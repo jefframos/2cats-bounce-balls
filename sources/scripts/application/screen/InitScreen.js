@@ -166,7 +166,7 @@ var InitScreen = AbstractScreen.extend({
 		if(APP.accelGame < 3){
 			APP.accelGame += this.currentHorde / 500;
 		}
-		console.log((APP.accelGame));
+		// console.log((APP.accelGame));
 
 		TweenLite.to(this.ball.getContent().position, 0.3, {y:posDest, ease:'easeOutBack', onComplete:function(){
 			var behaviour = self.behaviours[Math.floor(Math.random() * self.behaviours.length)].clone();
@@ -187,9 +187,9 @@ var InitScreen = AbstractScreen.extend({
 		this.updateLabel();
 		this.ball = new Ball({x:0,y:0}, this);
 		this.ball.build();
-		this.ball.getContent().position.y = 100;
-		this.ball.getContent().position.x = 100;
-		scaleConverter(this.ball.getContent().width, windowWidth, 0.15, this.ball.getContent());
+
+		// console.log(this.ball.getContent());
+		scaleConverter(this.ball.getContent().width, windowWidth, 0.18, this.ball.getContent());
 		this.ball.getContent().position.x = windowWidth / 2;
 		this.ball.getContent().position.y = windowHeight - this.ball.getContent().height - windowHeight * 0.1;
 

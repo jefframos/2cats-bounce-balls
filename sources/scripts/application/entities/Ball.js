@@ -35,11 +35,6 @@ var Ball = Entity.extend({
 
 		this.getContent().alpha = 0.5;
 		TweenLite.to(this.getContent(), 0.3, {alpha:1});
-		
-		this.birdsCollided = [];
-
-		this.particlesCounterMax = (Math.abs(this.velocity.x) + Math.abs(this.velocity.y)) / 3;
-		this.particlesCounter = this.particlesCounterMax *2;
 
 		this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100);
 
