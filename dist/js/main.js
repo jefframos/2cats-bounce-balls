@@ -656,7 +656,7 @@ var Application = AbstractApplication.extend({
     init: function(props) {
         this.props = props, this.left = Math.random() < .5, this.velX = this.props.velX ? this.props.velX : 8, 
         this.position = {
-            x: .15 * windowWidth + .7 * windowWidth * Math.random(),
+            x: windowWidth / 2,
             y: .2 * windowHeight + Math.random() * windowHeight * .3
         };
     },
