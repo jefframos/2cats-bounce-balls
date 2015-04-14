@@ -1,6 +1,6 @@
 /*jshint undef:false */
 var EnemyBall = Entity.extend({
-	init:function(vel){
+	init:function(vel, behaviour){
 		this._super( true );
 		this.updateable = false;
 		this.deading = false;
@@ -14,7 +14,7 @@ var EnemyBall = Entity.extend({
 		this.timeLive = 1000;
 		this.power = 1;
 		this.defaultVelocity = 1;
-
+		this.behaviour = behaviour.clone();
 		this.imgSource = this.particleSource = 'bullet.png';
 	},
 	startScaleTween: function(){
@@ -38,6 +38,7 @@ var EnemyBall = Entity.extend({
 	update: function(){
 		this.range = this.sprite.height / 3;
 		this._super();
+		this.behaviour.update(this);
 	},
 	// 	// this.updateableParticles();
 	// 	if(this.velocity.y !== 0){
@@ -120,10 +121,12 @@ var EnemyBall = Entity.extend({
 		}
 		for (var i = 5; i >= 0; i--) {
 			var particle = new Particles({x: Math.random() * 8 - 4, y:Math.random() * 8 - 4}, 120, this.particleSource, Math.random() * 0.05);
+			particle.maxScale = this.getContent().scale.x;
+            particle.maxInitScale = particle.maxScale;
 			particle.build();
 			particle.gravity = 0.3 * Math.random();
-			particle.alphadecres = 0.1;
-			particle.scaledecress = 0.02;
+			particle.alphadecress = 0.04;
+			particle.scaledecress = -0.05;
 			particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
 				this.getPosition().y);
 			this.layer.addChild(particle);

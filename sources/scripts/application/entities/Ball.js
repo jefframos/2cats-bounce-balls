@@ -14,10 +14,9 @@ var Ball = Entity.extend({
 		this.node = null;
 		this.velocity.x = vel.x;
 		this.velocity.y = vel.y;
-		this.timeLive = 1000;
 		this.power = 1;
 		this.defaultVelocity = 1;
-
+		
 		this.imgSource = this.particleSource = 'bullet.png';
 		// this.defaultVelocity.y = vel.y;
 		//console.log(bulletSource);
@@ -50,11 +49,13 @@ var Ball = Entity.extend({
 	update: function(){
 		this._super();
 		this.layer.collideChilds(this);
+		
 		// this.updateableParticles();
 		if(this.velocity.y !== 0){
 			this.updateableParticles();
 		}
-		if(this.timeLive <= 0 || this.getPosition() > windowWidth + 20){
+		if(this.getPosition().y < 0){
+			this.screen.gameOver();
 			this.kill = true;
 		}
 		this.range = this.sprite.height / 3;

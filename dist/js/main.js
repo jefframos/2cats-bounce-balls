@@ -542,7 +542,7 @@ var Application = AbstractApplication.extend({
         this._super(!0), this.updateable = !1, this.deading = !1, this.screen = screen, 
         this.range = 80, this.width = 1, this.height = 1, this.type = "bullet", this.target = "enemy", 
         this.fireType = "physical", this.node = null, this.velocity.x = vel.x, this.velocity.y = vel.y, 
-        this.timeLive = 1e3, this.power = 1, this.defaultVelocity = 1, this.imgSource = this.particleSource = "bullet.png";
+        this.power = 1, this.defaultVelocity = 1, this.imgSource = this.particleSource = "bullet.png";
     },
     startScaleTween: function() {
         TweenLite.from(this.getContent().scale, .3, {
@@ -562,10 +562,9 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this._super(), this.layer.collideChilds(this), 0 !== this.velocity.y && this.updateableParticles(), 
-        (this.timeLive <= 0 || this.getPosition() > windowWidth + 20) && (this.kill = !0), 
-        this.range = this.sprite.height / 3, this.isRotation && (this.sprite.rotation += this.accumRot), 
-        this.sinoid && (this.velocity.y = 5 * Math.sin(this.sin) * this.velocity.x, this.sin += .2, 
-        this.getContent().rotation = 0), this.collideArea.contains(this.getPosition().x, this.getPosition().y) || (this.kill = !0);
+        this.getPosition().y < 0 && (this.screen.gameOver(), this.kill = !0), this.range = this.sprite.height / 3, 
+        this.isRotation && (this.sprite.rotation += this.accumRot), this.sinoid && (this.velocity.y = 5 * Math.sin(this.sin) * this.velocity.x, 
+        this.sin += .2, this.getContent().rotation = 0), this.collideArea.contains(this.getPosition().x, this.getPosition().y) || (this.kill = !0);
     },
     updateableParticles: function() {
         if (this.particlesCounter--, this.particlesCounter <= 0) {
@@ -602,11 +601,11 @@ var Application = AbstractApplication.extend({
         }
     }
 }), EnemyBall = Entity.extend({
-    init: function(vel) {
+    init: function(vel, behaviour) {
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
         this.height = 1, this.type = "enemy", this.node = null, this.velocity.x = vel.x, 
         this.velocity.y = vel.y, this.timeLive = 1e3, this.power = 1, this.defaultVelocity = 1, 
-        this.imgSource = this.particleSource = "bullet.png";
+        this.behaviour = behaviour.clone(), this.imgSource = this.particleSource = "bullet.png";
     },
     startScaleTween: function() {
         TweenLite.from(this.getContent().scale, .3, {
@@ -623,7 +622,7 @@ var Application = AbstractApplication.extend({
         }), this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100);
     },
     update: function() {
-        this.range = this.sprite.height / 3, this._super();
+        this.range = this.sprite.height / 3, this._super(), this.behaviour.update(this);
     },
     updateableParticles: function() {
         if (this.particlesCounter--, this.particlesCounter <= 0) {
@@ -645,13 +644,32 @@ var Application = AbstractApplication.extend({
                     x: 8 * Math.random() - 4,
                     y: 8 * Math.random() - 4
                 }, 120, this.particleSource, .05 * Math.random());
-                particle.build(), particle.gravity = .3 * Math.random(), particle.alphadecres = .1, 
-                particle.scaledecress = .02, particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
+                particle.maxScale = this.getContent().scale.x, particle.maxInitScale = particle.maxScale, 
+                particle.build(), particle.gravity = .3 * Math.random(), particle.alphadecress = .04, 
+                particle.scaledecress = -.05, particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
                 this.layer.addChild(particle);
             }
             this.collidable = !1, this.kill = !0;
         }
     }
+}), SiderBehaviour = Class.extend({
+    init: function(props) {
+        this.props = props, this.left = Math.random() < .5, this.velX = this.props.velX ? this.props.velX : 8, 
+        this.position = {
+            x: .15 * windowWidth + .7 * windowWidth * Math.random(),
+            y: .2 * windowHeight + Math.random() * windowHeight * .3
+        };
+    },
+    clone: function() {
+        return new SiderBehaviour(this.props);
+    },
+    update: function(entity) {
+        pointDistance(entity.getContent().position.x, 0, windowWidth / 2, 0) > .3 * windowWidth && (this.velX *= -1), 
+        entity.velocity.x = this.velX;
+    },
+    build: function() {},
+    destroy: function() {},
+    serialize: function() {}
 }), Bird = Entity.extend({
     init: function(birdModel, screen) {
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
@@ -1506,16 +1524,18 @@ var Application = AbstractApplication.extend({
         this.fullscreenButton.setPosition(windowWidth - this.fullscreenButton.getContent().width - 20, windowHeight - this.fullscreenButton.getContent().height - 20), 
         this.addChild(this.fullscreenButton), this.fullscreenButton.clickCallback = function() {
             fullscreen(), self.fullscreenButton.getContent().alpha = 0;
-        }), this.setAudioButtons(), this.fromTween(), this.layerManager = new LayerManager(), 
-        this.layerManager.build("Main"), this.addChild(this.layerManager), this.layer = new Layer(), 
-        this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), this.hitTouch = new PIXI.Graphics(), 
-        this.hitTouch.interactive = !0, this.hitTouch.beginFill(0), this.hitTouch.drawRect(0, 0, windowWidth, windowHeight), 
+        }), this.fromTween(), this.layerManager = new LayerManager(), this.layerManager.build("Main"), 
+        this.addChild(this.layerManager), this.layer = new Layer(), this.layer.build("EntityLayer"), 
+        this.layerManager.addLayer(this.layer), this.hitTouch = new PIXI.Graphics(), this.hitTouch.interactive = !0, 
+        this.hitTouch.beginFill(0), this.hitTouch.drawRect(0, 0, windowWidth, windowHeight), 
         this.hitTouch.alpha = 0, this.hitTouch.hitArea = new PIXI.Rectangle(0, 0, windowWidth, windowHeight), 
         this.hitTouch.mouseup = function(mouseData) {
             self.moveBall();
         }, this.hitTouch.touchstart = function(touchData) {
             self.moveBall();
-        }, this.startGame();
+        }, this.startGame(), this.behaviours = [ new SiderBehaviour({
+            velX: 8
+        }) ];
     },
     moveBall: function() {
         this.ball.velocity.y = -20;
@@ -1526,11 +1546,11 @@ var Application = AbstractApplication.extend({
             y: posDest,
             ease: "easeOutBack",
             onComplete: function() {
-                var tempEnemy = new EnemyBall({
+                var behaviour = self.behaviours[0].clone(), tempEnemy = new EnemyBall({
                     x: 0,
                     y: 0
-                });
-                tempEnemy.build(), tempEnemy.getContent().position.x = windowWidth / 2, tempEnemy.getContent().position.y = windowHeight / 2, 
+                }, behaviour);
+                tempEnemy.build(), tempEnemy.getContent().position.x = behaviour.position.x, tempEnemy.getContent().position.y = behaviour.position.y, 
                 self.layer.addChild(tempEnemy);
             }
         });
@@ -1543,6 +1563,11 @@ var Application = AbstractApplication.extend({
         scaleConverter(this.ball.getContent().width, windowWidth, .15, this.ball.getContent()), 
         this.ball.getContent().position.x = windowWidth / 2, this.ball.getContent().position.y = windowHeight - this.ball.getContent().height - .1 * windowHeight, 
         this.layer.addChild(this.ball), this.nextHorde(), this.addChild(this.hitTouch);
+    },
+    gameOver: function() {
+        this.removeChild(this.hitTouch);
+        for (var i = this.layer.childs.length - 1; i >= 0; i--) this.layer.childs[i].preKill();
+        this.fromTween();
     },
     update: function() {
         this.updateable && this._super();
@@ -1577,6 +1602,7 @@ var Application = AbstractApplication.extend({
         });
     },
     fromTween: function(callback) {
+        this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width / 2, windowHeight - 2.5 * this.playButton.getContent().height), 
         TweenLite.from(this.bg.getContent(), .5, {
             alpha: 0,
             ease: "easeOutCubic"

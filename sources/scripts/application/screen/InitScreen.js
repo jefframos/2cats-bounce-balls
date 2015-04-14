@@ -97,7 +97,7 @@ var InitScreen = AbstractScreen.extend({
 			};
 		}
 
-		this.setAudioButtons();
+		// this.setAudioButtons();
 
 		
 		this.fromTween();
@@ -133,6 +133,8 @@ var InitScreen = AbstractScreen.extend({
 
 
         this.startGame();
+
+        this.behaviours = [new SiderBehaviour({velX:8})];
 	},
 	moveBall:function(){
 		this.ball.velocity.y = -20;
@@ -141,13 +143,13 @@ var InitScreen = AbstractScreen.extend({
 		var self = this;
 		var posDest = windowHeight - this.ball.getContent().height - windowHeight * 0.1;
 		TweenLite.to(this.ball.getContent().position, 0.3, {y:posDest, ease:'easeOutBack', onComplete:function(){
-			
-			var tempEnemy = new EnemyBall({x:0,y:0});
+			var behaviour = self.behaviours[0].clone();
+			var tempEnemy = new EnemyBall({x:0,y:0}, behaviour);
 			tempEnemy.build();
-			tempEnemy.getContent().position.x = windowWidth / 2;
-			tempEnemy.getContent().position.y = windowHeight / 2;
+			tempEnemy.getContent().position.x = behaviour.position.x;
+			tempEnemy.getContent().position.y = behaviour.position.y;
 			self.layer.addChild(tempEnemy);
-			
+
 		}});
 	},
 	startGame:function(){
@@ -165,6 +167,14 @@ var InitScreen = AbstractScreen.extend({
 		this.nextHorde();
 
         this.addChild(this.hitTouch);
+	},
+	gameOver:function(){
+		this.removeChild(this.hitTouch);
+		for (var i = this.layer.childs.length - 1; i >= 0; i--) {
+			this.layer.childs[i].preKill();
+		}
+		// this.layer.childs
+		this.fromTween();
 	},
 	update:function(){
         if(!this.updateable){
@@ -197,6 +207,10 @@ var InitScreen = AbstractScreen.extend({
 		}});
 	},
 	fromTween:function(callback){
+
+		this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width/2,
+			windowHeight - this.playButton.getContent().height * 2.5);
+
 		TweenLite.from(this.bg.getContent(), 0.5, {alpha:0, ease:'easeOutCubic'});
 		TweenLite.from(this.logo.getContent(), 0.5, {delay:0.1, alpha:0});
 	   
