@@ -8,7 +8,8 @@ var RadiusBehaviour = Class.extend({
 		this.position = {x: windowWidth / 2, y:windowHeight * 0.2 + Math.random() * windowHeight * 0.3};
 		this.centerPos = {x: windowWidth / 2, y:windowHeight / 2.2 - ((windowHeight / 1.7) - this.radius * 2 ) * Math.random()};
 		this.angle = Math.random();
-		this.angleSpd = Math.random() * 0.05 + 0.06;
+		this.angleSpd = Math.random() * 0.04 + 0.02;
+		this.angleSpd *= APP.accelGame;
 		this.side = Math.random() < 0.5 ? 1 : -1;
 	},
 	clone:function(){

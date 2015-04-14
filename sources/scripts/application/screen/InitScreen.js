@@ -136,8 +136,8 @@ var InitScreen = AbstractScreen.extend({
 		this.behaviours = [];
 		this.behaviours.push(new RadiusPingPongBehaviour({}));
 		this.behaviours.push(new RadiusBehaviour({}));
-		this.behaviours.push(new SiderBehaviour({velX:8}));
-		this.behaviours.push(new DiagBehaviour({velX:8}));
+		this.behaviours.push(new SiderBehaviour({}));
+		this.behaviours.push(new DiagBehaviour({}));
 
 		this.pointsLabel = new PIXI.Text('0', {align:'center',font:'50px Vagron', fill:'#FFF', wordWrap:true, wordWrapWidth:500});
 		scaleConverter(this.pointsLabel.height, windowHeight, 0.06, this.pointsLabel);
@@ -162,6 +162,12 @@ var InitScreen = AbstractScreen.extend({
 	nextHorde:function(){
 		var self = this;
 		var posDest = windowHeight - this.ball.getContent().height - windowHeight * 0.1;
+		this.currentHorde ++;
+		if(APP.accelGame < 3){
+			APP.accelGame += this.currentHorde / 500;
+		}
+		console.log((APP.accelGame));
+
 		TweenLite.to(this.ball.getContent().position, 0.3, {y:posDest, ease:'easeOutBack', onComplete:function(){
 			var behaviour = self.behaviours[Math.floor(Math.random() * self.behaviours.length)].clone();
 		// var behaviour = self.behaviours[3].clone();
@@ -176,6 +182,8 @@ var InitScreen = AbstractScreen.extend({
 	startGame:function(){
 		this.toTween();
 		this.currentPoints = 0;
+		this.currentHorde = 0;
+		APP.accelGame = 1;
 		this.updateLabel();
 		this.ball = new Ball({x:0,y:0}, this);
 		this.ball.build();
