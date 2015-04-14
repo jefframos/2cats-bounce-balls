@@ -656,8 +656,8 @@ var Application = AbstractApplication.extend({
     }
 }), DiagBehaviour = Class.extend({
     init: function(props) {
-        this.props = props, this.left = Math.random() < .5, this.velX = this.props.velX ? this.props.velX : 8, 
-        this.position = {
+        this.props = props, this.left = Math.random() < .5, this.velX = this.props.velX ? this.props.velX : 5, 
+        this.velX *= APP.accelGame, this.position = {
             x: windowWidth / 2,
             y: .22 * windowHeight + Math.random() * windowHeight * .35
         }, this.centerDist = .2 * Math.random() * windowWidth + .15 * windowWidth, this.side = Math.random() < .5 ? 1 : -1;
@@ -681,7 +681,8 @@ var Application = AbstractApplication.extend({
         }, this.centerPos = {
             x: windowWidth / 2,
             y: windowHeight / 2.2 - (windowHeight / 1.7 - 2 * this.radius) * Math.random()
-        }, this.angle = Math.random(), this.angleSpd = .05 * Math.random() + .06, this.side = Math.random() < .5 ? 1 : -1;
+        }, this.angle = Math.random(), this.angleSpd = .04 * Math.random() + .02, this.angleSpd *= APP.accelGame, 
+        this.side = Math.random() < .5 ? 1 : -1;
     },
     clone: function() {
         return new RadiusBehaviour(this.props);
@@ -703,8 +704,9 @@ var Application = AbstractApplication.extend({
         }, this.centerPos = {
             x: windowWidth / 2,
             y: windowHeight / 2 - (windowHeight / 2 - 2 * this.radius) * Math.random()
-        }, this.angle = 3.14, this.angleSpd = .05 * Math.random() + .045, this.side = Math.random() < .5 ? 1 : -1, 
-        this.angleMin = 1.57, this.angleMax = 4.71, this.invert = !1;
+        }, this.angle = 3.14, this.angleSpd = .03 * Math.random() + .025, this.angleSpd *= APP.accelGame, 
+        this.side = Math.random() < .5 ? 1 : -1, this.angleMin = 1.57, this.angleMax = 4.71, 
+        this.invert = !1;
     },
     clone: function() {
         return new RadiusPingPongBehaviour(this.props);
@@ -720,8 +722,8 @@ var Application = AbstractApplication.extend({
     serialize: function() {}
 }), SiderBehaviour = Class.extend({
     init: function(props) {
-        this.props = props, this.left = Math.random() < .5, this.velX = this.props.velX ? this.props.velX : 8, 
-        this.position = {
+        this.props = props, this.left = Math.random() < .5, this.velX = this.props.velX ? this.props.velX : 5, 
+        this.velX *= APP.accelGame, this.position = {
             x: windowWidth / 2,
             y: .25 * windowHeight + Math.random() * windowHeight * .45
         }, this.centerDist = .2 * Math.random() * windowWidth + .2 * windowWidth;
@@ -1600,11 +1602,8 @@ var Application = AbstractApplication.extend({
         }, this.hitTouch.touchstart = function(touchData) {
             self.moveBall();
         }, this.behaviours = [], this.behaviours.push(new RadiusPingPongBehaviour({})), 
-        this.behaviours.push(new RadiusBehaviour({})), this.behaviours.push(new SiderBehaviour({
-            velX: 8
-        })), this.behaviours.push(new DiagBehaviour({
-            velX: 8
-        })), this.pointsLabel = new PIXI.Text("0", {
+        this.behaviours.push(new RadiusBehaviour({})), this.behaviours.push(new SiderBehaviour({})), 
+        this.behaviours.push(new DiagBehaviour({})), this.pointsLabel = new PIXI.Text("0", {
             align: "center",
             font: "50px Vagron",
             fill: "#FFF",
@@ -1625,7 +1624,8 @@ var Application = AbstractApplication.extend({
     },
     nextHorde: function() {
         var self = this, posDest = windowHeight - this.ball.getContent().height - .1 * windowHeight;
-        TweenLite.to(this.ball.getContent().position, .3, {
+        this.currentHorde++, APP.accelGame < 3 && (APP.accelGame += this.currentHorde / 500), 
+        console.log(APP.accelGame), TweenLite.to(this.ball.getContent().position, .3, {
             y: posDest,
             ease: "easeOutBack",
             onComplete: function() {
@@ -1639,7 +1639,8 @@ var Application = AbstractApplication.extend({
         });
     },
     startGame: function() {
-        this.toTween(), this.currentPoints = 0, this.updateLabel(), this.ball = new Ball({
+        this.toTween(), this.currentPoints = 0, this.currentHorde = 0, APP.accelGame = 1, 
+        this.updateLabel(), this.ball = new Ball({
             x: 0,
             y: 0
         }, this), this.ball.build(), this.ball.getContent().position.y = 100, this.ball.getContent().position.x = 100, 
@@ -1648,7 +1649,7 @@ var Application = AbstractApplication.extend({
         this.layer.addChild(this.ball), this.nextHorde(), this.addChild(this.hitTouch);
     },
     gameOver: function() {
-        this.removeChild(this.hitTouch);
+        this.removeChild(this.hitTouch), this.pointsLabel.position.y = -50;
         for (var i = this.layer.childs.length - 1; i >= 0; i--) this.layer.childs[i].preKill();
         this.fromTween();
     },
