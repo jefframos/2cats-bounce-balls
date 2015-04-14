@@ -537,6 +537,121 @@ var Application = AbstractApplication.extend({
     playAmbientSound: function() {
         this.ambientPlaying || (this.ambientPlaying = !0, this.ambientSound1.play());
     }
+}), Ball = Entity.extend({
+    init: function(vel, screen) {
+        this._super(!0), this.updateable = !1, this.deading = !1, this.screen = screen, 
+        this.range = 80, this.width = 1, this.height = 1, this.type = "bullet", this.target = "enemy", 
+        this.fireType = "physical", this.node = null, this.velocity.x = vel.x, this.velocity.y = vel.y, 
+        this.timeLive = 1e3, this.power = 1, this.defaultVelocity = 1, this.imgSource = this.particleSource = "bullet.png";
+    },
+    startScaleTween: function() {
+        TweenLite.from(this.getContent().scale, .3, {
+            x: 0,
+            y: 0,
+            ease: "easeOutBack"
+        });
+    },
+    build: function() {
+        this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
+        this.sprite.anchor.y = .5, this.updateable = !0, this.collidable = !0, this.getContent().alpha = .5, 
+        TweenLite.to(this.getContent(), .3, {
+            alpha: 1
+        }), this.birdsCollided = [], this.particlesCounterMax = (Math.abs(this.velocity.x) + Math.abs(this.velocity.y)) / 3, 
+        this.particlesCounter = 2 * this.particlesCounterMax, this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100), 
+        this.particlesCounterMax = 2, this.particlesCounter = 2;
+    },
+    update: function() {
+        this._super(), this.layer.collideChilds(this), 0 !== this.velocity.y && this.updateableParticles(), 
+        (this.timeLive <= 0 || this.getPosition() > windowWidth + 20) && (this.kill = !0), 
+        this.range = this.sprite.height / 3, this.isRotation && (this.sprite.rotation += this.accumRot), 
+        this.sinoid && (this.velocity.y = 5 * Math.sin(this.sin) * this.velocity.x, this.sin += .2, 
+        this.getContent().rotation = 0), this.collideArea.contains(this.getPosition().x, this.getPosition().y) || (this.kill = !0);
+    },
+    updateableParticles: function() {
+        if (this.particlesCounter--, this.particlesCounter <= 0) {
+            this.particlesCounter = this.particlesCounterMax;
+            var particle = new Particles({
+                x: 0,
+                y: 0
+            }, 120, this.particleSource, .05 * Math.random());
+            particle.maxScale = this.getContent().scale.x, particle.maxInitScale = particle.maxScale, 
+            particle.build(), particle.gravity = 0, particle.alphadecress = .08, particle.scaledecress = -.04, 
+            particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
+            this.layer.addChild(particle);
+        }
+    },
+    collide: function(arrayCollide) {
+        if (this.collidable) for (var i = arrayCollide.length - 1; i >= 0; i--) if ("enemy" === arrayCollide[i].type) {
+            var enemy = arrayCollide[i];
+            this.velocity.y = 0, this.getContent().position.y = enemy.getContent().position.y, 
+            enemy.preKill(), this.screen.nextHorde();
+        }
+    },
+    preKill: function() {
+        if (!this.invencible) {
+            for (var i = 1; i >= 0; i--) {
+                var particle = new Particles({
+                    x: 4 * Math.random(),
+                    y: -(2 * Math.random() + 1)
+                }, 120, this.particleSource, .05 * Math.random());
+                particle.build(), particle.gravity = .1 * Math.random() + .2, particle.alphadecres = .1, 
+                particle.scaledecress = .02, particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
+                this.layer.addChild(particle);
+            }
+            this.collidable = !1, this.kill = !0;
+        }
+    }
+}), EnemyBall = Entity.extend({
+    init: function(vel) {
+        this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
+        this.height = 1, this.type = "enemy", this.node = null, this.velocity.x = vel.x, 
+        this.velocity.y = vel.y, this.timeLive = 1e3, this.power = 1, this.defaultVelocity = 1, 
+        this.imgSource = this.particleSource = "bullet.png";
+    },
+    startScaleTween: function() {
+        TweenLite.from(this.getContent().scale, .3, {
+            x: 0,
+            y: 0,
+            ease: "easeOutBack"
+        });
+    },
+    build: function() {
+        this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
+        this.sprite.anchor.y = .5, this.updateable = !0, this.collidable = !0, this.getContent().alpha = .5, 
+        TweenLite.to(this.getContent(), .3, {
+            alpha: 1
+        }), this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100);
+    },
+    update: function() {
+        this.range = this.sprite.height / 3, this._super();
+    },
+    updateableParticles: function() {
+        if (this.particlesCounter--, this.particlesCounter <= 0) {
+            this.particlesCounter = this.particlesCounterMax;
+            var particle = new Particles({
+                x: 0,
+                y: 0
+            }, 120, this.particleSource, .05 * Math.random());
+            particle.maxScale = this.getContent().scale.x, particle.maxInitScale = particle.maxScale, 
+            particle.build(), particle.gravity = 0, particle.alphadecress = .08, particle.scaledecress = -.04, 
+            particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
+            this.layer.addChild(particle);
+        }
+    },
+    preKill: function() {
+        if (!this.invencible) {
+            for (var i = 5; i >= 0; i--) {
+                var particle = new Particles({
+                    x: 8 * Math.random() - 4,
+                    y: 8 * Math.random() - 4
+                }, 120, this.particleSource, .05 * Math.random());
+                particle.build(), particle.gravity = .3 * Math.random(), particle.alphadecres = .1, 
+                particle.scaledecress = .02, particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
+                this.layer.addChild(particle);
+            }
+            this.collidable = !1, this.kill = !0;
+        }
+    }
 }), Bird = Entity.extend({
     init: function(birdModel, screen) {
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
@@ -1356,9 +1471,6 @@ var Application = AbstractApplication.extend({
         this.loader = new PIXI.AssetLoader(assetsToLoader), assetsToLoader.length > 0 ? this.initLoad() : this.onAssetsLoaded(), 
         this.updateable = !0;
     },
-    update: function() {
-        !this.updateable;
-    },
     onProgress: function() {
         this._super();
     },
@@ -1388,22 +1500,55 @@ var Application = AbstractApplication.extend({
         }), 45, 2), scaleConverter(this.playButton.getContent().width, windowWidth, .4, this.playButton), 
         this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width / 2, windowHeight - 2.5 * this.playButton.getContent().height), 
         this.addChild(this.playButton), this.playButton.clickCallback = function() {
-            self.updateable = !1, self.toTween(function() {
-                self.screenManager.change("Choice");
-            });
+            self.startGame();
         }, possibleFullscreen() && !isfull && (this.fullscreenButton = new DefaultButton("fullscreen.png", "fullscreen.png"), 
         this.fullscreenButton.build(), scaleConverter(this.fullscreenButton.getContent().width, windowWidth, .1, this.fullscreenButton), 
         this.fullscreenButton.setPosition(windowWidth - this.fullscreenButton.getContent().width - 20, windowHeight - this.fullscreenButton.getContent().height - 20), 
         this.addChild(this.fullscreenButton), this.fullscreenButton.clickCallback = function() {
             fullscreen(), self.fullscreenButton.getContent().alpha = 0;
-        }), this.setAudioButtons(), this.fromTween();
+        }), this.setAudioButtons(), this.fromTween(), this.layerManager = new LayerManager(), 
+        this.layerManager.build("Main"), this.addChild(this.layerManager), this.layer = new Layer(), 
+        this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), this.hitTouch = new PIXI.Graphics(), 
+        this.hitTouch.interactive = !0, this.hitTouch.beginFill(0), this.hitTouch.drawRect(0, 0, windowWidth, windowHeight), 
+        this.hitTouch.alpha = 0, this.hitTouch.hitArea = new PIXI.Rectangle(0, 0, windowWidth, windowHeight), 
+        this.hitTouch.mouseup = function(mouseData) {
+            self.moveBall();
+        }, this.hitTouch.touchstart = function(touchData) {
+            self.moveBall();
+        }, this.startGame();
+    },
+    moveBall: function() {
+        this.ball.velocity.y = -20;
+    },
+    nextHorde: function() {
+        var self = this, posDest = windowHeight - this.ball.getContent().height - .1 * windowHeight;
+        TweenLite.to(this.ball.getContent().position, .3, {
+            y: posDest,
+            ease: "easeOutBack",
+            onComplete: function() {
+                var tempEnemy = new EnemyBall({
+                    x: 0,
+                    y: 0
+                });
+                tempEnemy.build(), tempEnemy.getContent().position.x = windowWidth / 2, tempEnemy.getContent().position.y = windowHeight / 2, 
+                self.layer.addChild(tempEnemy);
+            }
+        });
+    },
+    startGame: function() {
+        this.toTween(), this.ball = new Ball({
+            x: 0,
+            y: 0
+        }, this), this.ball.build(), this.ball.getContent().position.y = 100, this.ball.getContent().position.x = 100, 
+        scaleConverter(this.ball.getContent().width, windowWidth, .15, this.ball.getContent()), 
+        this.ball.getContent().position.x = windowWidth / 2, this.ball.getContent().position.y = windowHeight - this.ball.getContent().height - .1 * windowHeight, 
+        this.layer.addChild(this.ball), this.nextHorde(), this.addChild(this.hitTouch);
+    },
+    update: function() {
+        this.updateable && this._super();
     },
     toTween: function(callback) {
-        TweenLite.to(this.bg.getContent(), .5, {
-            delay: .7,
-            alpha: 0,
-            ease: "easeOutCubic"
-        }), TweenLite.to(this.logo.getContent(), .5, {
+        TweenLite.to(this.logo.getContent(), .5, {
             delay: .1,
             alpha: 0
         }), this.audioOn && TweenLite.to(this.audioOn.getContent(), .5, {
