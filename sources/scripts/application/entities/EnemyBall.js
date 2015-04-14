@@ -34,41 +34,16 @@ var EnemyBall = Entity.extend({
 		
 		this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100);
 
+		this.particlesCounterMax = 5;
+        this.particlesCounter = 5;//this.particlesCounterMax *2;
+
 	},
 	update: function(){
-		this.range = this.sprite.height / 3;
+		this.range = this.sprite.height / 2;
 		this._super();
 		this.behaviour.update(this);
+		this.updateableParticles();
 	},
-	// 	// this.updateableParticles();
-	// 	if(this.velocity.y !== 0){
-	// 		this.updateableParticles();
-	// 	}
-	// 	if(this.timeLive <= 0 || this.getPosition() > windowWidth + 20){
-	// 		this.kill = true;
-	// 	}
-	// 	this.range = this.sprite.height / 2;
-	// 	if(this.isRotation){
-	// 		this.sprite.rotation += this.accumRot;
-	// 	}
-
-	// 	if(this.sinoid){
-	// 		this.velocity.y = Math.sin(this.sin) * (this.velocity.x * 5);
-	// 		this.sin += 0.2;
-	// 		this.getContent().rotation = 0;
-	// 	}
-
-	// 	if(!this.collideArea.contains(this.getPosition().x, this.getPosition().y)){
-	// 		this.kill = true;
-	// 	}
-	// 	// this.collideArea = new PIXI.Graphics();
-	// 	// this.collideArea.lineStyle(1,0x665544);
-	// 	// this.collideArea.drawCircle(this.centerPosition.x,this.centerPosition.y,this.range);
-	// 	// this.getContent().addChild(this.collideArea);
-	// 	// if(this.fall){
-	// 	//     this.velocity.y -= 0.1;
-	// 	// }
-	// },
 	updateableParticles:function(){
         this.particlesCounter --;
         if(this.particlesCounter <= 0)

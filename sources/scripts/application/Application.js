@@ -7,7 +7,7 @@ var Application = AbstractApplication.extend({
         this.stage.removeChild(this.loadText);
 
         this.labelDebug = new PIXI.Text('', {font:'15px Arial'});
-        this.stage.addChild(this.labelDebug);
+        // this.stage.addChild(this.labelDebug);
         this.labelDebug.position.y = windowHeight - 20;
         this.labelDebug.position.x = 20;
 
@@ -31,6 +31,9 @@ var Application = AbstractApplication.extend({
             return;
         }
         if(!this.screenManager.currentScreen){
+            return;
+        }
+        if(!this.labelDebug || this.labelDebug.parent){
             return;
         }
         this.childsCounter = 1;

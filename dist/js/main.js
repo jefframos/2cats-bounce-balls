@@ -322,14 +322,14 @@ var Application = AbstractApplication.extend({
         this._super(windowWidth, windowHeight), this.stage.setBackgroundColor(2892633), 
         this.stage.removeChild(this.loadText), this.labelDebug = new PIXI.Text("", {
             font: "15px Arial"
-        }), this.stage.addChild(this.labelDebug), this.labelDebug.position.y = windowHeight - 20, 
-        this.labelDebug.position.x = 20, this.mute = !1, this.audioController = new AudioController(), 
-        this.withAPI = !1, "#withoutAPI" === window.location.hash && (this.withAPI = !1);
+        }), this.labelDebug.position.y = windowHeight - 20, this.labelDebug.position.x = 20, 
+        this.mute = !1, this.audioController = new AudioController(), this.withAPI = !1, 
+        "#withoutAPI" === window.location.hash && (this.withAPI = !1);
     },
     update: function() {
         this._super(), this.withAPI && this.apiLogo && this.apiLogo.getContent().height > 1 && 0 === this.apiLogo.getContent().position.x && (scaleConverter(this.apiLogo.getContent().width, windowWidth, .5, this.apiLogo), 
         this.apiLogo.getContent().position.x = windowWidth / 2 - this.apiLogo.getContent().width / 2), 
-        this.screenManager && this.screenManager.currentScreen && (this.childsCounter = 1, 
+        this.screenManager && this.screenManager.currentScreen && this.labelDebug && !this.labelDebug.parent && (this.childsCounter = 1, 
         this.recursiveCounter(this.screenManager.currentScreen), this.labelDebug.setText(this.childsCounter));
     },
     apiLoaded: function(apiInstance) {
@@ -562,7 +562,7 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this._super(), this.layer.collideChilds(this), 0 !== this.velocity.y && this.updateableParticles(), 
-        this.getPosition().y < 0 && (this.screen.gameOver(), this.kill = !0), this.range = this.sprite.height / 3, 
+        this.getPosition().y < 0 && (this.screen.gameOver(), this.kill = !0), this.range = this.sprite.height / 2, 
         this.isRotation && (this.sprite.rotation += this.accumRot), this.sinoid && (this.velocity.y = 5 * Math.sin(this.sin) * this.velocity.x, 
         this.sin += .2, this.getContent().rotation = 0), this.collideArea.contains(this.getPosition().x, this.getPosition().y) || (this.kill = !0);
     },
@@ -573,17 +573,17 @@ var Application = AbstractApplication.extend({
                 x: 0,
                 y: 0
             }, 120, this.particleSource, .05 * Math.random());
-            particle.maxScale = this.getContent().scale.x, particle.maxInitScale = particle.maxScale, 
-            particle.build(), particle.gravity = 0, particle.alphadecress = .08, particle.scaledecress = -.04, 
+            particle.maxScale = this.getContent().scale.x, particle.maxInitScale = particle.maxScale / 1.5, 
+            particle.build(), particle.gravity = 0, particle.alphadecress = .01, particle.scaledecress = -.05, 
             particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
             this.layer.addChild(particle);
         }
     },
     collide: function(arrayCollide) {
-        if (this.collidable) for (var i = arrayCollide.length - 1; i >= 0; i--) if ("enemy" === arrayCollide[i].type) {
+        if (0 !== this.velocity.y && this.collidable) for (var i = arrayCollide.length - 1; i >= 0; i--) if ("enemy" === arrayCollide[i].type) {
             var enemy = arrayCollide[i];
             this.velocity.y = 0, this.getContent().position.y = enemy.getContent().position.y, 
-            enemy.preKill(), this.screen.nextHorde();
+            enemy.preKill(), this.screen.getBall();
         }
     },
     preKill: function() {
@@ -619,10 +619,12 @@ var Application = AbstractApplication.extend({
         this.sprite.anchor.y = .5, this.updateable = !0, this.collidable = !0, this.getContent().alpha = .5, 
         TweenLite.to(this.getContent(), .3, {
             alpha: 1
-        }), this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100);
+        }), this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100), 
+        this.particlesCounterMax = 5, this.particlesCounter = 5;
     },
     update: function() {
-        this.range = this.sprite.height / 3, this._super(), this.behaviour.update(this);
+        this.range = this.sprite.height / 2, this._super(), this.behaviour.update(this), 
+        this.updateableParticles();
     },
     updateableParticles: function() {
         if (this.particlesCounter--, this.particlesCounter <= 0) {
@@ -652,19 +654,83 @@ var Application = AbstractApplication.extend({
             this.collidable = !1, this.kill = !0;
         }
     }
+}), DiagBehaviour = Class.extend({
+    init: function(props) {
+        this.props = props, this.left = Math.random() < .5, this.velX = this.props.velX ? this.props.velX : 8, 
+        this.position = {
+            x: windowWidth / 2,
+            y: .22 * windowHeight + Math.random() * windowHeight * .35
+        }, this.centerDist = .2 * Math.random() * windowWidth + .15 * windowWidth, this.side = Math.random() < .5 ? 1 : -1;
+    },
+    clone: function() {
+        return new DiagBehaviour(this.props);
+    },
+    update: function(entity) {
+        pointDistance(entity.getContent().position.x, 0, windowWidth / 2, 0) > this.centerDist && (this.velX *= -1), 
+        entity.velocity.x = this.velX * this.side, entity.velocity.y = this.velX;
+    },
+    build: function() {},
+    destroy: function() {},
+    serialize: function() {}
+}), RadiusBehaviour = Class.extend({
+    init: function(props) {
+        this.props = props, this.left = Math.random() < .5, this.radius = .2 * windowWidth * Math.random() + .22 * windowWidth, 
+        this.position = {
+            x: windowWidth / 2,
+            y: .2 * windowHeight + Math.random() * windowHeight * .3
+        }, this.centerPos = {
+            x: windowWidth / 2,
+            y: windowHeight / 2.2 - (windowHeight / 1.7 - 2 * this.radius) * Math.random()
+        }, this.angle = Math.random(), this.angleSpd = .05 * Math.random() + .06, this.side = Math.random() < .5 ? 1 : -1;
+    },
+    clone: function() {
+        return new RadiusBehaviour(this.props);
+    },
+    update: function(entity) {
+        entity.getContent().position.x = Math.sin(this.angle) * this.radius + this.centerPos.x, 
+        entity.getContent().position.y = Math.cos(this.angle) * this.radius + this.centerPos.y, 
+        this.angle += this.angleSpd * this.side;
+    },
+    build: function() {},
+    destroy: function() {},
+    serialize: function() {}
+}), RadiusPingPongBehaviour = Class.extend({
+    init: function(props) {
+        this.props = props, this.left = Math.random() < .5, this.radius = .2 * windowWidth * Math.random() + .22 * windowWidth, 
+        this.position = {
+            x: windowWidth / 2,
+            y: .2 * windowHeight + Math.random() * windowHeight * .3
+        }, this.centerPos = {
+            x: windowWidth / 2,
+            y: windowHeight / 2 - (windowHeight / 2 - 2 * this.radius) * Math.random()
+        }, this.angle = 3.14, this.angleSpd = .05 * Math.random() + .045, this.side = Math.random() < .5 ? 1 : -1, 
+        this.angleMin = 1.57, this.angleMax = 4.71, this.invert = !1;
+    },
+    clone: function() {
+        return new RadiusPingPongBehaviour(this.props);
+    },
+    update: function(entity) {
+        entity.getContent().position.x = Math.sin(this.angle) * this.radius + this.centerPos.x, 
+        entity.getContent().position.y = Math.cos(this.angle) * this.radius + this.centerPos.y, 
+        this.angle += this.angleSpd * this.side, this.invert || (this.angle < this.angleMin && this.side < 0 && (this.side *= -1), 
+        this.angle > this.angleMax && this.side > 0 && (this.side *= -1));
+    },
+    build: function() {},
+    destroy: function() {},
+    serialize: function() {}
 }), SiderBehaviour = Class.extend({
     init: function(props) {
         this.props = props, this.left = Math.random() < .5, this.velX = this.props.velX ? this.props.velX : 8, 
         this.position = {
             x: windowWidth / 2,
-            y: .2 * windowHeight + Math.random() * windowHeight * .3
-        };
+            y: .25 * windowHeight + Math.random() * windowHeight * .45
+        }, this.centerDist = .2 * Math.random() * windowWidth + .2 * windowWidth;
     },
     clone: function() {
         return new SiderBehaviour(this.props);
     },
     update: function(entity) {
-        pointDistance(entity.getContent().position.x, 0, windowWidth / 2, 0) > .3 * windowWidth && (this.velX *= -1), 
+        pointDistance(entity.getContent().position.x, 0, windowWidth / 2, 0) > this.centerDist && (this.velX *= -1), 
         entity.velocity.x = this.velX;
     },
     build: function() {},
@@ -1500,8 +1566,8 @@ var Application = AbstractApplication.extend({
         this.bg = new SimpleSprite("bg1.jpg"), this.container.addChild(this.bg.getContent()), 
         scaleConverter(this.bg.getContent().width, windowWidth, 1.2, this.bg), this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2, 
         this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2, 
-        this.logo = new SimpleSprite("logo.png"), this.container.addChild(this.logo.getContent()), 
-        scaleConverter(this.logo.getContent().width, windowWidth, .5, this.logo), this.logo.getContent().position.x = windowWidth / 2 - this.logo.getContent().width / 2, 
+        this.logo = new SimpleSprite("logo.png"), scaleConverter(this.logo.getContent().width, windowWidth, .5, this.logo), 
+        this.logo.getContent().position.x = windowWidth / 2 - this.logo.getContent().width / 2, 
         this.logo.getContent().position.y = windowHeight / 2 - this.logo.getContent().height / 2, 
         APP.withAPI && (this.moreGames = new DefaultButton("UI_button_default_2.png", "UI_button_default_2.png"), 
         this.moreGames.build(), this.moreGames.addLabel(new PIXI.Text("MORE GAMES", {
@@ -1519,7 +1585,7 @@ var Application = AbstractApplication.extend({
         this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width / 2, windowHeight - 2.5 * this.playButton.getContent().height), 
         this.addChild(this.playButton), this.playButton.clickCallback = function() {
             self.startGame();
-        }, possibleFullscreen() && !isfull && (this.fullscreenButton = new DefaultButton("fullscreen.png", "fullscreen.png"), 
+        }, testMobile() && possibleFullscreen() && !isfull && (this.fullscreenButton = new DefaultButton("fullscreen.png", "fullscreen.png"), 
         this.fullscreenButton.build(), scaleConverter(this.fullscreenButton.getContent().width, windowWidth, .1, this.fullscreenButton), 
         this.fullscreenButton.setPosition(windowWidth - this.fullscreenButton.getContent().width - 20, windowHeight - this.fullscreenButton.getContent().height - 20), 
         this.addChild(this.fullscreenButton), this.fullscreenButton.clickCallback = function() {
@@ -1533,9 +1599,26 @@ var Application = AbstractApplication.extend({
             self.moveBall();
         }, this.hitTouch.touchstart = function(touchData) {
             self.moveBall();
-        }, this.startGame(), this.behaviours = [ new SiderBehaviour({
+        }, this.behaviours = [], this.behaviours.push(new RadiusPingPongBehaviour({})), 
+        this.behaviours.push(new RadiusBehaviour({})), this.behaviours.push(new SiderBehaviour({
             velX: 8
-        }) ];
+        })), this.behaviours.push(new DiagBehaviour({
+            velX: 8
+        })), this.pointsLabel = new PIXI.Text("0", {
+            align: "center",
+            font: "50px Vagron",
+            fill: "#FFF",
+            wordWrap: !0,
+            wordWrapWidth: 500
+        }), scaleConverter(this.pointsLabel.height, windowHeight, .06, this.pointsLabel), 
+        this.addChild(this.pointsLabel), this.pointsLabel.position.y = -50;
+    },
+    updateLabel: function() {
+        this.pointsLabel.setText(this.currentPoints), this.pointsLabel.position.x = windowWidth - this.pointsLabel.width - .1 * windowWidth, 
+        this.pointsLabel.position.y = .1 * windowWidth;
+    },
+    getBall: function() {
+        this.nextHorde(), this.currentPoints++, this.updateLabel();
     },
     moveBall: function() {
         this.ball.velocity.y = -20;
@@ -1546,7 +1629,7 @@ var Application = AbstractApplication.extend({
             y: posDest,
             ease: "easeOutBack",
             onComplete: function() {
-                var behaviour = self.behaviours[0].clone(), tempEnemy = new EnemyBall({
+                var behaviour = self.behaviours[Math.floor(Math.random() * self.behaviours.length)].clone(), tempEnemy = new EnemyBall({
                     x: 0,
                     y: 0
                 }, behaviour);
@@ -1556,7 +1639,7 @@ var Application = AbstractApplication.extend({
         });
     },
     startGame: function() {
-        this.toTween(), this.ball = new Ball({
+        this.toTween(), this.currentPoints = 0, this.updateLabel(), this.ball = new Ball({
             x: 0,
             y: 0
         }, this), this.ball.build(), this.ball.getContent().position.y = 100, this.ball.getContent().position.x = 100, 
@@ -1573,27 +1656,7 @@ var Application = AbstractApplication.extend({
         this.updateable && this._super();
     },
     toTween: function(callback) {
-        TweenLite.to(this.logo.getContent(), .5, {
-            delay: .1,
-            alpha: 0
-        }), this.audioOn && TweenLite.to(this.audioOn.getContent(), .5, {
-            delay: .1,
-            y: -this.audioOn.getContent().height,
-            ease: "easeOutBack"
-        }), this.audioOff && TweenLite.to(this.audioOff.getContent(), .5, {
-            delay: .1,
-            y: -this.audioOn.getContent().height,
-            ease: "easeOutBack"
-        }), this.fullscreenButton && TweenLite.to(this.fullscreenButton.getContent(), .5, {
-            delay: .3,
-            y: windowHeight,
-            ease: "easeOutBack"
-        }), this.moreGames && TweenLite.to(this.moreGames.getContent(), .5, {
-            delay: .4,
-            y: windowHeight,
-            ease: "easeOutBack"
-        }), TweenLite.to(this.playButton.getContent(), .5, {
-            delay: .5,
+        TweenLite.to(this.playButton.getContent(), .2, {
             y: windowHeight,
             ease: "easeOutBack",
             onComplete: function() {
@@ -1603,35 +1666,12 @@ var Application = AbstractApplication.extend({
     },
     fromTween: function(callback) {
         this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width / 2, windowHeight - 2.5 * this.playButton.getContent().height), 
-        TweenLite.from(this.bg.getContent(), .5, {
-            alpha: 0,
-            ease: "easeOutCubic"
-        }), TweenLite.from(this.logo.getContent(), .5, {
-            delay: .1,
-            alpha: 0
-        }), this.audioOn && TweenLite.from(this.audioOn.getContent(), .5, {
-            delay: .1,
-            y: -this.audioOn.getContent().height,
-            ease: "easeOutBack"
-        }), this.audioOff && TweenLite.from(this.audioOff.getContent(), .5, {
-            delay: .1,
-            y: -this.audioOn.getContent().height,
-            ease: "easeOutBack"
-        }), this.fullscreenButton && TweenLite.from(this.fullscreenButton.getContent(), .5, {
-            delay: .3,
-            y: windowHeight,
-            ease: "easeOutBack"
-        }), TweenLite.from(this.playButton.getContent(), .5, {
-            delay: .4,
+        TweenLite.from(this.playButton.getContent(), .2, {
             y: windowHeight,
             ease: "easeOutBack",
             onComplete: function() {
                 callback && callback();
             }
-        }), this.moreGames && TweenLite.from(this.moreGames.getContent(), .5, {
-            delay: .5,
-            y: windowHeight,
-            ease: "easeOutBack"
         });
     },
     setAudioButtons: function() {

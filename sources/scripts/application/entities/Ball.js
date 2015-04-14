@@ -58,7 +58,7 @@ var Ball = Entity.extend({
 			this.screen.gameOver();
 			this.kill = true;
 		}
-		this.range = this.sprite.height / 3;
+		this.range = this.sprite.height / 2;
 		if(this.isRotation){
 			this.sprite.rotation += this.accumRot;
 		}
@@ -115,12 +115,12 @@ var Ball = Entity.extend({
             //efeito 3
             var particle = new Particles({x: 0, y:0}, 120, this.particleSource, Math.random() * 0.05);
             particle.maxScale = this.getContent().scale.x;
-            particle.maxInitScale = particle.maxScale;
+            particle.maxInitScale = particle.maxScale / 1.5;
             // particle.growType = -1;
             particle.build();
             particle.gravity = 0.0;
-            particle.alphadecress = 0.08;
-            particle.scaledecress = -0.04;
+            particle.alphadecress = 0.01;
+            particle.scaledecress = -0.05;
             particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
                 this.getPosition().y);
             this.layer.addChild(particle);
@@ -128,6 +128,9 @@ var Ball = Entity.extend({
     },
 	collide:function(arrayCollide){
 		// console.log('fireCollide', arrayCollide[0]);
+		if(this.velocity.y === 0){
+            return;
+        }
 		if(this.collidable){
 			for (var i = arrayCollide.length - 1; i >= 0; i--) {
 				if(arrayCollide[i].type === 'enemy'){
@@ -136,7 +139,7 @@ var Ball = Entity.extend({
 					this.getContent().position.y = enemy.getContent().position.y;
 					// enemy.kill
 					enemy.preKill();
-					this.screen.nextHorde();
+					this.screen.getBall();
 					// arrayCollide[i].prekill();
 				}
 			}

@@ -39,7 +39,7 @@ var InitScreen = AbstractScreen.extend({
 		this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2;
 
 		this.logo = new SimpleSprite('logo.png');
-		this.container.addChild(this.logo.getContent());
+		// this.container.addChild(this.logo.getContent());
 		scaleConverter(this.logo.getContent().width, windowWidth, 0.5, this.logo);
 		this.logo.getContent().position.x = windowWidth / 2 - this.logo.getContent().width / 2;
 		this.logo.getContent().position.y = windowHeight / 2 - this.logo.getContent().height / 2;
@@ -83,7 +83,7 @@ var InitScreen = AbstractScreen.extend({
 		};
 
 
-		if(possibleFullscreen() && !isfull){
+		if(testMobile() && possibleFullscreen() && !isfull){
 			this.fullscreenButton = new DefaultButton('fullscreen.png', 'fullscreen.png');
 			this.fullscreenButton.build();
 			scaleConverter(this.fullscreenButton.getContent().width, windowWidth, 0.1, this.fullscreenButton);
@@ -103,38 +103,58 @@ var InitScreen = AbstractScreen.extend({
 		this.fromTween();
 
 		this.layerManager = new LayerManager();
-        this.layerManager.build('Main');
+		this.layerManager.build('Main');
 
-        this.addChild(this.layerManager);
+		this.addChild(this.layerManager);
 
-        //adiciona uma camada
-        this.layer = new Layer();
-        this.layer.build('EntityLayer');
-        this.layerManager.addLayer(this.layer);
-
-
+		//adiciona uma camada
+		this.layer = new Layer();
+		this.layer.build('EntityLayer');
+		this.layerManager.addLayer(this.layer);
 
 
-        this.hitTouch = new PIXI.Graphics();
-        this.hitTouch.interactive = true;
-        this.hitTouch.beginFill(0);
-        this.hitTouch.drawRect(0,0,windowWidth, windowHeight);
-        this.hitTouch.alpha = 0;
-        this.hitTouch.hitArea = new PIXI.Rectangle(0, 0, windowWidth, windowHeight);
-       
-
-        this.hitTouch.mouseup = function(mouseData){
-            self.moveBall();
-        };
-
-        this.hitTouch.touchstart = function(touchData){
-            self.moveBall();
-        };
 
 
-        this.startGame();
+		this.hitTouch = new PIXI.Graphics();
+		this.hitTouch.interactive = true;
+		this.hitTouch.beginFill(0);
+		this.hitTouch.drawRect(0,0,windowWidth, windowHeight);
+		this.hitTouch.alpha = 0;
+		this.hitTouch.hitArea = new PIXI.Rectangle(0, 0, windowWidth, windowHeight);
+	   
 
-        this.behaviours = [new SiderBehaviour({velX:8})];
+		this.hitTouch.mouseup = function(mouseData){
+			self.moveBall();
+		};
+
+		this.hitTouch.touchstart = function(touchData){
+			self.moveBall();
+		};
+
+
+
+		this.behaviours = [];
+		this.behaviours.push(new RadiusPingPongBehaviour({}));
+		this.behaviours.push(new RadiusBehaviour({}));
+		this.behaviours.push(new SiderBehaviour({velX:8}));
+		this.behaviours.push(new DiagBehaviour({velX:8}));
+
+		this.pointsLabel = new PIXI.Text('0', {align:'center',font:'50px Vagron', fill:'#FFF', wordWrap:true, wordWrapWidth:500});
+		scaleConverter(this.pointsLabel.height, windowHeight, 0.06, this.pointsLabel);
+		this.addChild(this.pointsLabel);
+		this.pointsLabel.position.y = -50;
+		
+		// this.startGame();
+	},
+	updateLabel:function(){
+		this.pointsLabel.setText(this.currentPoints);
+		this.pointsLabel.position.x = windowWidth - this.pointsLabel.width - windowWidth * 0.1;
+		this.pointsLabel.position.y = windowWidth * 0.1;
+	},
+	getBall:function(){
+		this.nextHorde();
+		this.currentPoints ++;
+		this.updateLabel();
 	},
 	moveBall:function(){
 		this.ball.velocity.y = -20;
@@ -143,7 +163,8 @@ var InitScreen = AbstractScreen.extend({
 		var self = this;
 		var posDest = windowHeight - this.ball.getContent().height - windowHeight * 0.1;
 		TweenLite.to(this.ball.getContent().position, 0.3, {y:posDest, ease:'easeOutBack', onComplete:function(){
-			var behaviour = self.behaviours[0].clone();
+			var behaviour = self.behaviours[Math.floor(Math.random() * self.behaviours.length)].clone();
+		// var behaviour = self.behaviours[3].clone();
 			var tempEnemy = new EnemyBall({x:0,y:0}, behaviour);
 			tempEnemy.build();
 			tempEnemy.getContent().position.x = behaviour.position.x;
@@ -154,6 +175,8 @@ var InitScreen = AbstractScreen.extend({
 	},
 	startGame:function(){
 		this.toTween();
+		this.currentPoints = 0;
+		this.updateLabel();
 		this.ball = new Ball({x:0,y:0}, this);
 		this.ball.build();
 		this.ball.getContent().position.y = 100;
@@ -165,8 +188,24 @@ var InitScreen = AbstractScreen.extend({
 		
 		this.layer.addChild(this.ball);
 		this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
+		// this.nextHorde();
 
-        this.addChild(this.hitTouch);
+		this.addChild(this.hitTouch);
 	},
 	gameOver:function(){
 		this.removeChild(this.hitTouch);
@@ -177,30 +216,30 @@ var InitScreen = AbstractScreen.extend({
 		this.fromTween();
 	},
 	update:function(){
-        if(!this.updateable){
-            return;
-        }
-        this._super();
-    },
+		if(!this.updateable){
+			return;
+		}
+		this._super();
+	},
 	toTween:function(callback){
 		// TweenLite.to(this.bg.getContent(), 0.5, {delay:0.7, alpha:0, ease:'easeOutCubic'});
-		TweenLite.to(this.logo.getContent(), 0.5, {delay:0.1, alpha:0});
+		// TweenLite.to(this.logo.getContent(), 0.5, {delay:0.1, alpha:0});
 
 	   
-		if(this.audioOn){
-			TweenLite.to(this.audioOn.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-		}
-		if(this.audioOff){
-			TweenLite.to(this.audioOff.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-		}
+		// if(this.audioOn){
+		// 	TweenLite.to(this.audioOn.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
+		// }
+		// if(this.audioOff){
+		// 	TweenLite.to(this.audioOff.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
+		// }
 
-		if(this.fullscreenButton){
-			TweenLite.to(this.fullscreenButton.getContent(), 0.5, {delay:0.3, y:windowHeight, ease:'easeOutBack'});
-		}
-		if(this.moreGames){
-			TweenLite.to(this.moreGames.getContent(), 0.5, {delay:0.4, y:windowHeight, ease:'easeOutBack'});
-		}
-		TweenLite.to(this.playButton.getContent(), 0.5, {delay:0.5, y:windowHeight, ease:'easeOutBack', onComplete:function(){
+		// if(this.fullscreenButton){
+		// 	TweenLite.to(this.fullscreenButton.getContent(), 0.5, {delay:0.3, y:windowHeight, ease:'easeOutBack'});
+		// }
+		// if(this.moreGames){
+		// 	TweenLite.to(this.moreGames.getContent(), 0.5, {delay:0.4, y:windowHeight, ease:'easeOutBack'});
+		// }
+		TweenLite.to(this.playButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack', onComplete:function(){
 			if(callback){
 				callback();
 			}
@@ -211,26 +250,26 @@ var InitScreen = AbstractScreen.extend({
 		this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width/2,
 			windowHeight - this.playButton.getContent().height * 2.5);
 
-		TweenLite.from(this.bg.getContent(), 0.5, {alpha:0, ease:'easeOutCubic'});
-		TweenLite.from(this.logo.getContent(), 0.5, {delay:0.1, alpha:0});
+		// TweenLite.from(this.bg.getContent(), 0.5, {alpha:0, ease:'easeOutCubic'});
+		// TweenLite.from(this.logo.getContent(), 0.5, {delay:0.1, alpha:0});
 	   
-		if(this.audioOn){
-			TweenLite.from(this.audioOn.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-		}
-		if(this.audioOff){
-			TweenLite.from(this.audioOff.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-		}
-		if(this.fullscreenButton){
-			TweenLite.from(this.fullscreenButton.getContent(), 0.5, {delay:0.3, y:windowHeight, ease:'easeOutBack'});
-		}
-		TweenLite.from(this.playButton.getContent(), 0.5, {delay:0.4, y:windowHeight, ease:'easeOutBack', onComplete:function(){
+		// if(this.audioOn){
+		// 	TweenLite.from(this.audioOn.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
+		// }
+		// if(this.audioOff){
+		// 	TweenLite.from(this.audioOff.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
+		// }
+		// if(this.fullscreenButton){
+		// 	TweenLite.from(this.fullscreenButton.getContent(), 0.5, {delay:0.3, y:windowHeight, ease:'easeOutBack'});
+		// }
+		TweenLite.from(this.playButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack', onComplete:function(){
 			if(callback){
 				callback();
 			}
 		}});
-		if(this.moreGames){
-			TweenLite.from(this.moreGames.getContent(), 0.5, {delay:0.5, y:windowHeight, ease:'easeOutBack'});
-		}
+		// if(this.moreGames){
+		// 	TweenLite.from(this.moreGames.getContent(), 0.5, {delay:0.5, y:windowHeight, ease:'easeOutBack'});
+		// }
 	},
 	setAudioButtons:function(){
 		var self = this;
