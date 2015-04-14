@@ -209,6 +209,7 @@ var InitScreen = AbstractScreen.extend({
 	},
 	gameOver:function(){
 		this.removeChild(this.hitTouch);
+		this.pointsLabel.position.y = -50;
 		for (var i = this.layer.childs.length - 1; i >= 0; i--) {
 			this.layer.childs[i].preKill();
 		}
