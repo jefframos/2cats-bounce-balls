@@ -329,7 +329,7 @@ var Application = AbstractApplication.extend({
     update: function() {
         this._super(), this.withAPI && this.apiLogo && this.apiLogo.getContent().height > 1 && 0 === this.apiLogo.getContent().position.x && (scaleConverter(this.apiLogo.getContent().width, windowWidth, .5, this.apiLogo), 
         this.apiLogo.getContent().position.x = windowWidth / 2 - this.apiLogo.getContent().width / 2), 
-        this.screenManager && this.screenManager.currentScreen && this.labelDebug && !this.labelDebug.parent && (this.childsCounter = 1, 
+        this.screenManager && this.screenManager.currentScreen && this.labelDebug && this.labelDebug.parent && (this.childsCounter = 1, 
         this.recursiveCounter(this.screenManager.currentScreen), this.labelDebug.setText(this.childsCounter));
     },
     apiLoaded: function(apiInstance) {

@@ -189,7 +189,6 @@
         <key>fileList</key>
         <array>
             <filename>normal/bg1.jpg</filename>
-            <filename>normal/logo.png</filename>
             <filename>normal/UI_button_close_1.png</filename>
             <filename>normal/UI_button_close_1_over.png</filename>
             <filename>normal/UI_button_default_1.png</filename>
@@ -207,6 +206,10 @@
             <filename>shadow.png</filename>
             <filename>ball.png</filename>
             <filename>bullet.png</filename>
+            <filename>volumeButton_on.png</filename>
+            <filename>volumeButton_on_over.png</filename>
+            <filename>volumeButton_off.png</filename>
+            <filename>volumeButton_off_over.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

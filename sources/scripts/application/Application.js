@@ -33,7 +33,7 @@ var Application = AbstractApplication.extend({
         if(!this.screenManager.currentScreen){
             return;
         }
-        if(!this.labelDebug || this.labelDebug.parent){
+        if(!this.labelDebug || !this.labelDebug.parent){
             return;
         }
         this.childsCounter = 1;
