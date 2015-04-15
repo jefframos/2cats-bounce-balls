@@ -27,7 +27,7 @@ var Particles = Entity.extend({
         }
         this.maxScale = 1;
         this.growType = 1;
-        this.maxInitScale = 0.2;
+        this.maxInitScale = 1;
 
     },
     build: function(){

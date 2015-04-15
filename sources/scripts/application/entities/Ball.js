@@ -17,7 +17,8 @@ var Ball = Entity.extend({
 		this.power = 1;
 		this.defaultVelocity = 1;
 		
-		this.imgSource = this.particleSource = 'bullet.png';
+		this.imgSource = 'ball.png';
+		this.particleSource = 'bullet.png';
 		// this.defaultVelocity.y = vel.y;
 		//console.log(bulletSource);
 	},
@@ -26,20 +27,42 @@ var Ball = Entity.extend({
 	},
 	build: function(){
 
-		this.sprite = new PIXI.Sprite.fromFrame(this.imgSource);
+		this.spriteBall = new PIXI.Sprite.fromFrame(this.imgSource);
+		this.sprite = new PIXI.Sprite();
+        this.sprite.addChild(this.spriteBall);
+        this.spriteBall.anchor.x = 0.5;
+		this.spriteBall.anchor.y = 0.5;
+
 		this.sprite.anchor.x = 0.5;
 		this.sprite.anchor.y = 0.5;
-
+		this.range = this.sprite.height / 2;
+		// console.log(this.range);
 		this.updateable = true;
 		this.collidable = true;
 
-		this.getContent().alpha = 0.5;
+		this.getContent().alpha = 0.1;
 		TweenLite.to(this.getContent(), 0.3, {alpha:1});
 
 		this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100);
 
 		this.particlesCounterMax = 2;
         this.particlesCounter = 2;//this.particlesCounterMax *2;
+        this.shadow = new PIXI.Sprite.fromFrame('shadow.png');
+        this.shadow.anchor.x = 0.5;
+        this.shadow.anchor.y = 0;
+        this.shadow.tint = 0;
+        this.shadowAlpha = 0.3;
+        this.shadow.alpha = this.shadowAlpha;
+        this.sprite.addChild(this.shadow);
+        this.sprite.setChildIndex(this.shadow , 0);
+	},
+	hideShadows: function(){
+		TweenLite.to(this.shadow, 0.1, {alpha:0});
+	},
+	updateShadow: function(angle){
+		TweenLite.to(this.shadow, 0.3, {delay:0.1, alpha:this.shadowAlpha});
+		// TweenLite.to(this.shadow, 0.1, {rotation:angle});
+		this.shadow.rotation = angle;
 	},
 	update: function(){
 		this._super();
@@ -53,7 +76,7 @@ var Ball = Entity.extend({
 			this.screen.gameOver();
 			this.kill = true;
 		}
-		this.range = this.sprite.height / 2;
+		
 		if(this.isRotation){
 			this.sprite.rotation += this.accumRot;
 		}
@@ -110,7 +133,7 @@ var Ball = Entity.extend({
             //efeito 3
             var particle = new Particles({x: 0, y:0}, 120, this.particleSource, Math.random() * 0.05);
             particle.maxScale = this.getContent().scale.x;
-            particle.maxInitScale = particle.maxScale / 1.5;
+            // particle.maxInitScale = particle.maxScale / 1.5;
             // particle.growType = -1;
             particle.build();
             particle.gravity = 0.0;
@@ -119,6 +142,7 @@ var Ball = Entity.extend({
             particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
                 this.getPosition().y);
             this.layer.addChild(particle);
+            particle.getContent().parent.setChildIndex(particle.getContent() , 0);
         }
     },
 	collide:function(arrayCollide){

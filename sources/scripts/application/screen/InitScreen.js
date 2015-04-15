@@ -3,7 +3,7 @@ var InitScreen = AbstractScreen.extend({
 	init: function (label) {
 		this._super(label);
 		this.isLoaded = false;
-		APP.seed = new Float(5);
+		APP.seed = new Float(Math.random() * 0xFFFF);
 		APP.seed.applySeed();
 		// alert(this.isLoaded);
 	},
@@ -40,11 +40,11 @@ var InitScreen = AbstractScreen.extend({
 		this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2;
 		this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2;
 
-		this.logo = new SimpleSprite('logo.png');
-		// this.container.addChild(this.logo.getContent());
-		scaleConverter(this.logo.getContent().width, windowWidth, 0.5, this.logo);
-		this.logo.getContent().position.x = windowWidth / 2 - this.logo.getContent().width / 2;
-		this.logo.getContent().position.y = windowHeight / 2 - this.logo.getContent().height / 2;
+		// this.logo = new SimpleSprite('logo.png');
+		// // this.container.addChild(this.logo.getContent());
+		// scaleConverter(this.logo.getContent().width, windowWidth, 0.5, this.logo);
+		// this.logo.getContent().position.x = windowWidth / 2 - this.logo.getContent().width / 2;
+		// this.logo.getContent().position.y = windowHeight / 2 - this.logo.getContent().height / 2;
 
 
 		if(APP.withAPI){
@@ -191,7 +191,7 @@ var InitScreen = AbstractScreen.extend({
 			tempEnemy.getContent().position.x = behaviour.position.x;
 			tempEnemy.getContent().position.y = behaviour.position.y;
 			self.layer.addChild(tempEnemy);
-
+			self.currentEnemy = tempEnemy;
 			if(self.currentHorde < 5){
 				return;
 			}
@@ -216,7 +216,8 @@ var InitScreen = AbstractScreen.extend({
 		this.ball.build();
 
 		// console.log(this.ball.getContent());
-		scaleConverter(this.ball.getContent().width, windowWidth, 0.18, this.ball.getContent());
+		scaleConverter(this.ball.spriteBall.width, windowWidth, 0.15, this.ball.spriteBall);
+		scaleConverter(this.ball.shadow.width, windowWidth, 0.15, this.ball.shadow);
 		this.ball.getContent().position.x = windowWidth / 2;
 		this.ball.getContent().position.y = windowHeight - this.ball.getContent().height - windowHeight * 0.1;
 
@@ -238,6 +239,14 @@ var InitScreen = AbstractScreen.extend({
 	update:function(){
 		if(!this.updateable){
 			return;
+		}
+		if(this.currentEnemy && this.ball){
+			this.ball.updateShadow(Math.atan2(
+				this.ball.getContent().position.y - this.currentEnemy.getContent().position.y,
+				this.ball.getContent().position.x - this.currentEnemy.getContent().position.x) - degreesToRadians(90)
+			);
+		}else if(this.ball){
+			this.ball.hideShadows();
 		}
 		this._super();
 	},

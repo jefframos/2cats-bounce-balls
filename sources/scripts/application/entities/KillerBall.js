@@ -93,6 +93,7 @@ var KillerBall = Entity.extend({
             particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
                 this.getPosition().y);
             this.layer.addChild(particle);
+            particle.getContent().parent.setChildIndex(particle.getContent() , 0);
         }
     },
 	preKill:function(){

@@ -4,7 +4,7 @@ function testMobile() {
 	return Modernizr.touch;// || window.innerWidth < 600;//true;// Modernizr.touch || window.innerWidth < 600;
 }
 
-var res = {x:750 / 2, y:1200 / 2};
+var res = {x:375, y:667};
 var resizeProportional = true;
 
 var windowWidth = res.x;

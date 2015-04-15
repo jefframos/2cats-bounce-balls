@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>3.6.0</string>
         <key>fileName</key>
-        <string>C:/wamp/www/grendenekids-2014-qrcode-barbie/sources/textures/atlas.tps</string>
+        <string>C:/xampp/htdocs/2cats-bounce-balls/sources/textures/atlas.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -188,20 +188,25 @@
         </struct>
         <key>fileList</key>
         <array>
-            <filename>seloGame.png</filename>
-            <filename>barbieEnd.png</filename>
-            <filename>bg.jpg</filename>
-            <filename>btnJogar.png</filename>
-            <filename>btnJogarNovamente.png</filename>
-            <filename>labirinto1.png</filename>
-            <filename>labirinto2.png</filename>
-            <filename>labirinto3.png</filename>
-            <filename>labirinto4.png</filename>
-            <filename>logo.png</filename>
-            <filename>parabens.png</filename>
-            <filename>pinOut.png</filename>
-            <filename>pinOver.png</filename>
-            <filename>selo.png</filename>
+            <filename>normal/bg1.jpg</filename>
+            <filename>normal/logo.png</filename>
+            <filename>normal/UI_button_close_1.png</filename>
+            <filename>normal/UI_button_close_1_over.png</filename>
+            <filename>normal/UI_button_default_1.png</filename>
+            <filename>normal/UI_button_facebook_1.png</filename>
+            <filename>normal/UI_button_help_1.png</filename>
+            <filename>normal/UI_button_help_1_over.png</filename>
+            <filename>normal/UI_button_pause_1.png</filename>
+            <filename>normal/UI_button_pause_1_over.png</filename>
+            <filename>normal/UI_button_play_1.png</filename>
+            <filename>normal/UI_button_play_1_over.png</filename>
+            <filename>normal/UI_button_ranking_1.png</filename>
+            <filename>normal/UI_button_twitter_1.png</filename>
+            <filename>normal/UI_modal_back_1.png</filename>
+            <filename>fullscreen.png</filename>
+            <filename>shadow.png</filename>
+            <filename>ball.png</filename>
+            <filename>bullet.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

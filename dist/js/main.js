@@ -542,7 +542,7 @@ var Application = AbstractApplication.extend({
         this._super(!0), this.updateable = !1, this.deading = !1, this.screen = screen, 
         this.range = 80, this.width = 1, this.height = 1, this.type = "bullet", this.target = "enemy", 
         this.fireType = "physical", this.node = null, this.velocity.x = vel.x, this.velocity.y = vel.y, 
-        this.power = 1, this.defaultVelocity = 1, this.imgSource = this.particleSource = "bullet.png";
+        this.power = 1, this.defaultVelocity = 1, this.imgSource = "ball.png", this.particleSource = "bullet.png";
     },
     startScaleTween: function() {
         TweenLite.from(this.getContent().scale, .3, {
@@ -552,18 +552,32 @@ var Application = AbstractApplication.extend({
         });
     },
     build: function() {
-        this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
-        this.sprite.anchor.y = .5, this.updateable = !0, this.collidable = !0, this.getContent().alpha = .5, 
-        TweenLite.to(this.getContent(), .3, {
+        this.spriteBall = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite = new PIXI.Sprite(), 
+        this.sprite.addChild(this.spriteBall), this.spriteBall.anchor.x = .5, this.spriteBall.anchor.y = .5, 
+        this.sprite.anchor.x = .5, this.sprite.anchor.y = .5, this.range = this.sprite.height / 2, 
+        this.updateable = !0, this.collidable = !0, this.getContent().alpha = .1, TweenLite.to(this.getContent(), .3, {
             alpha: 1
         }), this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100), 
-        this.particlesCounterMax = 2, this.particlesCounter = 2;
+        this.particlesCounterMax = 2, this.particlesCounter = 2, this.shadow = new PIXI.Sprite.fromFrame("shadow.png"), 
+        this.shadow.anchor.x = .5, this.shadow.anchor.y = 0, this.shadow.tint = 0, this.shadowAlpha = .3, 
+        this.shadow.alpha = this.shadowAlpha, this.sprite.addChild(this.shadow), this.sprite.setChildIndex(this.shadow, 0);
+    },
+    hideShadows: function() {
+        TweenLite.to(this.shadow, .1, {
+            alpha: 0
+        });
+    },
+    updateShadow: function(angle) {
+        TweenLite.to(this.shadow, .3, {
+            delay: .1,
+            alpha: this.shadowAlpha
+        }), this.shadow.rotation = angle;
     },
     update: function() {
         this._super(), this.layer.collideChilds(this), 0 !== this.velocity.y && this.updateableParticles(), 
-        this.getPosition().y < 0 && (this.screen.gameOver(), this.kill = !0), this.range = this.sprite.height / 2, 
-        this.isRotation && (this.sprite.rotation += this.accumRot), this.sinoid && (this.velocity.y = 5 * Math.sin(this.sin) * this.velocity.x, 
-        this.sin += .2, this.getContent().rotation = 0), this.collideArea.contains(this.getPosition().x, this.getPosition().y) || (this.kill = !0);
+        this.getPosition().y < 0 && (this.screen.gameOver(), this.kill = !0), this.isRotation && (this.sprite.rotation += this.accumRot), 
+        this.sinoid && (this.velocity.y = 5 * Math.sin(this.sin) * this.velocity.x, this.sin += .2, 
+        this.getContent().rotation = 0), this.collideArea.contains(this.getPosition().x, this.getPosition().y) || (this.kill = !0);
     },
     updateableParticles: function() {
         if (this.particlesCounter--, this.particlesCounter <= 0) {
@@ -572,10 +586,9 @@ var Application = AbstractApplication.extend({
                 x: 0,
                 y: 0
             }, 120, this.particleSource, .05 * Math.random());
-            particle.maxScale = this.getContent().scale.x, particle.maxInitScale = particle.maxScale / 1.5, 
-            particle.build(), particle.gravity = 0, particle.alphadecress = .01, particle.scaledecress = -.05, 
-            particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
-            this.layer.addChild(particle);
+            particle.maxScale = this.getContent().scale.x, particle.build(), particle.gravity = 0, 
+            particle.alphadecress = .01, particle.scaledecress = -.05, particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
+            this.layer.addChild(particle), particle.getContent().parent.setChildIndex(particle.getContent(), 0);
         }
     },
     collide: function(arrayCollide) {
@@ -635,7 +648,7 @@ var Application = AbstractApplication.extend({
             particle.maxScale = this.getContent().scale.x, particle.maxInitScale = particle.maxScale, 
             particle.build(), particle.gravity = 0, particle.alphadecress = .08, particle.scaledecress = -.04, 
             particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
-            this.layer.addChild(particle);
+            this.layer.addChild(particle), particle.getContent().parent.setChildIndex(particle.getContent(), 0);
         }
     },
     preKill: function() {
@@ -689,7 +702,7 @@ var Application = AbstractApplication.extend({
             particle.maxScale = this.getContent().scale.x, particle.maxInitScale = particle.maxScale, 
             particle.build(), particle.getContent().tint = 16711680, particle.gravity = 0, particle.alphadecress = .08, 
             particle.scaledecress = -.04, particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
-            this.layer.addChild(particle);
+            this.layer.addChild(particle), particle.getContent().parent.setChildIndex(particle.getContent(), 0);
         }
     },
     preKill: function() {
@@ -1646,7 +1659,8 @@ var Application = AbstractApplication.extend({
     }
 }), InitScreen = AbstractScreen.extend({
     init: function(label) {
-        this._super(label), this.isLoaded = !1, APP.seed = new Float(5), APP.seed.applySeed();
+        this._super(label), this.isLoaded = !1, APP.seed = new Float(65535 * Math.random()), 
+        APP.seed.applySeed();
     },
     destroy: function() {
         this._super();
@@ -1668,9 +1682,6 @@ var Application = AbstractApplication.extend({
         this.bg = new SimpleSprite("bg1.jpg"), this.container.addChild(this.bg.getContent()), 
         scaleConverter(this.bg.getContent().width, windowWidth, 1.2, this.bg), this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2, 
         this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2, 
-        this.logo = new SimpleSprite("logo.png"), scaleConverter(this.logo.getContent().width, windowWidth, .5, this.logo), 
-        this.logo.getContent().position.x = windowWidth / 2 - this.logo.getContent().width / 2, 
-        this.logo.getContent().position.y = windowHeight / 2 - this.logo.getContent().height / 2, 
         APP.withAPI && (this.moreGames = new DefaultButton("UI_button_default_2.png", "UI_button_default_2.png"), 
         this.moreGames.build(), this.moreGames.addLabel(new PIXI.Text("MORE GAMES", {
             font: "18px Vagron",
@@ -1737,7 +1748,7 @@ var Application = AbstractApplication.extend({
                 }, behaviour);
                 if (tempEnemy.build(), tempEnemy.getContent().position.x = behaviour.position.x, 
                 tempEnemy.getContent().position.y = behaviour.position.y, self.layer.addChild(tempEnemy), 
-                !(self.currentHorde < 5) && behaviour.killerBehaviour) {
+                self.currentEnemy = tempEnemy, !(self.currentHorde < 5) && behaviour.killerBehaviour) {
                     var tempEnemyKiller = new KillerBall({
                         x: 0,
                         y: 0
@@ -1754,8 +1765,9 @@ var Application = AbstractApplication.extend({
         APP.seed.applySeed(), this.updateLabel(), this.ball = new Ball({
             x: 0,
             y: 0
-        }, this), this.ball.build(), scaleConverter(this.ball.getContent().width, windowWidth, .18, this.ball.getContent()), 
-        this.ball.getContent().position.x = windowWidth / 2, this.ball.getContent().position.y = windowHeight - this.ball.getContent().height - .1 * windowHeight, 
+        }, this), this.ball.build(), scaleConverter(this.ball.spriteBall.width, windowWidth, .15, this.ball.spriteBall), 
+        scaleConverter(this.ball.shadow.width, windowWidth, .15, this.ball.shadow), this.ball.getContent().position.x = windowWidth / 2, 
+        this.ball.getContent().position.y = windowHeight - this.ball.getContent().height - .1 * windowHeight, 
         this.layer.addChild(this.ball), this.nextHorde(), this.addChild(this.hitTouch);
     },
     gameOver: function() {
@@ -1764,7 +1776,8 @@ var Application = AbstractApplication.extend({
         this.fromTween();
     },
     update: function() {
-        this.updateable && this._super();
+        this.updateable && (this.currentEnemy && this.ball ? this.ball.updateShadow(Math.atan2(this.ball.getContent().position.y - this.currentEnemy.getContent().position.y, this.ball.getContent().position.x - this.currentEnemy.getContent().position.x) - degreesToRadians(90)) : this.ball && this.ball.hideShadows(), 
+        this._super());
     },
     toTween: function(callback) {
         TweenLite.to(this.playButton.getContent(), .2, {
@@ -2229,7 +2242,7 @@ var Application = AbstractApplication.extend({
         this.node = null, this.velocity.x = vel.x, this.velocity.y = vel.y, this.timeLive = timeLive, 
         this.power = 1, this.defaultVelocity = 1, this.imgSource = source, this.alphadecress = .03, 
         this.scaledecress = .03, this.gravity = 0, rotation && (this.rotation = rotation), 
-        this.maxScale = 1, this.growType = 1, this.maxInitScale = .2;
+        this.maxScale = 1, this.growType = 1, this.maxInitScale = 1;
     },
     build: function() {
         this.updateable = !0, this.imgSource instanceof PIXI.Text ? this.sprite = this.imgSource : this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), 
@@ -2249,7 +2262,7 @@ var Application = AbstractApplication.extend({
     }
 }), res = {
     x: 375,
-    y: 600
+    y: 667
 }, resizeProportional = !0, windowWidth = res.x, windowHeight = res.y, realWindowWidth = res.x, realWindowHeight = res.y, gameScale = 1.3, screenOrientation = "portait", windowWidthVar = window.innerHeight, windowHeightVar = window.innerWidth, gameView = document.getElementById("game");
 
 testMobile() || (document.body.className = ""), console.log(gameView), window.addEventListener("orientationchange", function() {
