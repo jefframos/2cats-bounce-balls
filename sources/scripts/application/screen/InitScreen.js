@@ -3,6 +3,8 @@ var InitScreen = AbstractScreen.extend({
 	init: function (label) {
 		this._super(label);
 		this.isLoaded = false;
+		APP.seed = new Float(5);
+		APP.seed.applySeed();
 		// alert(this.isLoaded);
 	},
 	destroy: function () {
@@ -134,6 +136,7 @@ var InitScreen = AbstractScreen.extend({
 
 
 		this.behaviours = [];
+		this.behaviours.push(new StoppedBehaviour({}));
 		this.behaviours.push(new RadiusPingPongBehaviour({}));
 		this.behaviours.push(new RadiusBehaviour({}));
 		this.behaviours.push(new SiderBehaviour({}));
@@ -143,6 +146,7 @@ var InitScreen = AbstractScreen.extend({
 		scaleConverter(this.pointsLabel.height, windowHeight, 0.06, this.pointsLabel);
 		this.addChild(this.pointsLabel);
 		this.pointsLabel.position.y = -50;
+		
 		
 		// this.startGame();
 	},
@@ -162,6 +166,13 @@ var InitScreen = AbstractScreen.extend({
 	nextHorde:function(){
 		var self = this;
 		var posDest = windowHeight - this.ball.getContent().height - windowHeight * 0.1;
+
+		for (var i = this.layer.childs.length - 1; i >= 0; i--) {
+			if(this.layer.childs[i].type !== 'bullet'){
+				this.layer.childs[i].preKill();
+			}
+		}
+
 		this.currentHorde ++;
 		if(APP.accelGame < 3){
 			APP.accelGame += this.currentHorde / 500;
@@ -169,13 +180,28 @@ var InitScreen = AbstractScreen.extend({
 		// console.log((APP.accelGame));
 
 		TweenLite.to(this.ball.getContent().position, 0.3, {y:posDest, ease:'easeOutBack', onComplete:function(){
-			var behaviour = self.behaviours[Math.floor(Math.random() * self.behaviours.length)].clone();
+			var tempId = 0;
+			if(self.currentHorde > 1){
+				tempId = Math.floor(APP.seed.getNextFloat() * self.behaviours.length);
+			}
+			var behaviour = self.behaviours[tempId].clone();
 		// var behaviour = self.behaviours[3].clone();
 			var tempEnemy = new EnemyBall({x:0,y:0}, behaviour);
 			tempEnemy.build();
 			tempEnemy.getContent().position.x = behaviour.position.x;
 			tempEnemy.getContent().position.y = behaviour.position.y;
 			self.layer.addChild(tempEnemy);
+
+			if(self.currentHorde < 5){
+				return;
+			}
+			if(behaviour.killerBehaviour){
+				var tempEnemyKiller = new KillerBall({x:0,y:0}, behaviour.killerBehaviour);
+				tempEnemyKiller.build();
+				tempEnemyKiller.getContent().position.x = behaviour.killerBehaviour.position.x;
+				tempEnemyKiller.getContent().position.y = behaviour.killerBehaviour.position.y;
+				self.layer.addChild(tempEnemyKiller);
+			}
 
 		}});
 	},
@@ -184,6 +210,7 @@ var InitScreen = AbstractScreen.extend({
 		this.currentPoints = 0;
 		this.currentHorde = 0;
 		APP.accelGame = 1;
+		APP.seed.applySeed();
 		this.updateLabel();
 		this.ball = new Ball({x:0,y:0}, this);
 		this.ball.build();
@@ -196,22 +223,6 @@ var InitScreen = AbstractScreen.extend({
 		
 		this.layer.addChild(this.ball);
 		this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
-		// this.nextHorde();
 
 		this.addChild(this.hitTouch);
 	},

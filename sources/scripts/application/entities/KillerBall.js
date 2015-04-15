@@ -1,5 +1,5 @@
 /*jshint undef:false */
-var EnemyBall = Entity.extend({
+var KillerBall = Entity.extend({
 	init:function(vel, behaviour){
 		this._super( true );
 		this.updateable = false;
@@ -7,7 +7,7 @@ var EnemyBall = Entity.extend({
 		this.range = 80;
 		this.width = 1;
 		this.height = 1;
-		this.type = 'enemy';
+		this.type = 'killer';
 		this.node = null;
 		this.velocity.x = vel.x;
 		this.velocity.y = vel.y;
@@ -25,6 +25,7 @@ var EnemyBall = Entity.extend({
 		this.sprite = new PIXI.Sprite.fromFrame(this.imgSource);
 		this.sprite.anchor.x = 0.5;
 		this.sprite.anchor.y = 0.5;
+		this.sprite.tint = 0xFF0000;
 
 		this.updateable = true;
 		this.collidable = true;
@@ -39,12 +40,12 @@ var EnemyBall = Entity.extend({
 
 	},
 	update: function(){
-		this.range = this.sprite.height / 2;
+		this.range = this.sprite.height / 2.5;
 		this._super();
 		this.behaviour.update(this);
-		if(this.velocity.x || this.velocity.y){
-			this.updateableParticles();
-		}
+		// if(this.velocity.x !== 0 || this.velocity.y !== 0){
+		this.updateableParticles();
+		// }
 	},
 	updateableParticles:function(){
         this.particlesCounter --;
@@ -82,8 +83,10 @@ var EnemyBall = Entity.extend({
             var particle = new Particles({x: 0, y:0}, 120, this.particleSource, Math.random() * 0.05);
             particle.maxScale = this.getContent().scale.x;
             particle.maxInitScale = particle.maxScale;
+
             // particle.growType = -1;
             particle.build();
+            particle.getContent().tint = 0xFF0000;
             particle.gravity = 0.0;
             particle.alphadecress = 0.08;
             particle.scaledecress = -0.04;
@@ -101,6 +104,7 @@ var EnemyBall = Entity.extend({
 			particle.maxScale = this.getContent().scale.x;
             particle.maxInitScale = particle.maxScale;
 			particle.build();
+			particle.getContent().tint = 0xFF0000;
 			particle.gravity = 0.3 * Math.random();
 			particle.alphadecress = 0.04;
 			particle.scaledecress = -0.05;

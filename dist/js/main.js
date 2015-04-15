@@ -1,4 +1,4 @@
-/*! jefframos 14-04-2015 */
+/*! jefframos 15-04-2015 */
 function rgbToHsl(r, g, b) {
     r /= 255, g /= 255, b /= 255;
     var h, s, max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
@@ -583,7 +583,7 @@ var Application = AbstractApplication.extend({
             var enemy = arrayCollide[i];
             this.velocity.y = 0, this.getContent().position.y = enemy.getContent().position.y, 
             enemy.preKill(), this.screen.getBall();
-        }
+        } else "killer" === arrayCollide[i].type && (this.screen.gameOver(), this.kill = !0);
     },
     preKill: function() {
         if (!this.invencible) {
@@ -623,7 +623,7 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this.range = this.sprite.height / 2, this._super(), this.behaviour.update(this), 
-        this.updateableParticles();
+        (this.velocity.x || this.velocity.y) && this.updateableParticles();
     },
     updateableParticles: function() {
         if (this.particlesCounter--, this.particlesCounter <= 0) {
@@ -653,13 +653,76 @@ var Application = AbstractApplication.extend({
             this.collidable = !1, this.kill = !0;
         }
     }
+}), KillerBall = Entity.extend({
+    init: function(vel, behaviour) {
+        this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
+        this.height = 1, this.type = "killer", this.node = null, this.velocity.x = vel.x, 
+        this.velocity.y = vel.y, this.timeLive = 1e3, this.power = 1, this.defaultVelocity = 1, 
+        this.behaviour = behaviour.clone(), this.imgSource = this.particleSource = "bullet.png";
+    },
+    startScaleTween: function() {
+        TweenLite.from(this.getContent().scale, .3, {
+            x: 0,
+            y: 0,
+            ease: "easeOutBack"
+        });
+    },
+    build: function() {
+        this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
+        this.sprite.anchor.y = .5, this.sprite.tint = 16711680, this.updateable = !0, this.collidable = !0, 
+        this.getContent().alpha = .5, TweenLite.to(this.getContent(), .3, {
+            alpha: 1
+        }), this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100), 
+        this.particlesCounterMax = 5, this.particlesCounter = 5;
+    },
+    update: function() {
+        this.range = this.sprite.height / 2.5, this._super(), this.behaviour.update(this), 
+        this.updateableParticles();
+    },
+    updateableParticles: function() {
+        if (this.particlesCounter--, this.particlesCounter <= 0) {
+            this.particlesCounter = this.particlesCounterMax;
+            var particle = new Particles({
+                x: 0,
+                y: 0
+            }, 120, this.particleSource, .05 * Math.random());
+            particle.maxScale = this.getContent().scale.x, particle.maxInitScale = particle.maxScale, 
+            particle.build(), particle.getContent().tint = 16711680, particle.gravity = 0, particle.alphadecress = .08, 
+            particle.scaledecress = -.04, particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
+            this.layer.addChild(particle);
+        }
+    },
+    preKill: function() {
+        if (!this.invencible) {
+            for (var i = 5; i >= 0; i--) {
+                var particle = new Particles({
+                    x: 8 * Math.random() - 4,
+                    y: 8 * Math.random() - 4
+                }, 120, this.particleSource, .05 * Math.random());
+                particle.maxScale = this.getContent().scale.x, particle.maxInitScale = particle.maxScale, 
+                particle.build(), particle.getContent().tint = 16711680, particle.gravity = .3 * Math.random(), 
+                particle.alphadecress = .04, particle.scaledecress = -.05, particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
+                this.layer.addChild(particle);
+            }
+            this.collidable = !1, this.kill = !0;
+        }
+    }
 }), DiagBehaviour = Class.extend({
     init: function(props) {
-        this.props = props, this.left = Math.random() < .5, this.velX = this.props.velX ? this.props.velX : 5, 
+        this.props = props, this.left = APP.seed.getNextFloat() < .5, this.velX = this.props.velX ? this.props.velX : 5, 
         this.velX *= APP.accelGame, this.position = {
             x: windowWidth / 2,
-            y: .22 * windowHeight + Math.random() * windowHeight * .35
-        }, this.centerDist = .2 * Math.random() * windowWidth + .15 * windowWidth, this.side = Math.random() < .5 ? 1 : -1;
+            y: .22 * windowHeight + APP.seed.getNextFloat() * windowHeight * .35
+        }, this.centerDist = .2 * APP.seed.getNextFloat() * windowWidth + .15 * windowWidth, 
+        this.side = APP.seed.getNextFloat() < .5 ? 1 : -1;
+        var rnd = APP.seed.getNextFloat();
+        rnd < .15 * APP.accelGame ? (this.killerBehaviour = new SiderBehaviour({
+            centerDist: windowWidth / 2.5
+        }), this.killerBehaviour.position = {
+            x: this.position.x,
+            y: this.position.y + (.15 * windowHeight + .15 * windowHeight * APP.seed.getNextFloat())
+        }) : rnd < .3 * APP.accelGame && (this.killerBehaviour = new RadiusBehaviour({}), 
+        this.killerBehaviour.centerPos = this.position);
     },
     clone: function() {
         return new DiagBehaviour(this.props);
@@ -673,15 +736,23 @@ var Application = AbstractApplication.extend({
     serialize: function() {}
 }), RadiusBehaviour = Class.extend({
     init: function(props) {
-        this.props = props, this.left = Math.random() < .5, this.radius = .2 * windowWidth * Math.random() + .22 * windowWidth, 
+        this.props = props, this.left = APP.seed.getNextFloat() < .5, this.radius = .2 * windowWidth * APP.seed.getNextFloat() + .22 * windowWidth, 
         this.position = {
             x: windowWidth / 2,
-            y: .2 * windowHeight + Math.random() * windowHeight * .3
+            y: .2 * windowHeight + APP.seed.getNextFloat() * windowHeight * .3
         }, this.centerPos = {
             x: windowWidth / 2,
-            y: windowHeight / 2.2 - (windowHeight / 1.7 - 2 * this.radius) * Math.random()
-        }, this.angle = Math.random(), this.angleSpd = .04 * Math.random() + .02, this.angleSpd *= APP.accelGame, 
-        this.side = Math.random() < .5 ? 1 : -1;
+            y: windowHeight / 2.2 - (windowHeight / 1.7 - 2 * this.radius) * APP.seed.getNextFloat()
+        }, this.angle = APP.seed.getNextFloat(), this.angleSpd = .04 * APP.seed.getNextFloat() + .02, 
+        this.angleSpd *= APP.accelGame, this.side = APP.seed.getNextFloat() < .5 ? 1 : -1;
+        var rnd = APP.seed.getNextFloat();
+        rnd < .15 * APP.accelGame ? (this.killerBehaviour = new SiderBehaviour({
+            centerDist: windowWidth / 2.5
+        }), this.killerBehaviour.position = {
+            x: this.position.x,
+            y: this.position.y + (.15 * windowHeight + .15 * windowHeight * APP.seed.getNextFloat())
+        }) : rnd < .3 * APP.accelGame && (this.killerBehaviour = new StoppedBehaviour({}), 
+        this.killerBehaviour.position = this.centerPos);
     },
     clone: function() {
         return new RadiusBehaviour(this.props);
@@ -696,16 +767,24 @@ var Application = AbstractApplication.extend({
     serialize: function() {}
 }), RadiusPingPongBehaviour = Class.extend({
     init: function(props) {
-        this.props = props, this.left = Math.random() < .5, this.radius = .2 * windowWidth * Math.random() + .22 * windowWidth, 
+        this.props = props, this.left = APP.seed.getNextFloat() < .5, this.radius = .2 * windowWidth * APP.seed.getNextFloat() + .22 * windowWidth, 
         this.position = {
             x: windowWidth / 2,
-            y: .2 * windowHeight + Math.random() * windowHeight * .3
+            y: .2 * windowHeight + APP.seed.getNextFloat() * windowHeight * .3
         }, this.centerPos = {
             x: windowWidth / 2,
-            y: windowHeight / 2 - (windowHeight / 2 - 2 * this.radius) * Math.random()
-        }, this.angle = 3.14, this.angleSpd = .03 * Math.random() + .025, this.angleSpd *= APP.accelGame, 
-        this.side = Math.random() < .5 ? 1 : -1, this.angleMin = 1.57, this.angleMax = 4.71, 
+            y: windowHeight / 2 - (windowHeight / 2 - 2 * this.radius) * APP.seed.getNextFloat()
+        }, this.angle = 3.14, this.angleSpd = .03 * APP.seed.getNextFloat() + .025, this.angleSpd *= APP.accelGame, 
+        this.side = APP.seed.getNextFloat() < .5 ? 1 : -1, this.angleMin = 1.57, this.angleMax = 4.71, 
         this.invert = !1;
+        var rnd = APP.seed.getNextFloat();
+        rnd < .15 * APP.accelGame ? (this.killerBehaviour = new SiderBehaviour({
+            centerDist: windowWidth / 2.5
+        }), this.killerBehaviour.position = {
+            x: this.position.x,
+            y: this.position.y + (.15 * windowHeight + .15 * windowHeight * APP.seed.getNextFloat())
+        }) : rnd < .3 * APP.accelGame && (this.killerBehaviour = new RadiusBehaviour({}), 
+        this.killerBehaviour.centerPos = this.position);
     },
     clone: function() {
         return new RadiusPingPongBehaviour(this.props);
@@ -721,11 +800,11 @@ var Application = AbstractApplication.extend({
     serialize: function() {}
 }), SiderBehaviour = Class.extend({
     init: function(props) {
-        this.props = props, this.left = Math.random() < .5, this.velX = this.props.velX ? this.props.velX : 5, 
+        this.props = props, this.left = APP.seed.getNextFloat() < .5, this.velX = this.props.velX ? this.props.velX : 5, 
         this.velX *= APP.accelGame, this.position = {
             x: windowWidth / 2,
-            y: .25 * windowHeight + Math.random() * windowHeight * .45
-        }, this.centerDist = .2 * Math.random() * windowWidth + .2 * windowWidth;
+            y: .25 * windowHeight + APP.seed.getNextFloat() * windowHeight * .45
+        }, this.centerDist = this.props.centerDist ? this.props.centerDist : .2 * APP.seed.getNextFloat() * windowWidth + .2 * windowWidth;
     },
     clone: function() {
         return new SiderBehaviour(this.props);
@@ -734,6 +813,28 @@ var Application = AbstractApplication.extend({
         pointDistance(entity.getContent().position.x, 0, windowWidth / 2, 0) > this.centerDist && (this.velX *= -1), 
         entity.velocity.x = this.velX;
     },
+    build: function() {},
+    destroy: function() {},
+    serialize: function() {}
+}), StoppedBehaviour = Class.extend({
+    init: function(props) {
+        this.props = props, this.position = {
+            x: windowWidth / 2,
+            y: .15 * windowHeight + APP.seed.getNextFloat() * windowHeight * .25
+        }, this.centerDist = .2 * APP.seed.getNextFloat() * windowWidth + .15 * windowWidth;
+        var rnd = APP.seed.getNextFloat();
+        rnd < .15 * APP.accelGame ? (this.killerBehaviour = new SiderBehaviour({
+            centerDist: windowWidth / 2.5
+        }), this.killerBehaviour.position = {
+            x: this.position.x,
+            y: this.position.y + (.15 * windowHeight + .15 * windowHeight * APP.seed.getNextFloat())
+        }) : rnd < .3 * APP.accelGame && (this.killerBehaviour = new RadiusBehaviour({}), 
+        this.killerBehaviour.centerPos = this.position);
+    },
+    clone: function() {
+        return new StoppedBehaviour(this.props);
+    },
+    update: function(entity) {},
     build: function() {},
     destroy: function() {},
     serialize: function() {}
@@ -1545,7 +1646,7 @@ var Application = AbstractApplication.extend({
     }
 }), InitScreen = AbstractScreen.extend({
     init: function(label) {
-        this._super(label), this.isLoaded = !1;
+        this._super(label), this.isLoaded = !1, APP.seed = new Float(5), APP.seed.applySeed();
     },
     destroy: function() {
         this._super();
@@ -1600,7 +1701,7 @@ var Application = AbstractApplication.extend({
             self.moveBall();
         }, this.hitTouch.touchstart = function(touchData) {
             self.moveBall();
-        }, this.behaviours = [], this.behaviours.push(new RadiusPingPongBehaviour({})), 
+        }, this.behaviours = [], this.behaviours.push(new StoppedBehaviour({})), this.behaviours.push(new RadiusPingPongBehaviour({})), 
         this.behaviours.push(new RadiusBehaviour({})), this.behaviours.push(new SiderBehaviour({})), 
         this.behaviours.push(new DiagBehaviour({})), this.pointsLabel = new PIXI.Text("0", {
             align: "center",
@@ -1622,24 +1723,35 @@ var Application = AbstractApplication.extend({
         this.ball.velocity.y = -20;
     },
     nextHorde: function() {
-        var self = this, posDest = windowHeight - this.ball.getContent().height - .1 * windowHeight;
+        for (var self = this, posDest = windowHeight - this.ball.getContent().height - .1 * windowHeight, i = this.layer.childs.length - 1; i >= 0; i--) "bullet" !== this.layer.childs[i].type && this.layer.childs[i].preKill();
         this.currentHorde++, APP.accelGame < 3 && (APP.accelGame += this.currentHorde / 500), 
         TweenLite.to(this.ball.getContent().position, .3, {
             y: posDest,
             ease: "easeOutBack",
             onComplete: function() {
-                var behaviour = self.behaviours[Math.floor(Math.random() * self.behaviours.length)].clone(), tempEnemy = new EnemyBall({
+                var tempId = 0;
+                self.currentHorde > 1 && (tempId = Math.floor(APP.seed.getNextFloat() * self.behaviours.length));
+                var behaviour = self.behaviours[tempId].clone(), tempEnemy = new EnemyBall({
                     x: 0,
                     y: 0
                 }, behaviour);
-                tempEnemy.build(), tempEnemy.getContent().position.x = behaviour.position.x, tempEnemy.getContent().position.y = behaviour.position.y, 
-                self.layer.addChild(tempEnemy);
+                if (tempEnemy.build(), tempEnemy.getContent().position.x = behaviour.position.x, 
+                tempEnemy.getContent().position.y = behaviour.position.y, self.layer.addChild(tempEnemy), 
+                !(self.currentHorde < 5) && behaviour.killerBehaviour) {
+                    var tempEnemyKiller = new KillerBall({
+                        x: 0,
+                        y: 0
+                    }, behaviour.killerBehaviour);
+                    tempEnemyKiller.build(), tempEnemyKiller.getContent().position.x = behaviour.killerBehaviour.position.x, 
+                    tempEnemyKiller.getContent().position.y = behaviour.killerBehaviour.position.y, 
+                    self.layer.addChild(tempEnemyKiller);
+                }
             }
         });
     },
     startGame: function() {
         this.toTween(), this.currentPoints = 0, this.currentHorde = 0, APP.accelGame = 1, 
-        this.updateLabel(), this.ball = new Ball({
+        APP.seed.applySeed(), this.updateLabel(), this.ball = new Ball({
             x: 0,
             y: 0
         }, this), this.ball.build(), scaleConverter(this.ball.getContent().width, windowWidth, .18, this.ball.getContent()), 

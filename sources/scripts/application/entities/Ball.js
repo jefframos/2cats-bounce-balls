@@ -122,7 +122,7 @@ var Ball = Entity.extend({
         }
     },
 	collide:function(arrayCollide){
-		// console.log('fireCollide', arrayCollide[0]);
+		// console.log('fireCollide', arrayCollide[0].type);
 		if(this.velocity.y === 0){
             return;
         }
@@ -136,6 +136,9 @@ var Ball = Entity.extend({
 					enemy.preKill();
 					this.screen.getBall();
 					// arrayCollide[i].prekill();
+				}else if(arrayCollide[i].type === 'killer'){
+					this.screen.gameOver();
+					this.kill = true;
 				}
 			}
 		}
