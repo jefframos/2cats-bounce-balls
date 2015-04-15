@@ -49,6 +49,9 @@ var InitScreen = AbstractScreen.extend({
 		this.addChild(this.playButton);
 	  
 		this.playButton.clickCallback = function(){
+			if(testMobile() && possibleFullscreen()){
+				fullscreen();
+			}
 			self.startGame();
 		};
 
@@ -59,6 +62,9 @@ var InitScreen = AbstractScreen.extend({
 		this.addChild(this.shopButton);
 	  
 		this.shopButton.clickCallback = function(){
+			if(testMobile() && possibleFullscreen()){
+				fullscreen();
+			}
 			self.screenManager.change('Choice');
 		};
 
@@ -69,6 +75,9 @@ var InitScreen = AbstractScreen.extend({
 		this.addChild(this.rankingButton);
 	  
 		this.rankingButton.clickCallback = function(){
+			if(testMobile() && possibleFullscreen()){
+				fullscreen();
+			}
 			self.screenManager.change('Choice');
 		};
 

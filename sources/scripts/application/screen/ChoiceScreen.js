@@ -150,10 +150,10 @@ var ChoiceScreen = AbstractScreen.extend({
         }
     },
     toTween:function(callback){
-        TweenLite.to(this.bg.getContent(), 0.5, {alpha:0, ease:'easeOutCubic'});
-        TweenLite.to(this.textScreen, 0.5, {delay:0.1, alpha:0});
+        TweenLite.to(this.bg.getContent(), 0.1, {alpha:0, ease:'easeOutCubic'});
+        TweenLite.to(this.textScreen, 0.1, {delay:0.1, alpha:0});
        
-        TweenLite.to(this.playButton.getContent(), 0.5, {delay:0.5, y:-this.playButton.getContent().height, ease:'easeOutBack', onComplete:function(){
+        TweenLite.to(this.playButton.getContent(), 0.1, {delay:0.1, y:-this.playButton.getContent().height, ease:'easeOutBack', onComplete:function(){
             if(callback){
                 callback();
             }
@@ -161,9 +161,9 @@ var ChoiceScreen = AbstractScreen.extend({
     },
     fromTween:function(callback){
         console.log('from');
-        TweenLite.from(this.bg.getContent(), 0.5, {alpha:0, ease:'easeOutCubic'});
-        TweenLite.from(this.textScreen, 0.5, {delay:0.1, alpha:0});
-        TweenLite.from(this.playButton.getContent(), 0.5, {delay:0.4, y:windowHeight, ease:'easeOutBack', onComplete:function(){
+        TweenLite.from(this.bg.getContent(), 0.1, {alpha:0, ease:'easeOutCubic'});
+        TweenLite.from(this.textScreen, 0.1, {delay:0.1, alpha:0});
+        TweenLite.from(this.playButton.getContent(), 0.1, {delay:0.1, y:windowHeight, ease:'easeOutBack', onComplete:function(){
             if(callback){
                 callback();
             }

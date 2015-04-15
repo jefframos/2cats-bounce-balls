@@ -1626,14 +1626,14 @@ var Application = AbstractApplication.extend({
         };
     },
     toTween: function(callback) {
-        TweenLite.to(this.bg.getContent(), .5, {
+        TweenLite.to(this.bg.getContent(), .1, {
             alpha: 0,
             ease: "easeOutCubic"
-        }), TweenLite.to(this.textScreen, .5, {
+        }), TweenLite.to(this.textScreen, .1, {
             delay: .1,
             alpha: 0
-        }), TweenLite.to(this.playButton.getContent(), .5, {
-            delay: .5,
+        }), TweenLite.to(this.playButton.getContent(), .1, {
+            delay: .1,
             y: -this.playButton.getContent().height,
             ease: "easeOutBack",
             onComplete: function() {
@@ -1642,14 +1642,14 @@ var Application = AbstractApplication.extend({
         });
     },
     fromTween: function(callback) {
-        console.log("from"), TweenLite.from(this.bg.getContent(), .5, {
+        console.log("from"), TweenLite.from(this.bg.getContent(), .1, {
             alpha: 0,
             ease: "easeOutCubic"
-        }), TweenLite.from(this.textScreen, .5, {
+        }), TweenLite.from(this.textScreen, .1, {
             delay: .1,
             alpha: 0
-        }), TweenLite.from(this.playButton.getContent(), .5, {
-            delay: .4,
+        }), TweenLite.from(this.playButton.getContent(), .1, {
+            delay: .1,
             y: windowHeight,
             ease: "easeOutBack",
             onComplete: function() {
@@ -1862,21 +1862,21 @@ var Application = AbstractApplication.extend({
             fill: "#FFFFFF"
         }), 45, 2), scaleConverter(this.playButton.getContent().width, windowWidth, .4, this.playButton), 
         this.addChild(this.playButton), this.playButton.clickCallback = function() {
-            self.startGame();
+            testMobile() && possibleFullscreen() && fullscreen(), self.startGame();
         }, this.shopButton = new DefaultButton("UI_button_default_1.png", "UI_button_default_1.png"), 
         this.shopButton.build(), this.shopButton.addLabel(new PIXI.Text("SHOP", {
             font: "50px Vagron",
             fill: "#FFFFFF"
         }), 45, 2), scaleConverter(this.shopButton.getContent().width, windowWidth, .4, this.shopButton), 
         this.addChild(this.shopButton), this.shopButton.clickCallback = function() {
-            self.screenManager.change("Choice");
+            testMobile() && possibleFullscreen() && fullscreen(), self.screenManager.change("Choice");
         }, this.rankingButton = new DefaultButton("UI_button_default_1.png", "UI_button_default_1.png"), 
         this.rankingButton.build(), this.rankingButton.addLabel(new PIXI.Text("RANK", {
             font: "50px Vagron",
             fill: "#FFFFFF"
         }), 45, 2), scaleConverter(this.rankingButton.getContent().width, windowWidth, .4, this.rankingButton), 
         this.addChild(this.rankingButton), this.rankingButton.clickCallback = function() {
-            self.screenManager.change("Choice");
+            testMobile() && possibleFullscreen() && fullscreen(), self.screenManager.change("Choice");
         }, this.setAudioButtons(), this.fromTween(), this.layerManager = new LayerManager(), 
         this.layerManager.build("Main"), this.addChild(this.layerManager), this.layer = new Layer(), 
         this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), this.hitTouch = new PIXI.Graphics(), 
