@@ -2216,7 +2216,7 @@ var Application = AbstractApplication.extend({
         this.shareButton.build(), this.shareButton.addLabel(new PIXI.Text("SHARE", {
             font: "50px Vagron",
             fill: "#FFFFFF"
-        }), 45, 2), scaleConverter(this.shareButton.getContent().width, this.boxContainer.width, .5, this.shareButton), 
+        }), 30, 2), scaleConverter(this.shareButton.getContent().width, this.boxContainer.width, .5, this.shareButton), 
         this.shareButton.setPosition(this.boxContainer.width / 2 - this.shareButton.getContent().width / 2, this.shopButton.getContent().position.y + this.shopButton.getContent().height + 20), 
         this.shareButton.clickCallback = function() {}, this.boxContainer.addChild(this.shareButton.getContent()), 
         this.rateButton = new DefaultButton("UI_button_default_1.png", "UI_button_default_1.png"), 
@@ -2226,7 +2226,7 @@ var Application = AbstractApplication.extend({
         }), 45, 2), scaleConverter(this.rateButton.getContent().width, this.boxContainer.width, .5, this.rateButton), 
         this.rateButton.setPosition(this.boxContainer.width / 2 - this.rateButton.getContent().width / 2, this.shareButton.getContent().position.y + this.shareButton.getContent().height + 20), 
         this.rateButton.clickCallback = function() {}, this.boxContainer.addChild(this.rateButton.getContent()), 
-        scaleConverter(this.boxContainer.height, windowHeight, .9, this.boxContainer);
+        this.backBox.height = this.boxContainer.height, scaleConverter(this.boxContainer.height, windowHeight, .9, this.boxContainer);
     },
     show: function() {
         this.screen.addChild(this), this.screen.blockPause = !0, this.boxContainer.visible = !0, 

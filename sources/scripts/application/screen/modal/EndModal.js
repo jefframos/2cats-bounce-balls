@@ -104,7 +104,7 @@ var EndModal = Class.extend({
 
 		this.shareButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.shareButton.build();
-		this.shareButton.addLabel(new PIXI.Text('SHARE', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		this.shareButton.addLabel(new PIXI.Text('SHARE', {font:'50px Vagron', fill:'#FFFFFF'}), 30,2);
 		scaleConverter(this.shareButton.getContent().width, this.boxContainer.width, 0.5, this.shareButton);
 		this.shareButton.setPosition(this.boxContainer.width / 2 - this.shareButton.getContent().width / 2,this.shopButton.getContent().position.y + this.shopButton.getContent().height + 20);//this.backBars.getContent().height / 2 - this.replayButton.height / 2 - 10);
 
@@ -123,6 +123,8 @@ var EndModal = Class.extend({
 			// self.screen.screenManager.change('Choice');
 		};
 		this.boxContainer.addChild(this.rateButton.getContent());
+
+		this.backBox.height = this.boxContainer.height;
 
 		scaleConverter(this.boxContainer.height, windowHeight, 0.9, this.boxContainer);
 	},
