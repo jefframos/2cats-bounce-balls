@@ -19,7 +19,6 @@ var LoadScreen = AbstractScreen.extend({
             this.onAssetsLoaded();
         }
 
-        APP.totalCoins = 5000;
     },
     initLoad:function(){
         var barHeight = 20;

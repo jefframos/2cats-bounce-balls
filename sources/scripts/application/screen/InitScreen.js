@@ -5,9 +5,7 @@ var InitScreen = AbstractScreen.extend({
 		this.isLoaded = false;
 		APP.seed = new Float(Math.random() * 0xFFFF);
 		APP.seed.applySeed();
-		APP.totalCoins = 0;
-		APP.maxPoints = 0;
-		APP.currentPoints = 0;
+		
 		// alert(this.isLoaded);
 	},
 	destroy: function () {
@@ -222,6 +220,7 @@ var InitScreen = AbstractScreen.extend({
 		APP.accelGame = 1;
 		APP.seed.applySeed();
 		this.updateLabel();
+		this.updateCoins();
 		this.ball = new Ball({x:0,y:0}, this);
 		this.ball.build();
 
@@ -246,7 +245,8 @@ var InitScreen = AbstractScreen.extend({
 		}
 		// this.layer.childs
 		// this.fromTween();
-
+		APP.plays ++;
+		APP.appModel.saveScore();
 		this.endModal.show();
 	},
 	update:function(){

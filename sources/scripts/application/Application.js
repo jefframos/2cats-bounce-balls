@@ -14,7 +14,7 @@ var Application = AbstractApplication.extend({
         this.mute = false;
 
         this.audioController = new AudioController();
-        this.appModel = new AppModel();
+
         this.withAPI = false;
         if(window.location.hash === '#withoutAPI'){
             this.withAPI = false;
@@ -86,7 +86,7 @@ var Application = AbstractApplication.extend({
     build:function(){
         this._super();
         this.cookieManager = new CookieManager();
-        this.gameModel = new AppModel();
+        this.appModel = new AppModel();
         if(!this.withAPI){
             this.initApplication();
         }

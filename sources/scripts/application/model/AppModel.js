@@ -13,7 +13,13 @@ var AppModel = Class.extend({
 		// console.log(cookieManager.getCookie('totalPoints'));
 		// APP.cookieManager.setCookie('totalPoints', 0, 500);
 		console.log(APP);
-
+		var coins = APP.cookieManager.getSafeCookie('coins');
+		var high = APP.cookieManager.getSafeCookie('highScore');
+		var plays = APP.cookieManager.getSafeCookie('plays');
+		APP.totalCoins = coins?coins:0;
+		APP.highScore = high?high:0;
+		APP.plays = plays?plays:0;
+		APP.currentPoints = 0;
 		// var points = parseInt(APP.cookieManager.getCookie('totalPoints'));
 		// var high = parseInt(APP.cookieManager.getCookie('highScore'));
 
@@ -25,12 +31,12 @@ var AppModel = Class.extend({
 		this.playerModels = [];
 		this.playerModels.push({
 			value:0,
-			color: 0xff0000,
+			color: 0xad76f7,
 			id: this.playerModels.length,
 			enabled: true
 		});
 		this.playerModels.push({
-			value:20,
+			value:1,
 			color: 0x00FF00,
 			id: this.playerModels.length,
 			enabled: false
@@ -43,25 +49,7 @@ var AppModel = Class.extend({
 		});
 		this.playerModels.push({
 			value:20,
-			color: 0xff0000,
-			id: this.playerModels.length,
-			enabled: false
-		});
-		this.playerModels.push({
-			value:20,
-			color: 0x00FF00,
-			id: this.playerModels.length,
-			enabled: false
-		});
-		this.playerModels.push({
-			value:20,
-			color: 0x0000FF,
-			id: this.playerModels.length,
-			enabled: false
-		});
-		this.playerModels.push({
-			value:20,
-			color: 0xff0000,
+			color: 0xad76f7,
 			id: this.playerModels.length,
 			enabled: false
 		});
@@ -77,7 +65,46 @@ var AppModel = Class.extend({
 			id: this.playerModels.length,
 			enabled: false
 		});
-		this.enemiesModels = [];
+		this.playerModels.push({
+			value:20,
+			color: 0xad76f7,
+			id: this.playerModels.length,
+			enabled: false
+		});
+		this.playerModels.push({
+			value:20,
+			color: 0x00FF00,
+			id: this.playerModels.length,
+			enabled: false
+		});
+		this.playerModels.push({
+			value:20,
+			color: 0x0000FF,
+			id: this.playerModels.length,
+			enabled: false
+		});
+		console.log(APP.cookieManager.getSafeCookie('enableds'));
+		var enableds = APP.cookieManager.getSafeCookie('enableds');
+		
+		// console.log(enableds.split(','));
+		var j = 0;
+		if(!enableds){
+			console.log('whata');
+			enableds = '1';
+			for (j = 0; j < this.playerModels.length - 1; j++) {
+				enableds+=',0';
+			}
+			APP.cookieManager.setSafeCookie('enableds', enableds);
+		}else{
+			enableds = enableds.split(',');
+			for (j = 0; j < this.playerModels.length - 1; j++) {
+				console.log(enableds[j]);
+				if(enableds[j] === '1'){
+					this.playerModels[j].enabled = true;
+				}
+			}
+		}
+
 
 		this.currentPlayerModel = this.playerModels[0];
 
@@ -90,11 +117,26 @@ var AppModel = Class.extend({
 				this.totalPlayers ++;
 			}
 		}
-		this.birdProbs = [0,1,0,0,0,2,0,0,0,1,2,3,0,0,2,0,3,4,4,4,4,4,0,5,5,5,5,5,0,6,6,6,6,0,7,7,7,7,4,5,6,7];
 
 		this.currentHorde = 0;
 	},
-	
+	saveScore:function(){
+		APP.cookieManager.setSafeCookie('coins', APP.totalCoins);
+		APP.cookieManager.setSafeCookie('highScore', APP.highScore);
+		APP.cookieManager.setSafeCookie('plays', APP.plays);
+		var enableds = '1';
+		for (var i = 1; i < this.playerModels.length; i++) {
+			if(this.playerModels[i].enabled){
+				enableds+=',1';
+			}else{
+				enableds+=',0';
+			}
+		}
+		console.log(enableds);
+		APP.cookieManager.setSafeCookie('enableds', enableds);
+
+		console.log(APP.cookieManager.getSafeCookie('enableds'));
+	},
 	setModel:function(id){
 		this.currentID = id;
 		this.currentPlayerModel = this.playerModels[id];

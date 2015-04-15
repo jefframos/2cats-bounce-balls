@@ -66,6 +66,12 @@ var ChoiceScreen = AbstractScreen.extend({
 
         this.applyScroll(this.scrollContainer);
 
+        this.backTop = new PIXI.Graphics();
+        this.backTop.beginFill(0);
+        this.backTop.drawRect(0,0,windowWidth,marginTopBottom);
+        this.container.addChild(this.backTop);
+        // this.scrollContainer.setChildIndex(this.backTop, 0);
+
         this.textScreen = new PIXI.Text('SHOP', {font:'50px Vagron', fill:'#FFFFFF'});
         scaleConverter(this.textScreen.width, windowWidth, 0.25, this.textScreen);
         this.textScreen.position.x = windowWidth / 2 - this.textScreen.width / 2;
@@ -73,10 +79,10 @@ var ChoiceScreen = AbstractScreen.extend({
         this.container.addChild(this.textScreen);
 
 
-        this.playButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+        this.playButton = new DefaultButton('UI_button_play_1.png', 'UI_button_play_1.png');
         this.playButton.build();
-        this.playButton.addLabel(new PIXI.Text('PLAY', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
-        scaleConverter(this.playButton.getContent().width, windowWidth, 0.4, this.playButton);
+        // this.playButton.addLabel(new PIXI.Text('PLAY', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+        scaleConverter(this.playButton.getContent().height, this.textScreen.height, 1, this.playButton);
         this.playButton.setPosition(windowWidth * 0.1,windowWidth * 0.1);
         this.addChild(this.playButton);
       

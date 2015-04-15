@@ -323,8 +323,8 @@ var Application = AbstractApplication.extend({
         this.stage.removeChild(this.loadText), this.labelDebug = new PIXI.Text("", {
             font: "15px Arial"
         }), this.labelDebug.position.y = windowHeight - 20, this.labelDebug.position.x = 20, 
-        this.mute = !1, this.audioController = new AudioController(), this.appModel = new AppModel(), 
-        this.withAPI = !1, "#withoutAPI" === window.location.hash && (this.withAPI = !1);
+        this.mute = !1, this.audioController = new AudioController(), this.withAPI = !1, 
+        "#withoutAPI" === window.location.hash && (this.withAPI = !1);
     },
     update: function() {
         this._super(), this.withAPI && this.apiLogo && this.apiLogo.getContent().height > 1 && 0 === this.apiLogo.getContent().position.x && (scaleConverter(this.apiLogo.getContent().width, windowWidth, .5, this.apiLogo), 
@@ -354,7 +354,7 @@ var Application = AbstractApplication.extend({
         }
     },
     build: function() {
-        this._super(), this.cookieManager = new CookieManager(), this.gameModel = new AppModel(), 
+        this._super(), this.cookieManager = new CookieManager(), this.appModel = new AppModel(), 
         this.withAPI || this.initApplication();
     },
     initApplication: function() {
@@ -557,7 +557,7 @@ var Application = AbstractApplication.extend({
         this.buyButton.clickCallback = this.buyButton.mouseDownCallback = function() {
             if (!(self.model.value > APP.totalCoins)) {
                 APP.totalCoins -= self.model.value, self.screen.updateCoins(), APP.appModel.currentPlayerModel = self.model, 
-                APP.appModel.currentPlayerModel.enabled = !0;
+                APP.appModel.currentPlayerModel.enabled = !0, APP.appModel.saveScore();
                 for (var targetArray = self.screen.shopList, i = targetArray.length - 1; i >= 0; i--) targetArray[i].updateStats();
                 self.updateStats();
             }
@@ -1363,13 +1363,16 @@ var Application = AbstractApplication.extend({
     serialize: function() {}
 }), AppModel = Class.extend({
     init: function() {
-        console.log(APP), this.playerModels = [], this.playerModels.push({
+        console.log(APP);
+        var coins = APP.cookieManager.getSafeCookie("coins"), high = APP.cookieManager.getSafeCookie("highScore"), plays = APP.cookieManager.getSafeCookie("plays");
+        APP.totalCoins = coins ? coins : 0, APP.highScore = high ? high : 0, APP.plays = plays ? plays : 0, 
+        APP.currentPoints = 0, this.playerModels = [], this.playerModels.push({
             value: 0,
-            color: 16711680,
+            color: 11368183,
             id: this.playerModels.length,
             enabled: !0
         }), this.playerModels.push({
-            value: 20,
+            value: 1,
             color: 65280,
             id: this.playerModels.length,
             enabled: !1
@@ -1380,22 +1383,7 @@ var Application = AbstractApplication.extend({
             enabled: !1
         }), this.playerModels.push({
             value: 20,
-            color: 16711680,
-            id: this.playerModels.length,
-            enabled: !1
-        }), this.playerModels.push({
-            value: 20,
-            color: 65280,
-            id: this.playerModels.length,
-            enabled: !1
-        }), this.playerModels.push({
-            value: 20,
-            color: 255,
-            id: this.playerModels.length,
-            enabled: !1
-        }), this.playerModels.push({
-            value: 20,
-            color: 16711680,
+            color: 11368183,
             id: this.playerModels.length,
             enabled: !1
         }), this.playerModels.push({
@@ -1408,11 +1396,38 @@ var Application = AbstractApplication.extend({
             color: 255,
             id: this.playerModels.length,
             enabled: !1
-        }), this.enemiesModels = [], this.currentPlayerModel = this.playerModels[0], this.totalPlayers = 0;
+        }), this.playerModels.push({
+            value: 20,
+            color: 11368183,
+            id: this.playerModels.length,
+            enabled: !1
+        }), this.playerModels.push({
+            value: 20,
+            color: 65280,
+            id: this.playerModels.length,
+            enabled: !1
+        }), this.playerModels.push({
+            value: 20,
+            color: 255,
+            id: this.playerModels.length,
+            enabled: !1
+        }), console.log(APP.cookieManager.getSafeCookie("enableds"));
+        var enableds = APP.cookieManager.getSafeCookie("enableds"), j = 0;
+        if (enableds) for (enableds = enableds.split(","), j = 0; j < this.playerModels.length - 1; j++) console.log(enableds[j]), 
+        "1" === enableds[j] && (this.playerModels[j].enabled = !0); else {
+            for (console.log("whata"), enableds = "1", j = 0; j < this.playerModels.length - 1; j++) enableds += ",0";
+            APP.cookieManager.setSafeCookie("enableds", enableds);
+        }
+        this.currentPlayerModel = this.playerModels[0], this.totalPlayers = 0;
         for (var i = this.playerModels.length - 1; i >= 0; i--) this.playerModels[i].toAble <= this.totalPoints && (this.playerModels[i].able = !0, 
         this.totalPlayers++);
-        this.birdProbs = [ 0, 1, 0, 0, 0, 2, 0, 0, 0, 1, 2, 3, 0, 0, 2, 0, 3, 4, 4, 4, 4, 4, 0, 5, 5, 5, 5, 5, 0, 6, 6, 6, 6, 0, 7, 7, 7, 7, 4, 5, 6, 7 ], 
         this.currentHorde = 0;
+    },
+    saveScore: function() {
+        APP.cookieManager.setSafeCookie("coins", APP.totalCoins), APP.cookieManager.setSafeCookie("highScore", APP.highScore), 
+        APP.cookieManager.setSafeCookie("plays", APP.plays);
+        for (var enableds = "1", i = 1; i < this.playerModels.length; i++) enableds += this.playerModels[i].enabled ? ",1" : ",0";
+        console.log(enableds), APP.cookieManager.setSafeCookie("enableds", enableds), console.log(APP.cookieManager.getSafeCookie("enableds"));
     },
     setModel: function(id) {
         this.currentID = id, this.currentPlayerModel = this.playerModels[id];
@@ -1565,16 +1580,14 @@ var Application = AbstractApplication.extend({
         this.back = new PIXI.Graphics(), this.back.beginFill(0), this.back.drawRect(0, 0, windowWidth, this.scrollContainer.height), 
         this.back.height = this.scrollContainer.height + 2 * marginTopBottom, this.scrollContainer.addChild(this.back), 
         this.scrollContainer.setChildIndex(this.back, 0), this.applyScroll(this.scrollContainer), 
-        this.textScreen = new PIXI.Text("SHOP", {
+        this.backTop = new PIXI.Graphics(), this.backTop.beginFill(0), this.backTop.drawRect(0, 0, windowWidth, marginTopBottom), 
+        this.container.addChild(this.backTop), this.textScreen = new PIXI.Text("SHOP", {
             font: "50px Vagron",
             fill: "#FFFFFF"
         }), scaleConverter(this.textScreen.width, windowWidth, .25, this.textScreen), this.textScreen.position.x = windowWidth / 2 - this.textScreen.width / 2, 
         this.textScreen.position.y = .1 * windowWidth, this.container.addChild(this.textScreen), 
-        this.playButton = new DefaultButton("UI_button_default_1.png", "UI_button_default_1.png"), 
-        this.playButton.build(), this.playButton.addLabel(new PIXI.Text("PLAY", {
-            font: "50px Vagron",
-            fill: "#FFFFFF"
-        }), 45, 2), scaleConverter(this.playButton.getContent().width, windowWidth, .4, this.playButton), 
+        this.playButton = new DefaultButton("UI_button_play_1.png", "UI_button_play_1.png"), 
+        this.playButton.build(), scaleConverter(this.playButton.getContent().height, this.textScreen.height, 1, this.playButton), 
         this.playButton.setPosition(.1 * windowWidth, .1 * windowWidth), this.addChild(this.playButton), 
         this.playButton.clickCallback = function() {
             self.updateable = !1, self.toTween(function() {
@@ -1821,7 +1834,7 @@ var Application = AbstractApplication.extend({
 }), InitScreen = AbstractScreen.extend({
     init: function(label) {
         this._super(label), this.isLoaded = !1, APP.seed = new Float(65535 * Math.random()), 
-        APP.seed.applySeed(), APP.totalCoins = 0, APP.maxPoints = 0, APP.currentPoints = 0;
+        APP.seed.applySeed();
     },
     destroy: function() {
         this._super();
@@ -1953,7 +1966,7 @@ var Application = AbstractApplication.extend({
         this.toTween(), TweenLite.to(this.tapToPlay, .5, {
             alpha: 1
         }), APP.currentPoints = 0, this.currentHorde = 0, APP.accelGame = 1, APP.seed.applySeed(), 
-        this.updateLabel(), this.ball = new Ball({
+        this.updateLabel(), this.updateCoins(), this.ball = new Ball({
             x: 0,
             y: 0
         }, this), this.ball.build(), scaleConverter(this.ball.spriteBall.width, windowWidth, .15, this.ball.spriteBall), 
@@ -1965,7 +1978,7 @@ var Application = AbstractApplication.extend({
     gameOver: function() {
         this.removeChild(this.hitTouch), this.pointsLabel.position.y = -500, this.coinsLabel.position.y = -500;
         for (var i = this.layer.childs.length - 1; i >= 0; i--) this.layer.childs[i].preKill();
-        this.endModal.show();
+        APP.plays++, APP.appModel.saveScore(), this.endModal.show();
     },
     update: function() {
         this.updateable && (this.currentEnemy && this.ball ? this.ball.updateShadow(Math.atan2(this.ball.getContent().position.y - this.currentEnemy.getContent().position.y, this.ball.getContent().position.x - this.currentEnemy.getContent().position.x) - degreesToRadians(90)) : this.ball && this.ball.hideShadows(), 
@@ -2047,7 +2060,7 @@ var Application = AbstractApplication.extend({
         this._super();
         var assetsToLoader = [ "dist/img/atlas.json" ];
         assetsToLoader.length > 0 && !this.isLoaded ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
-        this.initLoad()) : this.onAssetsLoaded(), APP.totalCoins = 5e3;
+        this.initLoad()) : this.onAssetsLoaded();
     },
     initLoad: function() {
         var barHeight = 20;
@@ -2142,11 +2155,22 @@ var Application = AbstractApplication.extend({
             font: "20px Vagron",
             fill: "#FFF"
         }), this.newHigh.position.y = this.gameOver.position.y + this.gameOver.height, this.newHigh.position.x = this.boxContainer.width / 2 - this.newHigh.width / 2, 
-        this.boxContainer.addChild(this.newHigh), this.score = new PIXI.Text("SCORE", {
+        this.boxContainer.addChild(this.newHigh), this.playedLabel = new PIXI.Text("GAMES PLAYED", {
             font: "20px Vagron",
             fill: "#FFF"
-        }), this.score.position.y = this.newHigh.position.x + this.newHigh.height, this.score.position.x = this.boxContainer.width / 2 - this.score.width / 2, 
-        this.boxContainer.addChild(this.score), this.scoreValue = new PIXI.Text("0", {
+        }), this.playedLabel.position.y = this.newHigh.position.y + this.newHigh.height, 
+        this.playedLabel.position.x = this.boxContainer.width / 2 - this.playedLabel.width / 2, 
+        this.boxContainer.addChild(this.playedLabel), this.playedLabelValue = new PIXI.Text("0", {
+            font: "30px Vagron",
+            fill: "#FFF"
+        }), this.playedLabelValue.position.y = this.playedLabel.position.y + this.playedLabel.height, 
+        this.playedLabelValue.position.x = this.boxContainer.width / 2 - this.playedLabelValue.width / 2, 
+        this.boxContainer.addChild(this.playedLabelValue), this.score = new PIXI.Text("SCORE", {
+            font: "20px Vagron",
+            fill: "#FFF"
+        }), this.score.position.y = this.playedLabelValue.position.y + this.playedLabelValue.height, 
+        this.score.position.x = this.boxContainer.width / 2 - this.score.width / 2, this.boxContainer.addChild(this.score), 
+        this.scoreValue = new PIXI.Text("0", {
             font: "30px Vagron",
             fill: "#FFF"
         }), this.scoreValue.position.y = this.score.position.y + this.score.height, this.scoreValue.position.x = this.boxContainer.width / 2 - this.scoreValue.width / 2, 
@@ -2207,15 +2231,17 @@ var Application = AbstractApplication.extend({
     show: function() {
         this.screen.addChild(this), this.screen.blockPause = !0, this.boxContainer.visible = !0, 
         this.container.parent.setChildIndex(this.container, this.container.parent.children.length - 1), 
-        APP.maxPoints < APP.currentPoints ? (APP.maxPoints = APP.currentPoints, this.newHigh.alpha = 1) : this.newHigh.alpha = 0, 
-        this.scoreValue.setText(APP.currentPoints), this.bestScoreValue.setText(APP.maxPoints), 
-        this.scoreValue.position.x = windowWidth / 2 - this.scoreValue.width / 2, this.bestScoreValue.position.x = windowWidth / 2 - this.bestScoreValue.width / 2, 
+        APP.highScore < APP.currentPoints ? (APP.highScore = APP.currentPoints, this.newHigh.alpha = 1) : this.newHigh.alpha = 0, 
+        this.scoreValue.setText(APP.currentPoints), this.bestScoreValue.setText(APP.highScore), 
+        this.playedLabelValue.setText(APP.plays), this.scoreValue.position.x = windowWidth / 2 - this.scoreValue.width / 2, 
+        this.bestScoreValue.position.x = windowWidth / 2 - this.bestScoreValue.width / 2, 
+        this.playedLabelValue.position.x = windowWidth / 2 - this.playedLabelValue.width / 2, 
         this.boxContainer.position.x = windowWidth / 2 - this.boxContainer.width / 2, this.boxContainer.position.y = windowHeight / 2 - this.boxContainer.height / 2, 
         this.bg.alpha = .8, this.boxContainer.alpha = 1, TweenLite.from(this.bg, .5, {
             alpha: 0
         }), TweenLite.from(this.boxContainer, .5, {
             y: -this.boxContainer.height
-        }), console.log("show");
+        }), console.log("show"), APP.appModel.saveScore();
     },
     hide: function(callback) {
         var self = this;
@@ -2444,13 +2470,19 @@ var Application = AbstractApplication.extend({
 }), CookieManager = Class.extend({
     init: function() {},
     setCookie: function(cname, cvalue, exdays) {
-        var d = new Date();
-        d.setTime(d.getTime() + 24 * exdays * 60 * 60 * 1e3);
-        var expires = "expires=" + d.toUTCString();
-        document.cookie = cname + "=" + cvalue + "; " + expires;
+        var d = new Date(), days = exdays ? exdays : 5e4;
+        d.setTime(d.getTime() + 24 * days * 60 * 60 * 1e3);
+        "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + "; " + days;
     },
     getCookie: function(name) {
         return (name = new RegExp("(?:^|;\\s*)" + ("" + name).replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + "=([^;]*)").exec(document.cookie)) && name[1];
+    },
+    setSafeCookie: function(key, value) {
+        return this.setCookie(key, value);
+    },
+    getSafeCookie: function(key, callback) {
+        return this.getCookie(key);
     }
 }), Environment = Class.extend({
     init: function(maxWidth, maxHeight) {

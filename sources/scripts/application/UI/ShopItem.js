@@ -60,9 +60,9 @@ var ShopItem = Class.extend({
 			}
 			APP.totalCoins -= self.model.value;
 			self.screen.updateCoins();
-			
 			APP.appModel.currentPlayerModel = self.model;
 			APP.appModel.currentPlayerModel.enabled = true;
+			APP.appModel.saveScore();
 			var targetArray = self.screen.shopList;
 			for (var i = targetArray.length - 1; i >= 0; i--) {
 				targetArray[i].updateStats();

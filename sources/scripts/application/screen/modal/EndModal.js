@@ -32,8 +32,18 @@ var EndModal = Class.extend({
 		this.newHigh.position.x = this.boxContainer.width / 2 - this.newHigh.width / 2;
 		this.boxContainer.addChild(this.newHigh);
 
+		this.playedLabel = new PIXI.Text('GAMES PLAYED', {font:'20px Vagron', fill:'#FFF'});
+		this.playedLabel.position.y = this.newHigh.position.y + this.newHigh.height;
+		this.playedLabel.position.x = this.boxContainer.width / 2 - this.playedLabel.width / 2;
+		this.boxContainer.addChild(this.playedLabel);
+
+		this.playedLabelValue = new PIXI.Text('0', {font:'30px Vagron', fill:'#FFF'});
+		this.playedLabelValue.position.y = this.playedLabel.position.y + this.playedLabel.height;
+		this.playedLabelValue.position.x = this.boxContainer.width / 2 - this.playedLabelValue.width / 2;
+		this.boxContainer.addChild(this.playedLabelValue);
+
 		this.score = new PIXI.Text('SCORE', {font:'20px Vagron', fill:'#FFF'});
-		this.score.position.y = this.newHigh.position.x + this.newHigh.height;
+		this.score.position.y = this.playedLabelValue.position.y + this.playedLabelValue.height;
 		this.score.position.x = this.boxContainer.width / 2 - this.score.width / 2;
 		this.boxContainer.addChild(this.score);
 
@@ -122,21 +132,23 @@ var EndModal = Class.extend({
 		this.boxContainer.visible = true;
 		this.container.parent.setChildIndex(this.container,this.container.parent.children.length -1);
 
-		if(APP.maxPoints < APP.currentPoints){
-			APP.maxPoints = APP.currentPoints;
+		if(APP.highScore < APP.currentPoints){
+			APP.highScore = APP.currentPoints;
 			this.newHigh.alpha = 1;
 		}else{
 			this.newHigh.alpha = 0;
 		}
 		this.scoreValue.setText(APP.currentPoints);
-		this.bestScoreValue.setText(APP.maxPoints);
+		this.bestScoreValue.setText(APP.highScore);
+		this.playedLabelValue.setText(APP.plays);
 
 
 		this.scoreValue.position.x = windowWidth / 2 - this.scoreValue.width / 2;
 		this.bestScoreValue.position.x = windowWidth / 2 - this.bestScoreValue.width / 2;
+		this.playedLabelValue.position.x = windowWidth / 2 - this.playedLabelValue.width / 2;
 		
 		// this.screen.updateable = false;
-// this.boxContainer.width / 2 - this.bestScoreValue.width / 2;
+		// this.boxContainer.width / 2 - this.bestScoreValue.width / 2;
 		this.boxContainer.position.x = windowWidth / 2 - this.boxContainer.width / 2;
 		this.boxContainer.position.y = windowHeight / 2 - this.boxContainer.height / 2;
 		this.bg.alpha = 0.8;
@@ -146,6 +158,8 @@ var EndModal = Class.extend({
 		TweenLite.from(this.boxContainer, 0.5, {y:-this.boxContainer.height});
 
 		console.log('show');
+
+		APP.appModel.saveScore();
 	},
 	hide:function(callback){
 		var self = this;
