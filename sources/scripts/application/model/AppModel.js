@@ -1,7 +1,7 @@
 /*jshint undef:false */
 var AppModel = Class.extend({
 	init:function(){
-		this.currentPlayerModel = {};
+		
 
 		// source,
 		// energy coast, 1 / 3
@@ -14,19 +14,74 @@ var AppModel = Class.extend({
 		// APP.cookieManager.setCookie('totalPoints', 0, 500);
 		console.log(APP);
 
-		var points = parseInt(APP.cookieManager.getCookie('totalPoints'));
-		var high = parseInt(APP.cookieManager.getCookie('highScore'));
+		// var points = parseInt(APP.cookieManager.getCookie('totalPoints'));
+		// var high = parseInt(APP.cookieManager.getCookie('highScore'));
 
-		this.highScore = high?high:0;
-		this.totalPoints = points?points:0;
-		this.currentPoints = 0;
+		// this.highScore = high?high:0;
+		// this.totalPoints = points?points:0;
+		// this.currentPoints = 0;
 
 		
 		this.playerModels = [];
-
+		this.playerModels.push({
+			value:0,
+			color: 0xff0000,
+			id: this.playerModels.length,
+			enabled: true
+		});
+		this.playerModels.push({
+			value:20,
+			color: 0x00FF00,
+			id: this.playerModels.length,
+			enabled: false
+		});
+		this.playerModels.push({
+			value:20,
+			color: 0x0000FF,
+			id: this.playerModels.length,
+			enabled: false
+		});
+		this.playerModels.push({
+			value:20,
+			color: 0xff0000,
+			id: this.playerModels.length,
+			enabled: false
+		});
+		this.playerModels.push({
+			value:20,
+			color: 0x00FF00,
+			id: this.playerModels.length,
+			enabled: false
+		});
+		this.playerModels.push({
+			value:20,
+			color: 0x0000FF,
+			id: this.playerModels.length,
+			enabled: false
+		});
+		this.playerModels.push({
+			value:20,
+			color: 0xff0000,
+			id: this.playerModels.length,
+			enabled: false
+		});
+		this.playerModels.push({
+			value:20,
+			color: 0x00FF00,
+			id: this.playerModels.length,
+			enabled: false
+		});
+		this.playerModels.push({
+			value:20,
+			color: 0x0000FF,
+			id: this.playerModels.length,
+			enabled: false
+		});
 		this.enemiesModels = [];
 
-		this.setModel(0);
+		this.currentPlayerModel = this.playerModels[0];
+
+		// this.setModel(0);
 
 		this.totalPlayers = 0;
 		for (var i = this.playerModels.length - 1; i >= 0; i--) {

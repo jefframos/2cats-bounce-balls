@@ -14,55 +14,129 @@ var EndModal = Class.extend({
 
 		var self = this;
 
-		this.back = new SimpleSprite('UI_modal_back_1.png');
-        this.boxContainer.addChild(this.back.getContent());
+		// this.back = new SimpleSprite('UI_modal_back_1.png');
+		this.backBox = new PIXI.Graphics();
+		this.backBox.beginFill(0x151c47);
+		this.backBox.drawRect(0,0,windowWidth, windowHeight);
 
-        // scaleConverter(this.back.getContent().width, windowWidth, 0.8, this.back);
-        // this.back.getContent().position.x = windowWidth / 2 - this.back.getContent().width / 2;
-        // this.back.getContent().position.y = windowHeight / 2 - this.back.getContent().height / 2;
-		var thirdPart = this.back.getContent().width / 3;
+        this.boxContainer.addChild(this.backBox);
 
-		this.backButton = new DefaultButton('UI_button_play_1.png', 'UI_button_play_1.png');
-		this.backButton.build();
-		this.backButton.setPosition(thirdPart * 1 - thirdPart /2 - this.backButton.getContent().width/2,this.back.getContent().height / 2 - this.backButton.getContent().height / 2);//this.backBars.getContent().height / 2 - this.continueButton.height / 2 - 10);
-		this.backButton.clickCallback = function(){
-			self.hide(function(){
-				// self.screen.hideBars();
-				self.screen.screenManager.prevScreen();
-			});
-		};
-		this.back.getContent().addChild(this.backButton.getContent());
 
-		this.continueButton = new DefaultButton('UI_button_play_1_retina.png', 'UI_button_play_1_over_retina.png');
-		this.continueButton.build();
-		scaleConverter(this.continueButton.getContent().width, this.back.getContent().width, 0.3, this.continueButton);
-		this.continueButton.setPosition(thirdPart * 2 - thirdPart /2 -  this.continueButton.getContent().width/2,this.back.getContent().height / 2 - this.continueButton.getContent().height / 2);
-		this.continueButton.clickCallback = function(){
-			self.hide(function(){self.screen.updateable = true;});
-		};
-		this.back.getContent().addChild(this.continueButton.getContent());
+		this.gameOver = new PIXI.Text('GAME OVER', {font:'50px Vagron', fill:'#FFF'});
+		scaleConverter(this.gameOver.width, this.boxContainer.width, 1, this.gameOver);
+		this.gameOver.position.y = 0;
+		this.boxContainer.addChild(this.gameOver);
 
-		this.restartButton = new DefaultButton('UI_button_play_1.png', 'UI_button_play_1.png');
-		this.restartButton.build();
-		this.restartButton.setPosition(thirdPart * 3 - thirdPart /2 -  this.restartButton.getContent().width/2,this.back.getContent().height / 2 - this.restartButton.getContent().height / 2);//this.backBars.getContent().height / 2 - this.continueButton.height / 2 - 10);
+		this.newHigh = new PIXI.Text('NEW HIGHSCORE', {font:'20px Vagron', fill:'#FFF'});
+		this.newHigh.position.y = this.gameOver.position.y + this.gameOver.height;
+		this.newHigh.position.x = this.boxContainer.width / 2 - this.newHigh.width / 2;
+		this.boxContainer.addChild(this.newHigh);
 
-		this.restartButton.clickCallback = function(){
+		this.score = new PIXI.Text('SCORE', {font:'20px Vagron', fill:'#FFF'});
+		this.score.position.y = this.newHigh.position.x + this.newHigh.height;
+		this.score.position.x = this.boxContainer.width / 2 - this.score.width / 2;
+		this.boxContainer.addChild(this.score);
+
+		this.scoreValue = new PIXI.Text('0', {font:'30px Vagron', fill:'#FFF'});
+		this.scoreValue.position.y = this.score.position.y + this.score.height;
+		this.scoreValue.position.x = this.boxContainer.width / 2 - this.scoreValue.width / 2;
+		this.boxContainer.addChild(this.scoreValue);
+
+		this.bestScore = new PIXI.Text('BEST SCORE', {font:'20px Vagron', fill:'#FFF'});
+		this.bestScore.position.y = this.scoreValue.position.y + this.scoreValue.height;
+		this.bestScore.position.x = this.boxContainer.width / 2 - this.bestScore.width / 2;
+		this.boxContainer.addChild(this.bestScore);
+
+		this.bestScoreValue = new PIXI.Text('0', {font:'30px Vagron', fill:'#FFF'});
+		this.bestScoreValue.position.y = this.bestScore.position.y + this.bestScore.height;
+		this.bestScoreValue.position.x = this.boxContainer.width / 2 - this.bestScoreValue.width / 2;
+		this.boxContainer.addChild(this.bestScoreValue);
+
+
+		this.replayButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+		this.replayButton.build();
+		this.replayButton.addLabel(new PIXI.Text('REPLAY', {font:'45px Vagron', fill:'#FFFFFF'}), 25,2);
+		scaleConverter(this.replayButton.getContent().width, this.boxContainer.width, 0.5, this.replayButton);
+		this.replayButton.setPosition(this.boxContainer.width / 2 - this.replayButton.getContent().width / 2,this.bestScoreValue.position.y + this.bestScoreValue.height);
+		this.replayButton.clickCallback = function(){
 			self.hide(function(){
 				self.screen.updateable = true;
-				self.screen.reset();
+				self.screen.startGame();
 			});
 		};
-		this.back.getContent().addChild(this.restartButton.getContent());
+		this.boxContainer.addChild(this.replayButton.getContent());
 
-		scaleConverter(this.boxContainer.width, windowWidth, 0.8, this.boxContainer);
+		this.newSeed = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+		this.newSeed.build();
+		this.newSeed.addLabel(new PIXI.Text('NEW', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		scaleConverter(this.newSeed.getContent().width, this.boxContainer.width, 0.5, this.newSeed);
+		this.newSeed.setPosition(this.boxContainer.width / 2 - this.newSeed.getContent().width / 2,this.replayButton.getContent().position.y + this.replayButton.getContent().height + 20);//this.backBars.getContent().height / 2 - this.replayButton.height / 2 - 10);
+
+		this.newSeed.clickCallback = function(){
+			self.hide(function(){
+				self.screen.updateable = true;
+				APP.seed.seed = Math.random() * 0xFFFF;
+				self.screen.startGame();
+			});
+		};
+		this.boxContainer.addChild(this.newSeed.getContent());
+
+		this.shopButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+		this.shopButton.build();
+		this.shopButton.addLabel(new PIXI.Text('SHOP', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		scaleConverter(this.shopButton.getContent().width, this.boxContainer.width, 0.5, this.shopButton);
+		this.shopButton.setPosition(this.boxContainer.width / 2 - this.shopButton.getContent().width / 2,this.newSeed.getContent().position.y + this.newSeed.getContent().height + 20);//this.backBars.getContent().height / 2 - this.replayButton.height / 2 - 10);
+
+		this.shopButton.clickCallback = function(){
+			self.screen.screenManager.change('Choice');
+		};
+		this.boxContainer.addChild(this.shopButton.getContent());
+
+		this.shareButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+		this.shareButton.build();
+		this.shareButton.addLabel(new PIXI.Text('SHARE', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		scaleConverter(this.shareButton.getContent().width, this.boxContainer.width, 0.5, this.shareButton);
+		this.shareButton.setPosition(this.boxContainer.width / 2 - this.shareButton.getContent().width / 2,this.shopButton.getContent().position.y + this.shopButton.getContent().height + 20);//this.backBars.getContent().height / 2 - this.replayButton.height / 2 - 10);
+
+		this.shareButton.clickCallback = function(){
+			// self.screen.screenManager.change('Choice');
+		};
+		this.boxContainer.addChild(this.shareButton.getContent());
+
+		this.rateButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+		this.rateButton.build();
+		this.rateButton.addLabel(new PIXI.Text('RATE', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		scaleConverter(this.rateButton.getContent().width, this.boxContainer.width, 0.5, this.rateButton);
+		this.rateButton.setPosition(this.boxContainer.width / 2 - this.rateButton.getContent().width / 2,this.shareButton.getContent().position.y + this.shareButton.getContent().height + 20);//this.backBars.getContent().height / 2 - this.replayButton.height / 2 - 10);
+
+		this.rateButton.clickCallback = function(){
+			// self.screen.screenManager.change('Choice');
+		};
+		this.boxContainer.addChild(this.rateButton.getContent());
+
+		scaleConverter(this.boxContainer.height, windowHeight, 0.9, this.boxContainer);
 	},
 	show:function(){
 		this.screen.addChild(this);
 		this.screen.blockPause = true;
 		this.boxContainer.visible = true;
 		this.container.parent.setChildIndex(this.container,this.container.parent.children.length -1);
-		this.screen.updateable = false;
 
+		if(APP.maxPoints < APP.currentPoints){
+			APP.maxPoints = APP.currentPoints;
+			this.newHigh.alpha = 1;
+		}else{
+			this.newHigh.alpha = 0;
+		}
+		this.scoreValue.setText(APP.currentPoints);
+		this.bestScoreValue.setText(APP.maxPoints);
+
+
+		this.scoreValue.position.x = windowWidth / 2 - this.scoreValue.width / 2;
+		this.bestScoreValue.position.x = windowWidth / 2 - this.bestScoreValue.width / 2;
+		
+		// this.screen.updateable = false;
+// this.boxContainer.width / 2 - this.bestScoreValue.width / 2;
 		this.boxContainer.position.x = windowWidth / 2 - this.boxContainer.width / 2;
 		this.boxContainer.position.y = windowHeight / 2 - this.boxContainer.height / 2;
 		this.bg.alpha = 0.8;
@@ -70,6 +144,8 @@ var EndModal = Class.extend({
 
 		TweenLite.from(this.bg, 0.5, {alpha:0});
 		TweenLite.from(this.boxContainer, 0.5, {y:-this.boxContainer.height});
+
+		console.log('show');
 	},
 	hide:function(callback){
 		var self = this;
@@ -82,11 +158,11 @@ var EndModal = Class.extend({
 			if(callback){
 				callback();
 			}
-			self.kill = true;
+			// self.kill = true;
 		}});
 		TweenLite.to(this.boxContainer.position, 0.5, {y:-this.boxContainer.height, ease:'easeInBack'});
 		TweenLite.to(this.boxContainer, 0.5, {alpha:0});
-		// TweenLite.to(this.bg, 0.5, {alpha:0});
+		TweenLite.to(this.bg, 0.5, {alpha:0});
 	},
 	getContent:function(){
 		return this.container;

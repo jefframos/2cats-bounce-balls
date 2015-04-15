@@ -43,79 +43,111 @@ var ChoiceScreen = AbstractScreen.extend({
         this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2;
         this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2;
 
-        this.textScreen = new PIXI.Text('CHOICE SCREEN', {font:'50px Vagron', fill:'#FFFFFF'});
-        scaleConverter(this.textScreen.width, windowWidth, 0.5, this.textScreen);
-        this.textScreen.position.x = windowWidth / 2 - this.textScreen.width / 2;
-        this.textScreen.position.y = windowHeight / 2 - this.textScreen.height / 2;
-        this.container.addChild(this.textScreen);
+        this.scrollContainer = new PIXI.DisplayObjectContainer();
+        this.addChild(this.scrollContainer);
+        var tempGraphics = new PIXI.Graphics();
+        var marginTopBottom = 100;
+        this.shopList = [];
+        for (var i = 0; i < APP.appModel.playerModels.length; i++) {
+            var shopItem = new ShopItem(this);
+            shopItem.build(APP.appModel.playerModels[i]);
+            this.scrollContainer.addChild(shopItem.getContent());
+            shopItem.getContent().position.y = i * (shopItem.getContent().height * 1.1) + marginTopBottom ;
+            scaleConverter(shopItem.getContent().width, windowWidth, 0.75, shopItem.getContent());
+            shopItem.getContent().position.x = windowWidth / 2 - shopItem.getContent().width / 2;
+            this.shopList.push(shopItem);
+        }
+        this.back = new PIXI.Graphics();
+        this.back.beginFill(0);
+        this.back.drawRect(0,0,windowWidth,this.scrollContainer.height);
+        this.back.height = this.scrollContainer.height + marginTopBottom * 2;
+        this.scrollContainer.addChild(this.back);
+        this.scrollContainer.setChildIndex(this.back, 0);
 
-        this.moreGames = new DefaultButton('UI_button_default_2.png', 'UI_button_default_2.png');
-        this.moreGames.build();
-        this.moreGames.addLabel(new PIXI.Text('BACK', {font:'18px Vagron', fill:'#FFFFFF'}), 52, 12);
-        scaleConverter(this.moreGames.getContent().width, windowWidth, 0.35, this.moreGames);
-        this.moreGames.setPosition(windowWidth / 2 - this.moreGames.getContent().width/2,
-            windowHeight - this.moreGames.getContent().height *1.4);
-        this.addChild(this.moreGames);
-      
-        this.moreGames.clickCallback = function(){
-            self.updateable = false;
-            self.toTween(function(){
-                self.screenManager.change('Init');
-            });
-        };
+        this.applyScroll(this.scrollContainer);
+
+        this.textScreen = new PIXI.Text('SHOP', {font:'50px Vagron', fill:'#FFFFFF'});
+        scaleConverter(this.textScreen.width, windowWidth, 0.25, this.textScreen);
+        this.textScreen.position.x = windowWidth / 2 - this.textScreen.width / 2;
+        this.textScreen.position.y = windowWidth * 0.1;
+        this.container.addChild(this.textScreen);
 
 
         this.playButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
         this.playButton.build();
         this.playButton.addLabel(new PIXI.Text('PLAY', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
         scaleConverter(this.playButton.getContent().width, windowWidth, 0.4, this.playButton);
-        this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width/2,
-            windowHeight - this.playButton.getContent().height * 2.5);
+        this.playButton.setPosition(windowWidth * 0.1,windowWidth * 0.1);
         this.addChild(this.playButton);
       
         this.playButton.clickCallback = function(){
             self.updateable = false;
             self.toTween(function(){
-                self.screenManager.change('Game');
+                self.screenManager.change('Init');
+                APP.goDirect = true;
             });
         };
 
+        this.coinsLabel = new PIXI.Text(APP.totalCoins, {font:'50px Vagron', fill:'#FFFFFF'});
+        scaleConverter(this.coinsLabel.height, this.playButton.getContent().height, 1, this.coinsLabel);
+        this.coinsLabel.position.x = windowWidth - this.coinsLabel.width  - windowWidth * 0.1;
+        this.coinsLabel.position.y = windowWidth * 0.1;
+        this.container.addChild(this.coinsLabel);
 
-        if(possibleFullscreen() && !isfull){
-            this.fullscreenButton = new DefaultButton('fullscreen.png', 'fullscreen.png');
-            this.fullscreenButton.build();
-            scaleConverter(this.fullscreenButton.getContent().width, windowWidth, 0.1, this.fullscreenButton);
-            this.fullscreenButton.setPosition(windowWidth - this.fullscreenButton.getContent().width - 20,
-                windowHeight - this.fullscreenButton.getContent().height - 20);
-            this.addChild(this.fullscreenButton);
-          
-            this.fullscreenButton.clickCallback = function(){
-                fullscreen();
-                self.fullscreenButton.getContent().alpha = 0;
-            };
+    },
+    updateCoins:function(){
+        this.coinsLabel.setText(APP.totalCoins);
+        this.coinsLabel.position.x = windowWidth - this.coinsLabel.width  - windowWidth * 0.1;
+        this.coinsLabel.position.y = windowWidth * 0.1;
+    },
+    applyScroll:function(container){
+        container.interactive = true;
+        // container.mouseout = container.touchend = function(mouseData){
+        //     container.mouseDown = false;
+        // };
+         
+        container.mousedown  = container.touchstart = function(mouseData){
+            container.mouseDown = true;
+            container.initGlobalY = mouseData.global.y - container.position.y;
+        };
+
+        container.mousemove = container.touchmove  = function(mouseData){
+            if(container.mouseDown){
+                container.lastVelY = (mouseData.global.y - container.initGlobalY) - container.position.y;
+
+                var posDest = verifyPos(mouseData.global.y - container.initGlobalY);
+                container.position.y = posDest;
+
+                TweenLite.killTweensOf(container.position);
+            }
+        };
+         
+        container.mouseup  = container.touchend = function(mouseData){
+            container.mouseDown = false;
+            var posDest = verifyPos(container.position.y + container.lastVelY * 5);
+            TweenLite.to(container.position, Math.abs(container.lastVelY) / 120, {y:posDest});
+        };
+        function verifyPos(posReturn){
+            if(posReturn > 0){
+                posReturn = 0;
+            }
+            if(container.height > windowHeight){
+                if(Math.abs(posReturn) + windowHeight > container.height){
+                    posReturn = -container.height + windowHeight;
+                }
+            }else{
+                if(posReturn + container.height > windowHeight){
+                    posReturn = windowHeight - container.height;
+                }
+            }
+            return posReturn;
         }
-
-        this.setAudioButtons();
-
-        
-        this.fromTween();
     },
     toTween:function(callback){
         TweenLite.to(this.bg.getContent(), 0.5, {alpha:0, ease:'easeOutCubic'});
         TweenLite.to(this.textScreen, 0.5, {delay:0.1, alpha:0});
        
-        if(this.audioOn){
-            TweenLite.to(this.audioOn.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-        }
-        if(this.audioOff){
-            TweenLite.to(this.audioOff.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-        }
-
-        if(this.fullscreenButton){
-            TweenLite.to(this.fullscreenButton.getContent(), 0.5, {delay:0.3, y:windowHeight, ease:'easeOutBack'});
-        }
-        TweenLite.to(this.moreGames.getContent(), 0.5, {delay:0.4, y:windowHeight, ease:'easeOutBack'});
-        TweenLite.to(this.playButton.getContent(), 0.5, {delay:0.5, y:windowHeight, ease:'easeOutBack', onComplete:function(){
+        TweenLite.to(this.playButton.getContent(), 0.5, {delay:0.5, y:-this.playButton.getContent().height, ease:'easeOutBack', onComplete:function(){
             if(callback){
                 callback();
             }
@@ -125,18 +157,7 @@ var ChoiceScreen = AbstractScreen.extend({
         console.log('from');
         TweenLite.from(this.bg.getContent(), 0.5, {alpha:0, ease:'easeOutCubic'});
         TweenLite.from(this.textScreen, 0.5, {delay:0.1, alpha:0});
-       
-        if(this.audioOn){
-            TweenLite.from(this.audioOn.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-        }
-        if(this.audioOff){
-            TweenLite.from(this.audioOff.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-        }
-        if(this.fullscreenButton){
-            TweenLite.from(this.fullscreenButton.getContent(), 0.5, {delay:0.3, y:windowHeight, ease:'easeOutBack'});
-        }
-        TweenLite.from(this.playButton.getContent(), 0.5, {delay:0.4, y:windowHeight, ease:'easeOutBack'});
-        TweenLite.from(this.moreGames.getContent(), 0.5, {delay:0.5, y:windowHeight, ease:'easeOutBack', onComplete:function(){
+        TweenLite.from(this.playButton.getContent(), 0.5, {delay:0.4, y:windowHeight, ease:'easeOutBack', onComplete:function(){
             if(callback){
                 callback();
             }

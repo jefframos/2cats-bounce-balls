@@ -5,6 +5,9 @@ var InitScreen = AbstractScreen.extend({
 		this.isLoaded = false;
 		APP.seed = new Float(Math.random() * 0xFFFF);
 		APP.seed.applySeed();
+		APP.totalCoins = 0;
+		APP.maxPoints = 0;
+		APP.currentPoints = 0;
 		// alert(this.isLoaded);
 	},
 	destroy: function () {
@@ -40,66 +43,39 @@ var InitScreen = AbstractScreen.extend({
 		this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2;
 		this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2;
 
-		// this.logo = new SimpleSprite('logo.png');
-		// // this.container.addChild(this.logo.getContent());
-		// scaleConverter(this.logo.getContent().width, windowWidth, 0.5, this.logo);
-		// this.logo.getContent().position.x = windowWidth / 2 - this.logo.getContent().width / 2;
-		// this.logo.getContent().position.y = windowHeight / 2 - this.logo.getContent().height / 2;
-
-
-		if(APP.withAPI){
-			this.moreGames = new DefaultButton('UI_button_default_2.png', 'UI_button_default_2.png');
-			this.moreGames.build();
-			this.moreGames.addLabel(new PIXI.Text('MORE GAMES', {font:'18px Vagron', fill:'#FFFFFF'}), 17, 12);
-			scaleConverter(this.moreGames.getContent().width, windowWidth, 0.35, this.moreGames);
-			this.moreGames.setPosition(windowWidth / 2 - this.moreGames.getContent().width/2,
-				windowHeight - this.moreGames.getContent().height *1.4);
-			this.addChild(this.moreGames);
-		  
-			this.moreGames.clickCallback = function(){
-				self.updateable = false;
-				if(APP.withAPI){
-					APP.buttonProperties.action();
-				}
-				// self.toTween(function(){
-				//     self.screenManager.change('Game');
-				// });
-			};
-		}
-
-
+		
 		this.playButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.playButton.build();
 		this.playButton.addLabel(new PIXI.Text('PLAY', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
 		scaleConverter(this.playButton.getContent().width, windowWidth, 0.4, this.playButton);
-		this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width/2,
-			windowHeight - this.playButton.getContent().height * 2.5);
 		this.addChild(this.playButton);
 	  
 		this.playButton.clickCallback = function(){
 			self.startGame();
-			// self.updateable = false;
-			// self.toTween(function(){
-			// 	self.startGame();//self.screenManager.change('Choice');
-			// });
 		};
 
+		this.shopButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+		this.shopButton.build();
+		this.shopButton.addLabel(new PIXI.Text('SHOP', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		scaleConverter(this.shopButton.getContent().width, windowWidth, 0.4, this.shopButton);
+		this.addChild(this.shopButton);
+	  
+		this.shopButton.clickCallback = function(){
+			self.screenManager.change('Choice');
+		};
 
-		if(testMobile() && possibleFullscreen() && !isfull){
-			this.fullscreenButton = new DefaultButton('fullscreen.png', 'fullscreen.png');
-			this.fullscreenButton.build();
-			scaleConverter(this.fullscreenButton.getContent().width, windowWidth, 0.1, this.fullscreenButton);
-			this.fullscreenButton.setPosition(windowWidth - this.fullscreenButton.getContent().width - 20,
-				windowHeight - this.fullscreenButton.getContent().height - 20);
-			this.addChild(this.fullscreenButton);
-		  
-			this.fullscreenButton.clickCallback = function(){
-				fullscreen();
-				self.fullscreenButton.getContent().alpha = 0;
-			};
-		}
+		this.rankingButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+		this.rankingButton.build();
+		this.rankingButton.addLabel(new PIXI.Text('RANK', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		scaleConverter(this.rankingButton.getContent().width, windowWidth, 0.4, this.rankingButton);
+		this.addChild(this.rankingButton);
+	  
+		this.rankingButton.clickCallback = function(){
+			self.screenManager.change('Choice');
+		};
 
-		// this.setAudioButtons();
+		
+		this.setAudioButtons();
 
 		
 		this.fromTween();
@@ -133,8 +109,6 @@ var InitScreen = AbstractScreen.extend({
 			self.moveBall();
 		};
 
-
-
 		this.behaviours = [];
 		this.behaviours.push(new StoppedBehaviour({}));
 		this.behaviours.push(new RadiusPingPongBehaviour({}));
@@ -142,25 +116,55 @@ var InitScreen = AbstractScreen.extend({
 		this.behaviours.push(new SiderBehaviour({}));
 		this.behaviours.push(new DiagBehaviour({}));
 
+		this.tapToPlay = new PIXI.Text('TAP TO PLAY', {align:'center',font:'50px Vagron', fill:'#FFF', wordWrap:true, wordWrapWidth:500});
+		scaleConverter(this.tapToPlay.height, windowHeight, 0.06, this.tapToPlay);
+		this.addChild(this.tapToPlay);
+		this.tapToPlay.alpha = 0;
+		this.tapToPlay.position.y = windowHeight / 2;
+		this.tapToPlay.position.x = windowWidth / 2 - this.tapToPlay.width / 2;
+
 		this.pointsLabel = new PIXI.Text('0', {align:'center',font:'50px Vagron', fill:'#FFF', wordWrap:true, wordWrapWidth:500});
 		scaleConverter(this.pointsLabel.height, windowHeight, 0.06, this.pointsLabel);
 		this.addChild(this.pointsLabel);
-		this.pointsLabel.position.y = -50;
-		
-		
-		// this.startGame();
+		this.pointsLabel.position.y = -500;
+
+		this.coinsLabel = new PIXI.Text('0', {align:'center',font:'50px Vagron', fill:'#0FF', wordWrap:true, wordWrapWidth:500});
+		scaleConverter(this.coinsLabel.height, windowHeight, 0.06, this.coinsLabel);
+		this.addChild(this.coinsLabel);
+		this.coinsLabel.position.y = -500;
+		this.updateCoins();
+
+		this.endModal = new EndModal(this);
+		// this.endModal.show();
+
+		if(APP.goDirect){
+			this.startGame();
+		}
+		APP.goDirect = false;
 	},
 	updateLabel:function(){
-		this.pointsLabel.setText(this.currentPoints);
+		this.pointsLabel.setText(APP.currentPoints);
 		this.pointsLabel.position.x = windowWidth - this.pointsLabel.width - windowWidth * 0.1;
 		this.pointsLabel.position.y = windowWidth * 0.1;
 	},
+
+	getCoin:function(){
+		APP.totalCoins ++;
+		this.updateCoins();
+	},
+	updateCoins:function(){
+		this.coinsLabel.setText(APP.totalCoins);
+		this.coinsLabel.position.x = windowWidth * 0.1;
+		this.coinsLabel.position.y = windowWidth * 0.1;
+	},
+
 	getBall:function(){
 		this.nextHorde();
-		this.currentPoints ++;
+		APP.currentPoints ++;
 		this.updateLabel();
 	},
 	moveBall:function(){
+		TweenLite.to(this.tapToPlay, 0.5, {alpha:0});
 		this.ball.velocity.y = -20;
 	},
 	nextHorde:function(){
@@ -168,7 +172,7 @@ var InitScreen = AbstractScreen.extend({
 		var posDest = windowHeight - this.ball.getContent().height - windowHeight * 0.1;
 
 		for (var i = this.layer.childs.length - 1; i >= 0; i--) {
-			if(this.layer.childs[i].type !== 'bullet'){
+			if(this.layer.childs[i].type !== 'bullet' && this.layer.childs[i].type !== 'particle'){
 				this.layer.childs[i].preKill();
 			}
 		}
@@ -192,11 +196,16 @@ var InitScreen = AbstractScreen.extend({
 			tempEnemy.getContent().position.y = behaviour.position.y;
 			self.layer.addChild(tempEnemy);
 			self.currentEnemy = tempEnemy;
-			if(self.currentHorde < 5){
+			if(self.currentHorde < 2){
 				return;
 			}
 			if(behaviour.killerBehaviour){
-				var tempEnemyKiller = new KillerBall({x:0,y:0}, behaviour.killerBehaviour);
+				var tempEnemyKiller = null;
+				if(APP.seed.getNextFloat() < 0.5){
+					tempEnemyKiller = new KillerBall({x:0,y:0}, behaviour.killerBehaviour);
+				}else{
+					tempEnemyKiller = new Coin({x:0,y:0}, behaviour.killerBehaviour);
+				}
 				tempEnemyKiller.build();
 				tempEnemyKiller.getContent().position.x = behaviour.killerBehaviour.position.x;
 				tempEnemyKiller.getContent().position.y = behaviour.killerBehaviour.position.y;
@@ -207,7 +216,8 @@ var InitScreen = AbstractScreen.extend({
 	},
 	startGame:function(){
 		this.toTween();
-		this.currentPoints = 0;
+		TweenLite.to(this.tapToPlay, 0.5, {alpha:1});
+		APP.currentPoints = 0;
 		this.currentHorde = 0;
 		APP.accelGame = 1;
 		APP.seed.applySeed();
@@ -215,7 +225,6 @@ var InitScreen = AbstractScreen.extend({
 		this.ball = new Ball({x:0,y:0}, this);
 		this.ball.build();
 
-		// console.log(this.ball.getContent());
 		scaleConverter(this.ball.spriteBall.width, windowWidth, 0.15, this.ball.spriteBall);
 		scaleConverter(this.ball.shadow.width, windowWidth, 0.15, this.ball.shadow);
 		this.ball.getContent().position.x = windowWidth / 2;
@@ -223,18 +232,22 @@ var InitScreen = AbstractScreen.extend({
 
 		
 		this.layer.addChild(this.ball);
+		this.ball.spriteBall.tint = APP.appModel.currentPlayerModel.color;
 		this.nextHorde();
 
 		this.addChild(this.hitTouch);
 	},
 	gameOver:function(){
 		this.removeChild(this.hitTouch);
-		this.pointsLabel.position.y = -50;
+		this.pointsLabel.position.y = -500;
+		this.coinsLabel.position.y = -500;
 		for (var i = this.layer.childs.length - 1; i >= 0; i--) {
 			this.layer.childs[i].preKill();
 		}
 		// this.layer.childs
-		this.fromTween();
+		// this.fromTween();
+
+		this.endModal.show();
 	},
 	update:function(){
 		if(!this.updateable){
@@ -255,12 +268,12 @@ var InitScreen = AbstractScreen.extend({
 		// TweenLite.to(this.logo.getContent(), 0.5, {delay:0.1, alpha:0});
 
 	   
-		// if(this.audioOn){
-		// 	TweenLite.to(this.audioOn.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-		// }
-		// if(this.audioOff){
-		// 	TweenLite.to(this.audioOff.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-		// }
+		if(this.audioOn){
+			TweenLite.to(this.audioOn.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
+		}
+		if(this.audioOff){
+			TweenLite.to(this.audioOff.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
+		}
 
 		// if(this.fullscreenButton){
 		// 	TweenLite.to(this.fullscreenButton.getContent(), 0.5, {delay:0.3, y:windowHeight, ease:'easeOutBack'});
@@ -268,6 +281,8 @@ var InitScreen = AbstractScreen.extend({
 		// if(this.moreGames){
 		// 	TweenLite.to(this.moreGames.getContent(), 0.5, {delay:0.4, y:windowHeight, ease:'easeOutBack'});
 		// }
+		TweenLite.to(this.rankingButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack'});
+		TweenLite.to(this.shopButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack'});
 		TweenLite.to(this.playButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack', onComplete:function(){
 			if(callback){
 				callback();
@@ -277,20 +292,27 @@ var InitScreen = AbstractScreen.extend({
 	fromTween:function(callback){
 
 		this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width/2,
-			windowHeight - this.playButton.getContent().height * 2.5);
+			windowHeight / 2);
 
+		this.shopButton.setPosition(windowWidth / 2 - this.shopButton.getContent().width/2,
+			this.playButton.getContent().position.y + this.playButton.getContent().height + 10);
+
+		this.rankingButton.setPosition(windowWidth / 2 - this.rankingButton.getContent().width/2,
+			this.shopButton.getContent().position.y + this.shopButton.getContent().height + 10);
 		// TweenLite.from(this.bg.getContent(), 0.5, {alpha:0, ease:'easeOutCubic'});
 		// TweenLite.from(this.logo.getContent(), 0.5, {delay:0.1, alpha:0});
 	   
-		// if(this.audioOn){
-		// 	TweenLite.from(this.audioOn.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-		// }
-		// if(this.audioOff){
-		// 	TweenLite.from(this.audioOff.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
-		// }
+		if(this.audioOn){
+			TweenLite.from(this.audioOn.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
+		}
+		if(this.audioOff){
+			TweenLite.from(this.audioOff.getContent(), 0.5, {delay:0.1,y:-this.audioOn.getContent().height, ease:'easeOutBack'});
+		}
 		// if(this.fullscreenButton){
 		// 	TweenLite.from(this.fullscreenButton.getContent(), 0.5, {delay:0.3, y:windowHeight, ease:'easeOutBack'});
 		// }
+		TweenLite.from(this.rankingButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack'});
+		TweenLite.from(this.shopButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack'});
 		TweenLite.from(this.playButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack', onComplete:function(){
 			if(callback){
 				callback();

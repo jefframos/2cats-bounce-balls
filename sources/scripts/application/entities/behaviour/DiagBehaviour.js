@@ -12,10 +12,10 @@ var DiagBehaviour = Class.extend({
 		this.side = APP.seed.getNextFloat() < 0.5? 1 : -1;
 
 		var rnd = APP.seed.getNextFloat();
-		if(rnd < 0.15 * APP.accelGame){
+		if(rnd < 0.25 * APP.accelGame){
 			this.killerBehaviour = new SiderBehaviour({centerDist:windowWidth/2.5});
 			this.killerBehaviour.position = {x: this.position.x, y:this.position.y + (windowHeight * 0.15 + (windowHeight * 0.15) * APP.seed.getNextFloat())};
-		}else if(rnd < 0.3 * APP.accelGame){
+		}else if(rnd < 0.45 * APP.accelGame){
 			this.killerBehaviour = new RadiusBehaviour({});
 			this.killerBehaviour.centerPos = this.position;
 		}

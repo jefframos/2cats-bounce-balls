@@ -2,7 +2,7 @@
 
 "UI_button_close_1.png":
 {
-	"frame": {"x":188,"y":2,"w":30,"h":30},
+	"frame": {"x":2,"y":2,"w":30,"h":30},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":30},
@@ -11,7 +11,7 @@
 },
 "UI_button_close_1_over.png":
 {
-	"frame": {"x":220,"y":2,"w":30,"h":30},
+	"frame": {"x":34,"y":2,"w":30,"h":30},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":30},
@@ -20,7 +20,7 @@
 },
 "UI_button_default_1.png":
 {
-	"frame": {"x":172,"y":57,"w":200,"h":59},
+	"frame": {"x":66,"y":2,"w":200,"h":59},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":200,"h":59},
@@ -29,7 +29,7 @@
 },
 "UI_button_facebook_1.png":
 {
-	"frame": {"x":58,"y":57,"w":53,"h":53},
+	"frame": {"x":268,"y":2,"w":53,"h":53},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":53,"h":53},
@@ -38,7 +38,7 @@
 },
 "UI_button_help_1.png":
 {
-	"frame": {"x":2,"y":2,"w":29,"h":29},
+	"frame": {"x":323,"y":2,"w":29,"h":29},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":29},
@@ -47,7 +47,7 @@
 },
 "UI_button_help_1_over.png":
 {
-	"frame": {"x":33,"y":2,"w":29,"h":29},
+	"frame": {"x":354,"y":2,"w":29,"h":29},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":29},
@@ -56,7 +56,7 @@
 },
 "UI_button_pause_1.png":
 {
-	"frame": {"x":64,"y":2,"w":29,"h":29},
+	"frame": {"x":385,"y":2,"w":29,"h":29},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":29},
@@ -65,7 +65,7 @@
 },
 "UI_button_pause_1_over.png":
 {
-	"frame": {"x":157,"y":2,"w":29,"h":29},
+	"frame": {"x":416,"y":2,"w":29,"h":29},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":29},
@@ -74,7 +74,7 @@
 },
 "UI_button_play_1.png":
 {
-	"frame": {"x":95,"y":2,"w":29,"h":29},
+	"frame": {"x":447,"y":2,"w":29,"h":29},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":29},
@@ -83,7 +83,7 @@
 },
 "UI_button_play_1_over.png":
 {
-	"frame": {"x":126,"y":2,"w":29,"h":29},
+	"frame": {"x":2,"y":63,"w":29,"h":29},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":29},
@@ -92,7 +92,7 @@
 },
 "UI_button_ranking_1.png":
 {
-	"frame": {"x":2,"y":57,"w":54,"h":53},
+	"frame": {"x":33,"y":63,"w":54,"h":53},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":53},
@@ -101,7 +101,7 @@
 },
 "UI_button_twitter_1.png":
 {
-	"frame": {"x":304,"y":2,"w":53,"h":53},
+	"frame": {"x":89,"y":63,"w":53,"h":53},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":53,"h":53},
@@ -110,7 +110,7 @@
 },
 "UI_modal_back_1.png":
 {
-	"frame": {"x":142,"y":118,"w":253,"h":264},
+	"frame": {"x":144,"y":63,"w":253,"h":264},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":264},
@@ -119,7 +119,7 @@
 },
 "ball.png":
 {
-	"frame": {"x":2,"y":118,"w":68,"h":68},
+	"frame": {"x":399,"y":63,"w":68,"h":68},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":68,"h":68},
@@ -128,7 +128,7 @@
 },
 "bg1.jpg":
 {
-	"frame": {"x":2,"y":384,"w":320,"h":568},
+	"frame": {"x":2,"y":329,"w":320,"h":568},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":320,"h":568},
@@ -137,7 +137,7 @@
 },
 "bullet.png":
 {
-	"frame": {"x":252,"y":2,"w":50,"h":50},
+	"frame": {"x":324,"y":329,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -146,7 +146,7 @@
 },
 "fullscreen.png":
 {
-	"frame": {"x":113,"y":57,"w":57,"h":56},
+	"frame": {"x":376,"y":329,"w":57,"h":56},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":57,"h":56},
@@ -155,11 +155,47 @@
 },
 "shadow.png":
 {
-	"frame": {"x":72,"y":118,"w":68,"h":103},
+	"frame": {"x":2,"y":899,"w":68,"h":103},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":68,"h":103},
 	"sourceSize": {"w":68,"h":103},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"volumeButton_off.png":
+{
+	"frame": {"x":72,"y":899,"w":103,"h":95},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":95},
+	"sourceSize": {"w":103,"h":95},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"volumeButton_off_over.png":
+{
+	"frame": {"x":177,"y":899,"w":103,"h":95},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":95},
+	"sourceSize": {"w":103,"h":95},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"volumeButton_on.png":
+{
+	"frame": {"x":282,"y":899,"w":103,"h":95},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":95},
+	"sourceSize": {"w":103,"h":95},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"volumeButton_on_over.png":
+{
+	"frame": {"x":387,"y":899,"w":103,"h":95},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":95},
+	"sourceSize": {"w":103,"h":95},
 	"pivot": {"x":0.5,"y":0.5}
 }},
 "meta": {
@@ -167,8 +203,8 @@
 	"version": "1.0",
 	"image": "atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":397,"h":954},
+	"size": {"w":492,"h":1004},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:91999456abfe6f3a7d46210357392758:18b4816e16ebf693128c67542729e483:cbce6b53f0f49e0bf15173c25c41f876$"
+	"smartupdate": "$TexturePacker:SmartUpdate:601c89df49d36398c42dec34d6f613f1:af507be5acf57189b098cadac0e1432a:cbce6b53f0f49e0bf15173c25c41f876$"
 }
 }

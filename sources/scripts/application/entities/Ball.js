@@ -35,7 +35,7 @@ var Ball = Entity.extend({
 
 		this.sprite.anchor.x = 0.5;
 		this.sprite.anchor.y = 0.5;
-		this.range = this.sprite.height / 2;
+		
 		// console.log(this.range);
 		this.updateable = true;
 		this.collidable = true;
@@ -45,8 +45,8 @@ var Ball = Entity.extend({
 
 		this.collideArea = new PIXI.Rectangle(-50, -50, windowWidth + 100, windowHeight + 100);
 
-		this.particlesCounterMax = 2;
-        this.particlesCounter = 2;//this.particlesCounterMax *2;
+		this.particlesCounterMax = 1;
+        this.particlesCounter = 1;//this.particlesCounterMax *2;
         this.shadow = new PIXI.Sprite.fromFrame('shadow.png');
         this.shadow.anchor.x = 0.5;
         this.shadow.anchor.y = 0;
@@ -67,7 +67,7 @@ var Ball = Entity.extend({
 	update: function(){
 		this._super();
 		this.layer.collideChilds(this);
-		
+		this.range = this.spriteBall.height / 2;
 		// this.updateableParticles();
 		if(this.velocity.y !== 0){
 			this.updateableParticles();
@@ -137,7 +137,8 @@ var Ball = Entity.extend({
             // particle.growType = -1;
             particle.build();
             particle.gravity = 0.0;
-            particle.alphadecress = 0.01;
+            particle.getContent().tint = APP.appModel.currentPlayerModel.color;
+            particle.alphadecress = 0.05;
             particle.scaledecress = -0.05;
             particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
                 this.getPosition().y);
@@ -162,7 +163,21 @@ var Ball = Entity.extend({
 					// arrayCollide[i].prekill();
 				}else if(arrayCollide[i].type === 'killer'){
 					this.screen.gameOver();
-					this.kill = true;
+					this.preKill();
+				}else if(arrayCollide[i].type === 'coin'){
+					this.screen.getCoin();
+					arrayCollide[i].preKill();
+
+					var labelCoin = new Particles({x: 0, y:0}, 120, new PIXI.Text('+1', {font:'50px Vagron', fill:'#0FF'}));
+					labelCoin.maxScale = this.getContent().scale.x;
+					labelCoin.build();
+					labelCoin.getContent().tint = 0x00FFFF;
+					labelCoin.gravity = -0.2;
+					labelCoin.alphadecress = 0.04;
+					labelCoin.scaledecress = +0.05;
+					labelCoin.setPosition(this.getPosition().x, this.getPosition().y);
+					this.screen.layer.addChild(labelCoin);
+
 				}
 			}
 		}
@@ -176,6 +191,7 @@ var Ball = Entity.extend({
 			particle.build();
 			particle.gravity = 0.1 * Math.random() + 0.2;
 			particle.alphadecres = 0.1;
+			particle.getContent().tint = APP.appModel.currentPlayerModel.color;
 			particle.scaledecress = 0.02;
 			particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
 				this.getPosition().y);

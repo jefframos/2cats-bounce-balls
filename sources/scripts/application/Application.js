@@ -14,7 +14,7 @@ var Application = AbstractApplication.extend({
         this.mute = false;
 
         this.audioController = new AudioController();
-
+        this.appModel = new AppModel();
         this.withAPI = false;
         if(window.location.hash === '#withoutAPI'){
             this.withAPI = false;
