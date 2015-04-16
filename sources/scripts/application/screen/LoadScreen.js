@@ -11,7 +11,7 @@ var LoadScreen = AbstractScreen.extend({
     build: function () {
         this._super();
 
-        var assetsToLoader = ['dist/img/atlas.json'];
+        var assetsToLoader = ['dist/img/atlas2.json'];
         if(assetsToLoader.length > 0 && !this.isLoaded){
             this.loader = new PIXI.AssetLoader(assetsToLoader);
             this.initLoad();
@@ -25,7 +25,7 @@ var LoadScreen = AbstractScreen.extend({
         this.loaderContainer = new PIXI.DisplayObjectContainer();
         this.addChild(this.loaderContainer);
 
-        this.loaderBar = new LifeBarHUD(windowWidth * 0.6, barHeight, 0, 0xa72d79, 0x0d163e);
+        this.loaderBar = new LifeBarHUD(windowWidth * 0.6, barHeight, 0, 0xf5c30c, 0xFF453c);
         this.loaderContainer.addChild(this.loaderBar.getContent());
         this.loaderBar.getContent().position.x = windowWidth / 2 - this.loaderBar.getContent().width / 2;
         this.loaderBar.getContent().position.y = windowHeight - this.loaderBar.getContent().height - windowHeight * 0.1;

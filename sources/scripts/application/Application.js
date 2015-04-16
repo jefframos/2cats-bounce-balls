@@ -3,7 +3,7 @@ var Application = AbstractApplication.extend({
 	init:function(){
 
         this._super(windowWidth, windowHeight);
-        this.stage.setBackgroundColor(0x2c2359);
+        this.stage.setBackgroundColor(0xdb453c);
         this.stage.removeChild(this.loadText);
 
         this.labelDebug = new PIXI.Text('', {font:'15px Arial'});

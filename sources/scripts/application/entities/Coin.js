@@ -15,7 +15,9 @@ var Coin = Entity.extend({
 		this.power = 1;
 		this.defaultVelocity = 1;
 		this.behaviour = behaviour.clone();
-		this.imgSource = this.particleSource = 'bullet.png';
+		this.imgSource = 'batata_ok.png';
+		this.particleSource = 'bullet.png';
+		this.rot = 0;
 	},
 	startScaleTween: function(){
 		TweenLite.from(this.getContent().scale, 0.3, {x:0, y:0, ease:'easeOutBack'});
@@ -25,7 +27,6 @@ var Coin = Entity.extend({
 		this.sprite = new PIXI.Sprite.fromFrame(this.imgSource);
 		this.sprite.anchor.x = 0.5;
 		this.sprite.anchor.y = 0.5;
-		this.sprite.tint = 0x00FFFF;
 
 		this.updateable = true;
 		this.collidable = true;
@@ -43,8 +44,10 @@ var Coin = Entity.extend({
 		this.range = this.sprite.height / 2.5;
 		this._super();
 		this.behaviour.update(this);
+		this.rot += 0.1;
+		this.getContent().rotation = this.rot;
 		// if(this.velocity.x !== 0 || this.velocity.y !== 0){
-		this.updateableParticles();
+		// this.updateableParticles();
 		// }
 	},
 	updateableParticles:function(){
@@ -80,18 +83,18 @@ var Coin = Entity.extend({
 
 
             //efeito 3
-            var particle = new Particles({x: 0, y:0}, 120, this.particleSource, Math.random() * 0.05);
-            particle.maxScale = this.getContent().scale.x;
+            var particle = new Particles({x: Math.random() * 4 - 2, y:Math.random() * 4 - 2}, 120, this.particleSource, Math.random() * 0.05);
+            particle.maxScale = this.getContent().scale.x / 1.5;
             particle.maxInitScale = particle.maxScale;
 
             // particle.growType = -1;
             particle.build();
-            particle.getContent().tint = 0x00FFFF;
+            particle.getContent().tint = 0xf5c30c;
             particle.gravity = 0.0;
             particle.alphadecress = 0.08;
             particle.scaledecress = -0.04;
-            particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
-                this.getPosition().y);
+            particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.4) + this.getContent().width * 0.2,
+                this.getPosition().y - (Math.random() + this.getContent().width * 0.4)+ this.getContent().width * 0.2);
             this.layer.addChild(particle);
             particle.getContent().parent.setChildIndex(particle.getContent() , 0);
         }
@@ -105,15 +108,15 @@ var Coin = Entity.extend({
 
 		for (var i = 5; i >= 0; i--) {
 			var particle = new Particles({x: Math.random() * 8 - 4, y:Math.random() * 8 - 4}, 120, this.particleSource, Math.random() * 0.05);
-			particle.maxScale = this.getContent().scale.x;
+			particle.maxScale = this.getContent().scale.x / 2;
             particle.maxInitScale = particle.maxScale;
 			particle.build();
-			particle.getContent().tint = 0x00FFFF;
+			particle.getContent().tint = 0xf5c30c;
 			particle.gravity = 0.3 * Math.random();
 			particle.alphadecress = 0.04;
 			particle.scaledecress = -0.05;
-			particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
-				this.getPosition().y);
+			particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.4) + this.getContent().width * 0.2,
+                this.getPosition().y - (Math.random() + this.getContent().width * 0.4)+ this.getContent().width * 0.2);
 			this.layer.addChild(particle);
 		}
 		this.collidable = false;

@@ -17,7 +17,7 @@ var Ball = Entity.extend({
 		this.power = 1;
 		this.defaultVelocity = 1;
 		
-		this.imgSource = 'ball.png';
+		this.imgSource = 'tiro1.png';
 		this.particleSource = 'bullet.png';
 		// this.defaultVelocity.y = vel.y;
 		//console.log(bulletSource);
@@ -47,11 +47,11 @@ var Ball = Entity.extend({
 
 		this.particlesCounterMax = 1;
         this.particlesCounter = 1;//this.particlesCounterMax *2;
-        this.shadow = new PIXI.Sprite.fromFrame('shadow.png');
-        this.shadow.anchor.x = 0.5;
-        this.shadow.anchor.y = 0;
+        this.shadow = new PIXI.Sprite.fromFrame(this.imgSource);
+        this.shadow.anchor.x = 0.4;
+        this.shadow.anchor.y = 0.4;
         this.shadow.tint = 0;
-        this.shadowAlpha = 0.3;
+        this.shadowAlpha = 0.2;
         this.shadow.alpha = this.shadowAlpha;
         this.sprite.addChild(this.shadow);
         this.sprite.setChildIndex(this.shadow , 0);
@@ -62,15 +62,18 @@ var Ball = Entity.extend({
 	updateShadow: function(angle){
 		TweenLite.to(this.shadow, 0.3, {delay:0.1, alpha:this.shadowAlpha});
 		// TweenLite.to(this.shadow, 0.1, {rotation:angle});
-		this.shadow.rotation = angle;
+		// this.shadow.rotation = angle;
 	},
 	update: function(){
 		this._super();
 		this.layer.collideChilds(this);
-		this.range = this.spriteBall.height / 2;
+		this.range = this.spriteBall.height / 4;
 		// this.updateableParticles();
 		if(this.velocity.y !== 0){
 			this.updateableParticles();
+			this.getContent().alpha = 1;
+		}else{
+			this.getContent().alpha = 0;
 		}
 		if(this.getPosition().y < 0){
 			this.screen.gameOver();
@@ -131,8 +134,8 @@ var Ball = Entity.extend({
 
 
             //efeito 3
-            var particle = new Particles({x: 0, y:0}, 120, this.particleSource, Math.random() * 0.05);
-            particle.maxScale = this.getContent().scale.x;
+            var particle = new Particles({x: Math.random() * 4 - 2, y:Math.random()}, 120, this.particleSource, Math.random() * 0.05);
+            particle.maxScale = this.getContent().scale.x / 2;
             // particle.maxInitScale = particle.maxScale / 1.5;
             // particle.growType = -1;
             particle.build();
@@ -171,7 +174,7 @@ var Ball = Entity.extend({
 					var labelCoin = new Particles({x: 0, y:0}, 120, new PIXI.Text('+1', {font:'50px Vagron', fill:'#0FF'}));
 					labelCoin.maxScale = this.getContent().scale.x;
 					labelCoin.build();
-					labelCoin.getContent().tint = 0x00FFFF;
+					labelCoin.getContent().tint = 0xf5c30c;
 					labelCoin.gravity = -0.2;
 					labelCoin.alphadecress = 0.04;
 					labelCoin.scaledecress = +0.05;
@@ -186,18 +189,18 @@ var Ball = Entity.extend({
 		if(this.invencible){
 			return;
 		}
-		for (var i = 1; i >= 0; i--) {
-			var particle = new Particles({x: Math.random() * 4, y:-(Math.random() * 2 + 1)}, 120, this.particleSource, Math.random() * 0.05);
-			particle.build();
-			particle.gravity = 0.1 * Math.random() + 0.2;
-			particle.alphadecres = 0.1;
-			particle.getContent().tint = APP.appModel.currentPlayerModel.color;
-			particle.scaledecress = 0.02;
-			particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
-				this.getPosition().y);
-			this.layer.addChild(particle);
-		}
 		this.collidable = false;
 		this.kill = true;
+		// for (var i = 1; i >= 0; i--) {
+		// 	var particle = new Particles({x: Math.random() * 4, y:-(Math.random() * 2 + 1)}, 120, this.particleSource, Math.random() * 0.05);
+		// 	particle.build();
+		// 	particle.gravity = 0.1 * Math.random() + 0.2;
+		// 	particle.alphadecres = 0.1;
+		// 	particle.getContent().tint = APP.appModel.currentPlayerModel.color;
+		// 	particle.scaledecress = 0.02;
+		// 	particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
+		// 		this.getPosition().y);
+		// 	this.layer.addChild(particle);
+		// }
 	},
 });

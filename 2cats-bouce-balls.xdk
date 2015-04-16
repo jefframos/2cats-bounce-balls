@@ -6,7 +6,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "",
       "projectGuid": "abdaceea-7e8b-48ed-aea7-4f022ac56851",
-      "lastModifiedDate": 1429205157409,
+      "lastModifiedDate": 1429206926941,
       "creationDate": 1429204922104
     },
     "sourceDirectory": "",
@@ -119,7 +119,9 @@
         "name_": "iOS",
         "preferences_": {
           "ios-target": "6",
-          "ios-configuration": "adhoc"
+          "ios-configuration": "adhoc",
+          "Fullscreen": true,
+          "Orientation": "portrait"
         },
         "isActive_": true,
         "appName_": "2cats-bouce-balls",

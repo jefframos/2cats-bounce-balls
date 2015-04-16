@@ -6,7 +6,7 @@ var EndModal = Class.extend({
 		this.container = new PIXI.DisplayObjectContainer();
 		this.boxContainer = new PIXI.DisplayObjectContainer();
 		this.bg = new PIXI.Graphics();
-		this.bg.beginFill(0x151c47);
+		this.bg.beginFill(0xdb453c);
 		this.bg.drawRect(0,0,windowWidth, windowHeight);
 		this.bg.alpha = 0.8;
 		this.container.addChild(this.bg);
@@ -16,7 +16,7 @@ var EndModal = Class.extend({
 
 		// this.back = new SimpleSprite('UI_modal_back_1.png');
 		this.backBox = new PIXI.Graphics();
-		this.backBox.beginFill(0x151c47);
+		this.backBox.beginFill(0xdb453c);
 		this.backBox.drawRect(0,0,windowWidth, windowHeight);
 
         this.boxContainer.addChild(this.backBox);
@@ -65,7 +65,7 @@ var EndModal = Class.extend({
 
 		this.replayButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.replayButton.build();
-		this.replayButton.addLabel(new PIXI.Text('REPLAY', {font:'45px Vagron', fill:'#FFFFFF'}), 25,2);
+		this.replayButton.addLabel(new PIXI.Text('REPLAY', {font:'30px Vagron', fill:'#db453c'}), 25,2);
 		scaleConverter(this.replayButton.getContent().width, this.boxContainer.width, 0.5, this.replayButton);
 		this.replayButton.setPosition(this.boxContainer.width / 2 - this.replayButton.getContent().width / 2,this.bestScoreValue.position.y + this.bestScoreValue.height);
 		this.replayButton.clickCallback = function(){
@@ -78,7 +78,7 @@ var EndModal = Class.extend({
 
 		this.newSeed = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.newSeed.build();
-		this.newSeed.addLabel(new PIXI.Text('NEW', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		this.newSeed.addLabel(new PIXI.Text('NEW', {font:'30px Vagron', fill:'#db453c'}), 45,2);
 		scaleConverter(this.newSeed.getContent().width, this.boxContainer.width, 0.5, this.newSeed);
 		this.newSeed.setPosition(this.boxContainer.width / 2 - this.newSeed.getContent().width / 2,this.replayButton.getContent().position.y + this.replayButton.getContent().height + 20);//this.backBars.getContent().height / 2 - this.replayButton.height / 2 - 10);
 
@@ -93,7 +93,7 @@ var EndModal = Class.extend({
 
 		this.shopButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.shopButton.build();
-		this.shopButton.addLabel(new PIXI.Text('SHOP', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		this.shopButton.addLabel(new PIXI.Text('SHOP', {font:'30px Vagron', fill:'#db453c'}), 45,2);
 		scaleConverter(this.shopButton.getContent().width, this.boxContainer.width, 0.5, this.shopButton);
 		this.shopButton.setPosition(this.boxContainer.width / 2 - this.shopButton.getContent().width / 2,this.newSeed.getContent().position.y + this.newSeed.getContent().height + 20);//this.backBars.getContent().height / 2 - this.replayButton.height / 2 - 10);
 
@@ -104,7 +104,7 @@ var EndModal = Class.extend({
 
 		this.shareButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.shareButton.build();
-		this.shareButton.addLabel(new PIXI.Text('SHARE', {font:'50px Vagron', fill:'#FFFFFF'}), 30,2);
+		this.shareButton.addLabel(new PIXI.Text('SHARE', {font:'30px Vagron', fill:'#db453c'}), 30,2);
 		scaleConverter(this.shareButton.getContent().width, this.boxContainer.width, 0.5, this.shareButton);
 		this.shareButton.setPosition(this.boxContainer.width / 2 - this.shareButton.getContent().width / 2,this.shopButton.getContent().position.y + this.shopButton.getContent().height + 20);//this.backBars.getContent().height / 2 - this.replayButton.height / 2 - 10);
 
@@ -115,7 +115,7 @@ var EndModal = Class.extend({
 
 		this.rateButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.rateButton.build();
-		this.rateButton.addLabel(new PIXI.Text('RATE', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		this.rateButton.addLabel(new PIXI.Text('RATE', {font:'30px Vagron', fill:'#db453c'}), 45,2);
 		scaleConverter(this.rateButton.getContent().width, this.boxContainer.width, 0.5, this.rateButton);
 		this.rateButton.setPosition(this.boxContainer.width / 2 - this.rateButton.getContent().width / 2,this.shareButton.getContent().position.y + this.shareButton.getContent().height + 20);//this.backBars.getContent().height / 2 - this.replayButton.height / 2 - 10);
 

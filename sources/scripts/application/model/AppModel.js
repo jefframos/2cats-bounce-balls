@@ -31,7 +31,7 @@ var AppModel = Class.extend({
 		this.playerModels = [];
 		this.playerModels.push({
 			value:0,
-			color: 0xad76f7,
+			color: 0xFF453c,
 			id: this.playerModels.length,
 			enabled: true
 		});
@@ -49,37 +49,37 @@ var AppModel = Class.extend({
 		});
 		this.playerModels.push({
 			value:5,
-			color: 0xad76f7,
+			color: 0xa006f7,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
 			value:5,
-			color: 0x00FF00,
+			color: 0x058F00,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
 			value:5,
-			color: 0x0000FF,
+			color: 0x9600FF,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
 			value:5,
-			color: 0xad76f7,
+			color: 0xad00f7,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
 			value:5,
-			color: 0x00FF00,
+			color: 0x0a3F00,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
 			value:5,
-			color: 0x0000FF,
+			color: 0xa0a0aF,
 			id: this.playerModels.length,
 			enabled: false
 		});

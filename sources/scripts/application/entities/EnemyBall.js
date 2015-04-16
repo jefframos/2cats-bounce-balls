@@ -15,7 +15,8 @@ var EnemyBall = Entity.extend({
 		this.power = 1;
 		this.defaultVelocity = 1;
 		this.behaviour = behaviour.clone();
-		this.imgSource = this.particleSource = 'bullet.png';
+		this.imgSource = 'burger.png';
+		this.particleSource = 'bullet.png';
 	},
 	startScaleTween: function(){
 		TweenLite.from(this.getContent().scale, 0.3, {x:0, y:0, ease:'easeOutBack'});
@@ -39,12 +40,12 @@ var EnemyBall = Entity.extend({
 
 	},
 	update: function(){
-		this.range = this.sprite.height / 2;
+		this.range = this.sprite.height / 4;
 		this._super();
 		this.behaviour.update(this);
-		if(this.velocity.x || this.velocity.y){
-			this.updateableParticles();
-		}
+		// if(this.velocity.x || this.velocity.y){
+		// 	this.updateableParticles();
+		// }
 	},
 	updateableParticles:function(){
         this.particlesCounter --;
@@ -97,19 +98,27 @@ var EnemyBall = Entity.extend({
 		if(this.invencible){
 			return;
 		}
-		for (var i = 5; i >= 0; i--) {
-			var particle = new Particles({x: Math.random() * 8 - 4, y:Math.random() * 8 - 4}, 120, this.particleSource, Math.random() * 0.05);
-			particle.maxScale = this.getContent().scale.x;
-            particle.maxInitScale = particle.maxScale;
-			particle.build();
-			particle.gravity = 0.3 * Math.random();
-			particle.alphadecress = 0.04;
-			particle.scaledecress = -0.05;
-			particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
-				this.getPosition().y);
-			this.layer.addChild(particle);
-		}
+		this.velocity = {x:0, y:0};
+		var self = this;
+		TweenLite.to(this.getContent().scale, 0.2, {x:0.5, y:0.5});
+		TweenLite.to(this.getContent(), 0.2, {alpha:0, onComplete:function(){
+			self.kill = true;
+		}});
+		// for (var i = 5; i >= 0; i--) {
+		// 	var particle = new Particles({x: Math.random() * 8 - 4, y:Math.random() * 8 - 4}, 120, this.particleSource, Math.random() * 0.05);
+		// 	particle.maxScale = this.getContent().scale.x;
+  //           particle.maxInitScale = particle.maxScale;
+		// 	particle.build();
+		// 	particle.getContent().tint = APP.appModel.currentPlayerModel.color;
+		// 	particle.gravity = 0.3 * Math.random();
+		// 	particle.alphadecress = 0.04;
+		// 	particle.scaledecress = -0.05;
+		// 	particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
+		// 		this.getPosition().y);
+		// 	this.layer.addChild(particle);
+		// }
 		this.collidable = false;
-		this.kill = true;
+		this.updateable = false;
+		
 	},
 });

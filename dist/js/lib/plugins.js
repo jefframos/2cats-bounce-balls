@@ -1,4 +1,4 @@
-/*! jefframos 24-03-2015 */
+/*! jefframos 16-04-2015 */
 !function() {
     var cache = {}, ctx = null, usingWebAudio = !0, noAudio = !1;
     try {
@@ -375,7 +375,7 @@
     }, decodeAudioData = function(arraybuffer, obj, url) {
         ctx.decodeAudioData(arraybuffer, function(buffer) {
             buffer && (cache[url] = buffer, loadSound(obj, buffer));
-        }, function() {
+        }, function(err) {
             obj.on("loaderror");
         });
     }, loadSound = function(obj, buffer) {
@@ -5495,7 +5495,7 @@
         return !!J("transform");
     }, s.csstransforms3d = function() {
         var a = !!J("perspective");
-        return a && "webkitPerspective" in g.style && y("@media (transform-3d),(-webkit-transform-3d){#modernizr{left:9px;position:absolute;height:3px;}}", function(b) {
+        return a && "webkitPerspective" in g.style && y("@media (transform-3d),(-webkit-transform-3d){#modernizr{left:9px;position:absolute;height:3px;}}", function(b, c) {
             a = 9 === b.offsetLeft && 3 === b.offsetHeight;
         }), a;
     }, s.csstransitions = function() {
@@ -6007,7 +6007,7 @@
             })), !e && u && (e = b && c.ok() ? !!b.match(c.filePattern) : null), e;
         }, this.canPlayLink = function(b) {
             return b.type !== h && b.type && c.canPlayMIME(b.type) ? !0 : c.canPlayURL(b.href);
-        }, this.getSoundById = function(b) {
+        }, this.getSoundById = function(b, e) {
             return b ? c.sounds[b] : null;
         }, this.onready = function(b, c) {
             if ("function" != typeof b) throw R("needFunction", "onready");
@@ -6017,7 +6017,7 @@
             return c || (c = g), pa("ontimeout", b, c), D({
                 type: "ontimeout"
             }), !0;
-        }, this._wD = this._writeDebug = function() {
+        }, this._wD = this._writeDebug = function(b, c) {
             return !0;
         }, this._debug = function() {}, this.reboot = function(b, e) {
             var d, a, f;
@@ -6314,7 +6314,7 @@
             }, this._onconnect = function(b) {
                 b = 1 === b, (a.connected = b) && (a.failures = 0, q(a.id) && (a.getAutoPlay() ? a.play(h, a.getAutoPlay()) : a._iO.autoLoad && a.load()), 
                 a._iO.onconnect && a._iO.onconnect.apply(a, [ b ]));
-            }, this._ondataerror = function() {
+            }, this._ondataerror = function(b) {
                 0 < a.playState && a._iO.ondataerror && a._iO.ondataerror.apply(a);
             };
         }, va = function() {
@@ -6478,7 +6478,7 @@
             u = c.html5.usingFlash, !0;
         }, sa = {}, R = function() {}, ba = function(b) {
             return 8 === n && 1 < b.loops && b.stream && (b.stream = !1), b;
-        }, ca = function(b) {
+        }, ca = function(b, c) {
             return b && !b.usePolicyFile && (b.onid3 || b.usePeakData || b.useWaveformData || b.useEQData) && (b.usePolicyFile = !0), 
             b;
         }, la = function() {
@@ -6595,7 +6595,7 @@
             var e, d, b = c.audioFormats;
             for (d in b) if (b.hasOwnProperty(d) && ("mp3" === d || "mp4" === d) && (c.html5[d] = !1, 
             b[d] && b[d].related)) for (e = b[d].related.length - 1; e >= 0; e--) c.html5[b[d].related[e]] = !1;
-        }, this._setSandboxType = function() {}, this._externalInterfaceOK = function() {
+        }, this._setSandboxType = function(b) {}, this._externalInterfaceOK = function(b) {
             return c.swfLoaded ? !1 : (c.swfLoaded = !0, ka = !1, $a && Xa(), void setTimeout(ma, C ? 100 : 1));
         }, aa = function(b, e) {
             function d(a, b) {
@@ -7604,21 +7604,21 @@ var DefaultButton = Class.extend({
     },
     build: function(width, height) {
         var that = this;
-        this.width = width ? width : this.shapeButton.width, this.height = height ? height : this.shapeButton.height, 
+        width ? this.width = width : this.width = this.shapeButton.width, height ? this.height = height : this.height = this.shapeButton.height, 
         this.shapeButton.buttonMode = !0, this.shapeButton.position.x = 0, this.shapeButton.position.y = 0, 
         width && (this.shapeButton.width = this.width), height && (this.shapeButton.height = this.height), 
-        this.shapeButton.interactive = !0, this.shapeButton.mousedown = this.shapeButton.touchstart = function() {
+        this.shapeButton.interactive = !0, this.shapeButton.mousedown = this.shapeButton.touchstart = function(data) {
             null != that.mouseDownCallback && that.mouseDownCallback(), that.isdown = !0, that.shapeButton.setTexture(that.textureButtonDown), 
             that.alpha = 1;
-        }, this.shapeButton.mouseup = this.shapeButton.touchend = this.shapeButton.touchoutside = this.shapeButton.mouseuoutside = this.shapeButton.touchendoutside = function() {
+        }, this.shapeButton.mouseup = this.shapeButton.touchend = this.shapeButton.touchoutside = this.shapeButton.mouseuoutside = this.shapeButton.touchendoutside = function(data) {
             this.isdown = !1, null != that.mouseUpCallback && that.mouseUpCallback(), that.shapeButton.setTexture(that.isOver ? that.textureButtonOver : that.textureButton);
-        }, this.shapeButton.mouseover = function() {
+        }, this.shapeButton.mouseover = function(data) {
             that.isOver = !0, that.shapeButton.setTexture(that.textureButtonOver);
-        }, this.shapeButton.mouseout = function() {
+        }, this.shapeButton.mouseout = function(data) {
             that.isOver = !1, that.shapeButton.setTexture(that.textureButton);
-        }, this.shapeButton.click = function() {
+        }, this.shapeButton.click = function(data) {
             null != that.clickCallback && that.clickCallback();
-        }, this.shapeButton.tap = function() {
+        }, this.shapeButton.tap = function(data) {
             null != that.clickCallback && that.clickCallback();
         };
     },
@@ -7776,7 +7776,7 @@ var DefaultButton = Class.extend({
     setGravity: function(gravity) {
         this.gravity = gravity;
     },
-    collide: function() {}
+    collide: function(arrayCollide) {}
 }), SpritesheetEntity = Entity.extend({
     init: function() {
         this._super(!0), this.spritesheet;
@@ -8092,8 +8092,8 @@ var DefaultButton = Class.extend({
     }
 }, SimpleEntity = Class.extend({
     init: function(img) {
-        this.texture = "string" == typeof img ? new PIXI.Texture.fromImage(img) : img, this.container = new PIXI.Sprite(this.texture), 
-        this.velocity = {
+        "string" == typeof img ? this.texture = new PIXI.Texture.fromImage(img) : this.texture = img, 
+        this.container = new PIXI.Sprite(this.texture), this.velocity = {
             x: 0,
             y: 0
         }, this.updateable = !0;
@@ -8115,7 +8115,8 @@ var DefaultButton = Class.extend({
     }
 }), SimpleSprite = Class.extend({
     init: function(img) {
-        this.texture = "string" == typeof img ? new PIXI.Texture.fromImage(img) : img, this.container = new PIXI.Sprite(this.texture);
+        "string" == typeof img ? this.texture = new PIXI.Texture.fromImage(img) : this.texture = img, 
+        this.container = new PIXI.Sprite(this.texture);
     },
     getContent: function() {
         return this.container;
@@ -8158,7 +8159,7 @@ var DefaultButton = Class.extend({
     update: function() {
         var stop = !1;
         null != this.currentAnimation && (this.timeElapsed > this.currentAnimation.timeFrame ? (this.currentAnimation.currentID++, 
-        this.currentAnimation.currentID >= this.currentAnimation.frames.length && (this.currentAnimation.currentID = this.currentAnimation.repeat ? 0 : this.currentAnimation.frames.length - 1, 
+        this.currentAnimation.currentID >= this.currentAnimation.frames.length && (this.currentAnimation.repeat ? this.currentAnimation.currentID = 0 : this.currentAnimation.currentID = this.currentAnimation.frames.length - 1, 
         null != this.currentAnimation.callback && this.currentAnimation.callback()), this.timeElapsed = 0, 
         stop || this.updateFrame()) : this.timeElapsed++);
     },

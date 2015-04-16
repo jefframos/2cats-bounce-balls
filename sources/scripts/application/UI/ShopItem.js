@@ -13,7 +13,7 @@ var ShopItem = Class.extend({
 
         
 		this.backScroll = new PIXI.Graphics();
-        this.backScroll.beginFill(0x000000);
+        this.backScroll.beginFill(0xdb453c);
         this.backScroll.drawRect(0,0,windowWidth, 120);
         this.backScroll.alpha = 0.2;
         this.container.addChild(this.backScroll);
@@ -21,7 +21,7 @@ var ShopItem = Class.extend({
 
         this.backShopItem = new PIXI.Graphics();
         this.backShopItem.beginFill(this.model.color);
-        this.backShopItem.drawRect(0,0,150, 150);
+        this.backShopItem.drawRect(20,20,80, 80);
         this.backShopItem.alpha = 1;
         this.container.addChild(this.backShopItem);
 
@@ -29,15 +29,15 @@ var ShopItem = Class.extend({
 
 		// alert(this.backShopItem.height);
 
-		this.equipped = new PIXI.Text('EQUIPPED', {align:'center',font:'50px Vagron', fill:'#FFF', wordWrap:true, wordWrapWidth:500});
-		scaleConverter(this.equipped.height, this.backShopItem.height, 0.3, this.equipped);
+		this.equipped = new PIXI.Text('EQUIPPED', {align:'center',font:'50px Vagron', fill:'#db453c', wordWrap:true, wordWrapWidth:500});
+		scaleConverter(this.equipped.height, this.backShopItem.height, 0.4, this.equipped);
 		this.equipped.position.x = this.backScroll.width - this.equipped.width - this.backShopItem.height * 0.1;
 		this.equipped.position.y = this.backShopItem.height - this.equipped.height  + this.backShopItem.position.y;
 		// this.equipped.position.y = 20;
 
 		this.equipButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.equipButton.build();
-		this.equipButton.addLabel(new PIXI.Text('EQUIP', {font:'30px Vagron', fill:'#FFFFFF'}), 33,5);
+		this.equipButton.addLabel(new PIXI.Text('EQUIP', {font:'30px Vagron', fill:'#db453c'}), 33,5);
 		this.equipButton.setPosition(this.backScroll.width - this.equipButton.getContent().width - this.backShopItem.height * 0.1,this.backShopItem.height - this.equipButton.getContent().height + this.backShopItem.position.y);//this.backBars.getContent().height - 20 - this.continueButton.height / 2 - 10);
 		this.equipButton.clickCallback = this.equipButton.mouseDownCallback = function(){
 			
@@ -49,9 +49,9 @@ var ShopItem = Class.extend({
 			self.updateStats();
 		};
 
-		this.buyButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+		this.buyButton = new DefaultButton('UI_button_default_2.png', 'UI_button_default_2.png');
 		this.buyButton.build();
-		this.buyButton.addLabel(new PIXI.Text(this.model.value+' BUY', {font:'30px Vagron', fill:'#FFFFFF'}), 33,10);
+		this.buyButton.addLabel(new PIXI.Text(this.model.value+' BUY', {font:'30px Vagron', fill:'#ECBC0C'}), 33,10);
 		this.buyButton.setPosition(this.backScroll.width - this.buyButton.getContent().width - this.backShopItem.height * 0.1,this.backShopItem.height - this.buyButton.getContent().height + this.backShopItem.position.y);//this.backBars.getContent().height - 20 - this.continueButton.height / 2 - 10);
 		this.buyButton.clickCallback = this.buyButton.mouseDownCallback = function(){
 			// alert(self.model.value);

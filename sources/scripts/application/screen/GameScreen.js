@@ -42,7 +42,7 @@ var GameScreen = AbstractScreen.extend({
 
 
 
-
+        
 
 
 
@@ -134,6 +134,8 @@ var GameScreen = AbstractScreen.extend({
         this.layer = new Layer();
         this.layer.build('EntityLayer');
         this.layerManager.addLayer(this.layer);
+
+        
     },
     shoot:function(angle) {
         if(this.blockPause){

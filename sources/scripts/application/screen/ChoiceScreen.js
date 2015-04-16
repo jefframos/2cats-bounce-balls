@@ -11,7 +11,7 @@ var ChoiceScreen = AbstractScreen.extend({
     build: function () {
         this._super();
 
-        var assetsToLoader = ['dist/img/atlas.json'];
+        var assetsToLoader = [];
         this.loader = new PIXI.AssetLoader(assetsToLoader);
 
         if(assetsToLoader.length > 0){
@@ -38,7 +38,7 @@ var ChoiceScreen = AbstractScreen.extend({
         var self = this;
 
         this.bg = new SimpleSprite('bg1.jpg');
-        this.container.addChild(this.bg.getContent());
+        // this.container.addChild(this.bg.getContent());
         scaleConverter(this.bg.getContent().width, windowWidth, 1.2, this.bg);
         this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2;
         this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2;
@@ -52,13 +52,13 @@ var ChoiceScreen = AbstractScreen.extend({
             var shopItem = new ShopItem(this);
             shopItem.build(APP.appModel.playerModels[i]);
             this.scrollContainer.addChild(shopItem.getContent());
-            shopItem.getContent().position.y = i * (shopItem.getContent().height * 1.1) + marginTopBottom ;
-            scaleConverter(shopItem.getContent().width, windowWidth, 0.75, shopItem.getContent());
+            shopItem.getContent().position.y = i * (shopItem.getContent().height * 0.8) + marginTopBottom + 20;
+            scaleConverter(shopItem.getContent().width, windowWidth, 0.6, shopItem.getContent());
             shopItem.getContent().position.x = windowWidth / 2 - shopItem.getContent().width / 2;
             this.shopList.push(shopItem);
         }
         this.back = new PIXI.Graphics();
-        this.back.beginFill(0);
+        this.back.beginFill(0xECBC0C);
         this.back.drawRect(0,0,windowWidth,this.scrollContainer.height);
         this.back.height = this.scrollContainer.height + marginTopBottom * 2;
         this.scrollContainer.addChild(this.back);
@@ -67,7 +67,7 @@ var ChoiceScreen = AbstractScreen.extend({
         this.applyScroll(this.scrollContainer);
 
         this.backTop = new PIXI.Graphics();
-        this.backTop.beginFill(0);
+        this.backTop.beginFill(0xdb453c);
         this.backTop.drawRect(0,0,windowWidth,marginTopBottom);
         this.container.addChild(this.backTop);
         // this.scrollContainer.setChildIndex(this.backTop, 0);
@@ -79,12 +79,13 @@ var ChoiceScreen = AbstractScreen.extend({
         this.container.addChild(this.textScreen);
 
 
-        this.playButton = new DefaultButton('UI_button_play_1.png', 'UI_button_play_1.png');
+        this.playButton = new DefaultButton('play1.png', 'play1.png');
         this.playButton.build();
         // this.playButton.addLabel(new PIXI.Text('PLAY', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
         scaleConverter(this.playButton.getContent().height, this.textScreen.height, 1, this.playButton);
-        this.playButton.setPosition(windowWidth * 0.1,windowWidth * 0.1);
+        this.playButton.setPosition(windowWidth * 0.1 + this.playButton.getContent().width,windowWidth * 0.1);
         this.addChild(this.playButton);
+        this.playButton.getContent().scale.x = -1;
       
         this.playButton.clickCallback = function(){
             self.updateable = false;

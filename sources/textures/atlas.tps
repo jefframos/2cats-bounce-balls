@@ -38,7 +38,7 @@
         <key>dataFormat</key>
         <string>json</string>
         <key>textureFileName</key>
-        <filename>../../dist/img/atlas.png</filename>
+        <filename>../../dist/img/atlas2.png</filename>
         <key>flipPVR</key>
         <false/>
         <key>pvrCompressionQuality</key>
@@ -145,7 +145,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../../dist/img/atlas.json</filename>
+                <filename>../../dist/img/atlas2.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -191,7 +191,6 @@
             <filename>normal/bg1.jpg</filename>
             <filename>normal/UI_button_close_1.png</filename>
             <filename>normal/UI_button_close_1_over.png</filename>
-            <filename>normal/UI_button_default_1.png</filename>
             <filename>normal/UI_button_facebook_1.png</filename>
             <filename>normal/UI_button_help_1.png</filename>
             <filename>normal/UI_button_help_1_over.png</filename>
@@ -210,6 +209,16 @@
             <filename>volumeButton_on_over.png</filename>
             <filename>volumeButton_off.png</filename>
             <filename>volumeButton_off_over.png</filename>
+            <filename>tiro1.png</filename>
+            <filename>tubo.png</filename>
+            <filename>batata_ok.png</filename>
+            <filename>burger.png</filename>
+            <filename>conteudo.png</filename>
+            <filename>brilho_base.png</filename>
+            <filename>brilho.png</filename>
+            <filename>inimigo.png</filename>
+            <filename>inimigo_particula.png</filename>
+            <filename>UI_button_default_1.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

@@ -15,7 +15,8 @@ var KillerBall = Entity.extend({
 		this.power = 1;
 		this.defaultVelocity = 1;
 		this.behaviour = behaviour.clone();
-		this.imgSource = this.particleSource = 'bullet.png';
+		this.imgSource = 'inimigo.png';
+		this.particleSource = 'inimigo_particula.png';
 	},
 	startScaleTween: function(){
 		TweenLite.from(this.getContent().scale, 0.3, {x:0, y:0, ease:'easeOutBack'});
@@ -25,7 +26,7 @@ var KillerBall = Entity.extend({
 		this.sprite = new PIXI.Sprite.fromFrame(this.imgSource);
 		this.sprite.anchor.x = 0.5;
 		this.sprite.anchor.y = 0.5;
-		this.sprite.tint = 0xFF0000;
+		// this.sprite.tint = 0xFF0000;
 
 		this.updateable = true;
 		this.collidable = true;

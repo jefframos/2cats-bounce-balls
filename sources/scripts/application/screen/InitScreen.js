@@ -14,7 +14,7 @@ var InitScreen = AbstractScreen.extend({
 	build: function () {
 		this._super();
 
-		var assetsToLoader = ['dist/img/atlas.json'];
+		var assetsToLoader = ['dist/img/atlas2.json'];
 		this.loader = new PIXI.AssetLoader(assetsToLoader);
 
 		if(assetsToLoader.length > 0){
@@ -36,15 +36,35 @@ var InitScreen = AbstractScreen.extend({
 		var self = this;
 
 		this.bg = new SimpleSprite('bg1.jpg');
-		this.container.addChild(this.bg.getContent());
+		// this.container.addChild(this.bg.getContent());
 		scaleConverter(this.bg.getContent().width, windowWidth, 1.2, this.bg);
 		this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2;
 		this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2;
 
+		this.brilhoBase = new SimpleSprite('brilho_base.png');
+		this.container.addChild(this.brilhoBase.getContent());
+		scaleConverter(this.brilhoBase.getContent().width, windowWidth, 1, this.brilhoBase);
+		this.brilhoBase.getContent().position.x = windowWidth / 2 - this.brilhoBase.getContent().width / 2;
+		this.brilhoBase.getContent().position.y = windowHeight / 2 - this.brilhoBase.getContent().height;
+		// this.brilhoBase.blendMode = PIXI.blendModes.OVERLAY;
+		this.brilhoBase.getContent().tint = 0xf2c10c;
+		this.brilhoBase.getContent().alpha = 0;
+		
+
+		this.brilhoMeio = new SimpleSprite('brilho.png');
+		this.container.addChild(this.brilhoMeio.getContent());
+		scaleConverter(this.brilhoMeio.getContent().width, windowWidth, 1, this.brilhoMeio);
+		this.brilhoMeio.getContent().position.x = windowWidth / 2;
+		this.brilhoMeio.getContent().position.y = windowHeight / 2;
+		// this.brilhoMeio.blendMode = PIXI.blendModes.OVERLAY;
+		this.brilhoMeio.getContent().tint = 0xf2c10c;
+		this.brilhoMeio.getContent().alpha = 0;
+		this.brilhoMeio.getContent().anchor.x = 0.5;
+		this.brilhoMeio.getContent().anchor.y = 0.5;
 		
 		this.playButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.playButton.build();
-		this.playButton.addLabel(new PIXI.Text('PLAY', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		this.playButton.addLabel(new PIXI.Text('PLAY', {font:'30px Vagron', fill:'#db453c'}), 45,2);
 		scaleConverter(this.playButton.getContent().width, windowWidth, 0.4, this.playButton);
 		this.addChild(this.playButton);
 	  
@@ -57,7 +77,7 @@ var InitScreen = AbstractScreen.extend({
 
 		this.shopButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.shopButton.build();
-		this.shopButton.addLabel(new PIXI.Text('SHOP', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		this.shopButton.addLabel(new PIXI.Text('SHOP', {font:'30px Vagron', fill:'#db453c'}), 45,2);
 		scaleConverter(this.shopButton.getContent().width, windowWidth, 0.4, this.shopButton);
 		this.addChild(this.shopButton);
 	  
@@ -70,7 +90,7 @@ var InitScreen = AbstractScreen.extend({
 
 		this.rankingButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.rankingButton.build();
-		this.rankingButton.addLabel(new PIXI.Text('RANK', {font:'50px Vagron', fill:'#FFFFFF'}), 45,2);
+		this.rankingButton.addLabel(new PIXI.Text('RANK', {font:'30px Vagron', fill:'#db453c'}), 45,2);
 		scaleConverter(this.rankingButton.getContent().width, windowWidth, 0.4, this.rankingButton);
 		this.addChild(this.rankingButton);
 	  
@@ -81,8 +101,25 @@ var InitScreen = AbstractScreen.extend({
 			self.screenManager.change('Choice');
 		};
 
-		
-		this.setAudioButtons();
+        this.tuboContent = new SimpleSprite('conteudo.png');
+        this.addChild(this.tuboContent.getContent());
+        this.tuboContent.getContent().anchor.x = 0.5;
+        this.tuboContent.getContent().anchor.y = 1;
+        // scaleConverter(this.tuboContent.getContent().width, windowWidth, 1.2, this.tuboContent);
+        this.tuboContent.getContent().position.x = windowWidth / 2;
+        this.tuboContent.getContent().position.y = windowHeight;
+
+		this.tubo = new SimpleSprite('tubo.png');
+        this.addChild(this.tubo.getContent());
+        this.tubo.getContent().anchor.x = 0.5;
+        this.tubo.getContent().anchor.y = 1;
+        // scaleConverter(this.tubo.getContent().width, windowWidth, 1.2, this.tubo);
+        this.tubo.getContent().position.x = windowWidth / 2;
+        this.tubo.getContent().position.y = windowHeight;
+
+        this.tuboContent.getContent().tint = APP.appModel.currentPlayerModel.color;
+
+		// this.setAudioButtons();
 
 		
 		this.fromTween();
@@ -123,19 +160,19 @@ var InitScreen = AbstractScreen.extend({
 		this.behaviours.push(new SiderBehaviour({}));
 		this.behaviours.push(new DiagBehaviour({}));
 
-		this.tapToPlay = new PIXI.Text('TAP TO PLAY', {align:'center',font:'50px Vagron', fill:'#FFF', wordWrap:true, wordWrapWidth:500});
+		this.tapToPlay = new PIXI.Text('TAP TO PLAY', {align:'center',font:'30px Vagron', fill:'#FFF', wordWrap:true, wordWrapWidth:500});
 		scaleConverter(this.tapToPlay.height, windowHeight, 0.06, this.tapToPlay);
 		this.addChild(this.tapToPlay);
 		this.tapToPlay.alpha = 0;
 		this.tapToPlay.position.y = windowHeight / 2;
 		this.tapToPlay.position.x = windowWidth / 2 - this.tapToPlay.width / 2;
 
-		this.pointsLabel = new PIXI.Text('0', {align:'center',font:'50px Vagron', fill:'#FFF', wordWrap:true, wordWrapWidth:500});
+		this.pointsLabel = new PIXI.Text('0', {align:'center',font:'30px Vagron', fill:'#FFF', wordWrap:true, wordWrapWidth:500});
 		scaleConverter(this.pointsLabel.height, windowHeight, 0.06, this.pointsLabel);
 		this.addChild(this.pointsLabel);
 		this.pointsLabel.position.y = -500;
 
-		this.coinsLabel = new PIXI.Text('0', {align:'center',font:'50px Vagron', fill:'#0FF', wordWrap:true, wordWrapWidth:500});
+		this.coinsLabel = new PIXI.Text('0', {align:'center',font:'30px Vagron', fill:'#f5c30c', wordWrap:true, wordWrapWidth:500});
 		scaleConverter(this.coinsLabel.height, windowHeight, 0.06, this.coinsLabel);
 		this.addChild(this.coinsLabel);
 		this.coinsLabel.position.y = -500;
@@ -149,7 +186,10 @@ var InitScreen = AbstractScreen.extend({
 		}
 		APP.goDirect = false;
 
-
+		// alert(window.plugins.socialsharing);
+		// if(intel !== undefined){
+		// 	alert(window.plugins.socialsharing);
+		// }
 	},
 	updateLabel:function(){
 		this.pointsLabel.setText(APP.currentPoints);
@@ -173,13 +213,22 @@ var InitScreen = AbstractScreen.extend({
 		this.updateLabel();
 	},
 	moveBall:function(){
+		this.tubo.getContent().scale.y = 0.5;
+		this.tubo.getContent().scale.x = 1.2;
+		TweenLite.to(this.tubo.getContent().scale, 0.3, {y:1, x:1, ease:'easeOutBack'});
+
+		this.tuboContent.getContent().scale.y = 0.5;
+		this.tuboContent.getContent().scale.x = 1.2;
+		TweenLite.to(this.tuboContent.getContent().scale, 0.3, {y:1, x:1, ease:'easeOutBack'});
+
+
 		TweenLite.to(this.tapToPlay, 0.5, {alpha:0});
 		this.ball.velocity.y = -20;
 	},
 	nextHorde:function(){
 		var self = this;
 		var posDest = windowHeight - this.ball.getContent().height - windowHeight * 0.1;
-
+		TweenLite.to(this.brilhoMeio.getContent(), 0.2, {alpha:0});
 		for (var i = this.layer.childs.length - 1; i >= 0; i--) {
 			if(this.layer.childs[i].type !== 'bullet' && this.layer.childs[i].type !== 'particle'){
 				this.layer.childs[i].preKill();
@@ -203,6 +252,9 @@ var InitScreen = AbstractScreen.extend({
 			tempEnemy.build();
 			tempEnemy.getContent().position.x = behaviour.position.x;
 			tempEnemy.getContent().position.y = behaviour.position.y;
+
+			TweenLite.to(self.brilhoMeio.getContent(), 0.3, {alpha:0.3});
+
 			self.layer.addChild(tempEnemy);
 			self.currentEnemy = tempEnemy;
 			if(self.currentHorde < 2){
@@ -234,7 +286,6 @@ var InitScreen = AbstractScreen.extend({
 		this.updateCoins();
 		this.ball = new Ball({x:0,y:0}, this);
 		this.ball.build();
-
 		scaleConverter(this.ball.spriteBall.width, windowWidth, 0.15, this.ball.spriteBall);
 		scaleConverter(this.ball.shadow.width, windowWidth, 0.15, this.ball.shadow);
 		this.ball.getContent().position.x = windowWidth / 2;
@@ -243,6 +294,7 @@ var InitScreen = AbstractScreen.extend({
 		
 		this.layer.addChild(this.ball);
 		this.ball.spriteBall.tint = APP.appModel.currentPlayerModel.color;
+		this.tuboContent.getContent().tint = APP.appModel.currentPlayerModel.color;
 		this.nextHorde();
 
 		this.addChild(this.hitTouch);
@@ -265,10 +317,12 @@ var InitScreen = AbstractScreen.extend({
 			return;
 		}
 		if(this.currentEnemy && this.ball){
-			this.ball.updateShadow(Math.atan2(
-				this.ball.getContent().position.y - this.currentEnemy.getContent().position.y,
-				this.ball.getContent().position.x - this.currentEnemy.getContent().position.x) - degreesToRadians(90)
-			);
+			this.brilhoMeio.getContent().position.x = this.currentEnemy.getContent().position.x;
+			this.brilhoMeio.getContent().position.y = this.currentEnemy.getContent().position.y;
+			// this.ball.updateShadow(Math.atan2(
+			// 	this.ball.getContent().position.y - this.currentEnemy.getContent().position.y,
+			// 	this.ball.getContent().position.x - this.currentEnemy.getContent().position.x) - degreesToRadians(90)
+			// );
 		}else if(this.ball){
 			this.ball.hideShadows();
 		}
