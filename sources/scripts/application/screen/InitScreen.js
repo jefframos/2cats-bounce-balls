@@ -148,6 +148,8 @@ var InitScreen = AbstractScreen.extend({
 			this.startGame();
 		}
 		APP.goDirect = false;
+
+
 	},
 	updateLabel:function(){
 		this.pointsLabel.setText(APP.currentPoints);
