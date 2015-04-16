@@ -1,4 +1,4 @@
-/*! jefframos 15-04-2015 */
+/*! jefframos 16-04-2015 */
 function rgbToHsl(r, g, b) {
     r /= 255, g /= 255, b /= 255;
     var h, s, max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
@@ -1377,37 +1377,37 @@ var Application = AbstractApplication.extend({
             id: this.playerModels.length,
             enabled: !1
         }), this.playerModels.push({
-            value: 20,
+            value: 5,
             color: 255,
             id: this.playerModels.length,
             enabled: !1
         }), this.playerModels.push({
-            value: 20,
+            value: 5,
             color: 11368183,
             id: this.playerModels.length,
             enabled: !1
         }), this.playerModels.push({
-            value: 20,
+            value: 5,
             color: 65280,
             id: this.playerModels.length,
             enabled: !1
         }), this.playerModels.push({
-            value: 20,
+            value: 5,
             color: 255,
             id: this.playerModels.length,
             enabled: !1
         }), this.playerModels.push({
-            value: 20,
+            value: 5,
             color: 11368183,
             id: this.playerModels.length,
             enabled: !1
         }), this.playerModels.push({
-            value: 20,
+            value: 5,
             color: 65280,
             id: this.playerModels.length,
             enabled: !1
         }), this.playerModels.push({
-            value: 20,
+            value: 5,
             color: 255,
             id: this.playerModels.length,
             enabled: !1

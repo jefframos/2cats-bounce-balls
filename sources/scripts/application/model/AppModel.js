@@ -42,43 +42,43 @@ var AppModel = Class.extend({
 			enabled: false
 		});
 		this.playerModels.push({
-			value:20,
+			value:5,
 			color: 0x0000FF,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
-			value:20,
+			value:5,
 			color: 0xad76f7,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
-			value:20,
+			value:5,
 			color: 0x00FF00,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
-			value:20,
+			value:5,
 			color: 0x0000FF,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
-			value:20,
+			value:5,
 			color: 0xad76f7,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
-			value:20,
+			value:5,
 			color: 0x00FF00,
 			id: this.playerModels.length,
 			enabled: false
 		});
 		this.playerModels.push({
-			value:20,
+			value:5,
 			color: 0x0000FF,
 			id: this.playerModels.length,
 			enabled: false
