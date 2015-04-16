@@ -171,10 +171,10 @@ var Ball = Entity.extend({
 					this.screen.getCoin();
 					arrayCollide[i].preKill();
 
-					var labelCoin = new Particles({x: 0, y:0}, 120, new PIXI.Text('+1', {font:'50px Vagron', fill:'#0FF'}));
+					var labelCoin = new Particles({x: 0, y:0}, 120, new PIXI.Text('+1', {font:'50px Vagron', fill:'#f5c30c'}));
 					labelCoin.maxScale = this.getContent().scale.x;
 					labelCoin.build();
-					labelCoin.getContent().tint = 0xf5c30c;
+					// labelCoin.getContent().tint = 0xf5c30c;
 					labelCoin.gravity = -0.2;
 					labelCoin.alphadecress = 0.04;
 					labelCoin.scaledecress = +0.05;

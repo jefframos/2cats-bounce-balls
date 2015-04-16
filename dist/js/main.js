@@ -659,11 +659,11 @@ var Application = AbstractApplication.extend({
                 y: 0
             }, 120, new PIXI.Text("+1", {
                 font: "50px Vagron",
-                fill: "#0FF"
+                fill: "#f5c30c"
             }));
-            labelCoin.maxScale = this.getContent().scale.x, labelCoin.build(), labelCoin.getContent().tint = 16106252, 
-            labelCoin.gravity = -.2, labelCoin.alphadecress = .04, labelCoin.scaledecress = .05, 
-            labelCoin.setPosition(this.getPosition().x, this.getPosition().y), this.screen.layer.addChild(labelCoin);
+            labelCoin.maxScale = this.getContent().scale.x, labelCoin.build(), labelCoin.gravity = -.2, 
+            labelCoin.alphadecress = .04, labelCoin.scaledecress = .05, labelCoin.setPosition(this.getPosition().x, this.getPosition().y), 
+            this.screen.layer.addChild(labelCoin);
         }
     },
     preKill: function() {
