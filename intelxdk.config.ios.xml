@@ -13,4 +13,6 @@
 <intelxdk:plugin intelxdk:name="SocialSharing*" intelxdk:value="https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin"/>
 <preference name="ios-target" value="6"/>
 <preference name="ios-configuration" value="adhoc"/>
+<preference name="Fullscreen" value="true"/>
+<preference name="Orientation" value="portrait"/>
 <!--creationInfo:{"src":"","projectTypeName":"com.intel.xdk.projecttype.jsapp"}--></widget>

@@ -44,7 +44,7 @@ var EnemyBall = Entity.extend({
 		this._super();
 		this.behaviour.update(this);
 		// if(this.velocity.x || this.velocity.y){
-		// 	this.updateableParticles();
+		// this.updateableParticles();
 		// }
 	},
 	updateableParticles:function(){

@@ -11,7 +11,8 @@ var LoadScreen = AbstractScreen.extend({
     build: function () {
         this._super();
 
-        var assetsToLoader = ['dist/img/atlas2.json'];
+        var assetsToLoader = ['dist/img/atlas2.json',
+        'dist/img/2.png'];
         if(assetsToLoader.length > 0 && !this.isLoaded){
             this.loader = new PIXI.AssetLoader(assetsToLoader);
             this.initLoad();

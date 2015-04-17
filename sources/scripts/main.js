@@ -13,7 +13,7 @@ var windowHeight = res.y;
 var realWindowWidth = res.x;
 var realWindowHeight = res.y;
 
-var gameScale = 1.3;
+var gameScale = 2;
 
 var screenOrientation = 'portait';
 
@@ -37,7 +37,7 @@ var init = false;
 var renderer;
 var APP;
 
-var retina = 1;//window.devicePixelRatio >= 2 ? 2 : 1;
+var retina = 2;//window.devicePixelRatio >= 2 ? 2 : 1;
 
 function isPortait(){
 	return window.innerHeight > window.innerWidth;
@@ -62,7 +62,7 @@ function updateResolution(orientation, scale){
 				windowHeight =  window.devicePixelRatio >= 2 ? window.innerHeight * scale : window.outerHeight * scale;//window.outerHeight * scale;
 				
 				// windowHeight =  window.outerHeight * scale;
-				windowHeightVar =  window.outerHeight;
+				windowHeightVar =  window.outerHeight* scale;
 			}
 			
 
@@ -171,7 +171,13 @@ function fullscreen(){
 (function() {
 	var App = {
 		init: function () {
-			initialize();
+			if(window.intel !== undefined){
+				document.addEventListener('deviceready', function() {
+					initialize();
+				});
+			}else{
+				initialize();
+			}
 		}
 	};
 	App.init();

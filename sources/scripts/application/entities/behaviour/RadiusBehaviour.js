@@ -25,6 +25,7 @@ var RadiusBehaviour = Class.extend({
 		return new RadiusBehaviour(this.props);
 	},
 	update:function(entity){
+		this.tempPosition = {x:Math.sin(this.angle) * this.radius + this.centerPos.x, y:Math.cos(this.angle) * this.radius + this.centerPos.y};
 		entity.getContent().position.x = Math.sin(this.angle) * this.radius + this.centerPos.x;
 		entity.getContent().position.y = Math.cos(this.angle) * this.radius + this.centerPos.y;
 		this.angle += (this.angleSpd * this.side);

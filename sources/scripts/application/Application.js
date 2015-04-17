@@ -1,26 +1,45 @@
 /*jshint undef:false */
 var Application = AbstractApplication.extend({
 	init:function(){
+        var self = this;
 
-        this._super(windowWidth, windowHeight);
-        this.stage.setBackgroundColor(0xdb453c);
-        this.stage.removeChild(this.loadText);
 
-        this.labelDebug = new PIXI.Text('', {font:'15px Arial'});
-        // this.stage.addChild(this.labelDebug);
-        this.labelDebug.position.y = windowHeight - 20;
-        this.labelDebug.position.x = 20;
+        function initialize(){
+            self._super(windowWidth, windowHeight);
+            self.stage.setBackgroundColor(0xdb453c);
+            self.stage.removeChild(self.loadText);
 
-        this.mute = false;
+            self.labelDebug = new PIXI.Text('', {font:'15px Arial'});
+            // self.stage.addChild(self.labelDebug);
+            self.labelDebug.position.y = windowHeight - 20;
+            self.labelDebug.position.x = 20;
 
-        this.audioController = new AudioController();
+            self.initialized = true;
+            // self.mute = false;
 
-        this.withAPI = false;
-        if(window.location.hash === '#withoutAPI'){
-            this.withAPI = false;
+            // self.audioController = new AudioController();
+
+            self.withAPI = false;
+            if(window.location.hash === '#withoutAPI'){
+                self.withAPI = false;
+            }
+
+            // self.build();
         }
+        // if(window.intel !== undefined){
+        //     document.addEventListener('deviceready', function() {
+        //         initialize();
+        //     });
+        // }else{
+        // }
+        initialize();
+
+        
 	},
     update:function(){
+        if(!this.initialized){
+            return;
+        }
         this._super();
         if(this.withAPI && this.apiLogo && this.apiLogo.getContent().height > 1 && this.apiLogo.getContent().position.x === 0){
             // this.apiLogo.getContent().position.y = windowHeight - this.apiLogo.getContent().height;

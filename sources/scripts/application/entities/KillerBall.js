@@ -15,8 +15,8 @@ var KillerBall = Entity.extend({
 		this.power = 1;
 		this.defaultVelocity = 1;
 		this.behaviour = behaviour.clone();
-		this.imgSource = 'inimigo.png';
-		this.particleSource = 'inimigo_particula.png';
+		this.imgSource = 'barata.png';
+		this.particleSource = 'partEnemy.png';
 	},
 	startScaleTween: function(){
 		TweenLite.from(this.getContent().scale, 0.3, {x:0, y:0, ease:'easeOutBack'});
@@ -42,13 +42,23 @@ var KillerBall = Entity.extend({
 	},
 	update: function(){
 		this.range = this.sprite.height / 2.5;
+		var tempRot = 0;
+		if(this.behaviour.tempPosition){
+			tempRot = Math.atan2(this.behaviour.tempPosition.y, this.behaviour.tempPosition.x);
+		}else{
+			tempRot = Math.atan2(this.velocity.y, this.velocity.x);
+		}
+		// console.log(Math.atan2(this.behaviour.velocity.y, this.velocity.x), this.velocity);
+		this.getContent().rotation = -tempRot;//radiansToDegrees(Math.sin(this.velocity.x) + Math.sin(this.velocity.y)) + 90;
 		this._super();
+		
 		this.behaviour.update(this);
 		// if(this.velocity.x !== 0 || this.velocity.y !== 0){
 		this.updateableParticles();
 		// }
 	},
 	updateableParticles:function(){
+		// console.log(this.particlesCounter);
         this.particlesCounter --;
         if(this.particlesCounter <= 0)
         {
@@ -79,22 +89,22 @@ var KillerBall = Entity.extend({
             //     this.getPosition().y);
             // this.layer.addChild(particle);
 
-
+            // console.log('particle');
             //efeito 3
-            var particle = new Particles({x: 0, y:0}, 120, this.particleSource, Math.random() * 0.05);
-            particle.maxScale = this.getContent().scale.x;
+            var particle = new Particles({x: Math.random() * 4 - 2, y:Math.random() * 4 - 2}, 120, this.particleSource, Math.random() * 0.3 - 0.15);
+            particle.maxScale = this.getContent().scale.x / 2 + Math.random() * this.getContent().scale.x / 2;
             particle.maxInitScale = particle.maxScale;
 
-            // particle.growType = -1;
+            particle.growType = -1;
             particle.build();
-            particle.getContent().tint = 0xFF0000;
+            // particle.getContent().tint = 0xFF0000;
             particle.gravity = 0.0;
             particle.alphadecress = 0.08;
             particle.scaledecress = -0.04;
             particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
                 this.getPosition().y);
             this.layer.addChild(particle);
-            particle.getContent().parent.setChildIndex(particle.getContent() , 0);
+            // particle.getContent().parent.setChildIndex(particle.getContent() , 0);
         }
     },
 	preKill:function(){
@@ -102,11 +112,11 @@ var KillerBall = Entity.extend({
 			return;
 		}
 		for (var i = 5; i >= 0; i--) {
-			var particle = new Particles({x: Math.random() * 8 - 4, y:Math.random() * 8 - 4}, 120, this.particleSource, Math.random() * 0.05);
-			particle.maxScale = this.getContent().scale.x;
+			var particle = new Particles({x: Math.random() * 8 - 4, y:Math.random() * 8 - 4}, 120, this.particleSource, Math.random() * 0.1);
+			particle.maxScale = this.getContent().scale.x / 2;
             particle.maxInitScale = particle.maxScale;
 			particle.build();
-			particle.getContent().tint = 0xFF0000;
+			// particle.getContent().tint = 0xFF0000;
 			particle.gravity = 0.3 * Math.random();
 			particle.alphadecress = 0.04;
 			particle.scaledecress = -0.05;

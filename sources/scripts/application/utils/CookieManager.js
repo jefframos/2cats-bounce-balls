@@ -14,10 +14,10 @@ var CookieManager = Class.extend({
 	},
 
 	setSafeCookie: function (key, value) {
-		if(true){
+		if(!window.intel){
 			return this.setCookie(key, value);
 		}
-		intel.security.secureStorage.write(
+		window.intel.security.secureStorage.write(
 				function() {console.log('success');},
 				function(errorObj) {console.log('fail: code = ' + errorObj.code + ', message = ' + errorObj.message);},
 				{'id': key, 'data': value }
@@ -25,12 +25,12 @@ var CookieManager = Class.extend({
 	},
 
 	getSafeCookie: function (key, callback) {
-		if(true){
+		if(!window.intel){
 			return this.getCookie(key);
 		}
-		intel.security.secureStorage.read(
+		window.intel.security.secureStorage.read(
 				function(instanceID) {
-						intel.security.secureData.getData(
+						window.intel.security.secureData.getData(
 								function(data) {
 										callback(data);
 									},

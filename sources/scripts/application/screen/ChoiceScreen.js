@@ -52,8 +52,8 @@ var ChoiceScreen = AbstractScreen.extend({
             var shopItem = new ShopItem(this);
             shopItem.build(APP.appModel.playerModels[i]);
             this.scrollContainer.addChild(shopItem.getContent());
-            shopItem.getContent().position.y = i * (shopItem.getContent().height * 0.8) + marginTopBottom + 20;
             scaleConverter(shopItem.getContent().width, windowWidth, 0.6, shopItem.getContent());
+            shopItem.getContent().position.y = i * (shopItem.getContent().height) + marginTopBottom + 20;
             shopItem.getContent().position.x = windowWidth / 2 - shopItem.getContent().width / 2;
             this.shopList.push(shopItem);
         }

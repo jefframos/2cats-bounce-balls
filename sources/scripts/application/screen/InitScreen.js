@@ -35,8 +35,8 @@ var InitScreen = AbstractScreen.extend({
 	initApplication:function(){
 		var self = this;
 
-		this.bg = new SimpleSprite('bg1.jpg');
-		// this.container.addChild(this.bg.getContent());
+		this.bg = new SimpleSprite('dist/img/2.png');
+		this.container.addChild(this.bg.getContent());
 		scaleConverter(this.bg.getContent().width, windowWidth, 1.2, this.bg);
 		this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2;
 		this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2;
@@ -47,7 +47,7 @@ var InitScreen = AbstractScreen.extend({
 		this.brilhoBase.getContent().position.x = windowWidth / 2 - this.brilhoBase.getContent().width / 2;
 		this.brilhoBase.getContent().position.y = windowHeight / 2 - this.brilhoBase.getContent().height;
 		// this.brilhoBase.blendMode = PIXI.blendModes.OVERLAY;
-		this.brilhoBase.getContent().tint = 0xf2c10c;
+		// this.brilhoBase.getContent().tint = 0xf2c10c;
 		this.brilhoBase.getContent().alpha = 0;
 		
 
@@ -57,7 +57,7 @@ var InitScreen = AbstractScreen.extend({
 		this.brilhoMeio.getContent().position.x = windowWidth / 2;
 		this.brilhoMeio.getContent().position.y = windowHeight / 2;
 		// this.brilhoMeio.blendMode = PIXI.blendModes.OVERLAY;
-		this.brilhoMeio.getContent().tint = 0xf2c10c;
+		// this.brilhoMeio.getContent().tint = 0xf2c10c;
 		this.brilhoMeio.getContent().alpha = 0;
 		this.brilhoMeio.getContent().anchor.x = 0.5;
 		this.brilhoMeio.getContent().anchor.y = 0.5;
@@ -252,7 +252,7 @@ var InitScreen = AbstractScreen.extend({
 			tempEnemy.build();
 			tempEnemy.getContent().position.x = behaviour.position.x;
 			tempEnemy.getContent().position.y = behaviour.position.y;
-
+			scaleConverter(tempEnemy.getContent().height, windowHeight, 0.2, tempEnemy.getContent());
 			TweenLite.to(self.brilhoMeio.getContent(), 0.3, {alpha:0.3});
 
 			self.layer.addChild(tempEnemy);
@@ -262,7 +262,7 @@ var InitScreen = AbstractScreen.extend({
 			}
 			if(behaviour.killerBehaviour){
 				var tempEnemyKiller = null;
-				if(APP.seed.getNextFloat() < 0.5){
+				if(APP.seed.getNextFloat() < 10.5){
 					tempEnemyKiller = new KillerBall({x:0,y:0}, behaviour.killerBehaviour);
 				}else{
 					tempEnemyKiller = new Coin({x:0,y:0}, behaviour.killerBehaviour);
@@ -270,6 +270,9 @@ var InitScreen = AbstractScreen.extend({
 				tempEnemyKiller.build();
 				tempEnemyKiller.getContent().position.x = behaviour.killerBehaviour.position.x;
 				tempEnemyKiller.getContent().position.y = behaviour.killerBehaviour.position.y;
+
+				scaleConverter(tempEnemyKiller.getContent().height, windowHeight, 0.2, tempEnemyKiller.getContent());
+
 				self.layer.addChild(tempEnemyKiller);
 			}
 

@@ -9,7 +9,7 @@ var EndModal = Class.extend({
 		this.bg.beginFill(0xdb453c);
 		this.bg.drawRect(0,0,windowWidth, windowHeight);
 		this.bg.alpha = 0.8;
-		this.container.addChild(this.bg);
+		// this.container.addChild(this.bg);
 		this.container.addChild(this.boxContainer);
 
 		var self = this;
@@ -20,6 +20,7 @@ var EndModal = Class.extend({
 		this.backBox.drawRect(0,0,windowWidth, windowHeight);
 
         this.boxContainer.addChild(this.backBox);
+        this.backBox.alpha = 0;
 
 
 		this.gameOver = new PIXI.Text('GAME OVER', {font:'50px Vagron', fill:'#FFF'});
