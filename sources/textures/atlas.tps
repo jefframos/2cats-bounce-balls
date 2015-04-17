@@ -189,18 +189,9 @@
         <key>fileList</key>
         <array>
             <filename>normal/bg1.jpg</filename>
-            <filename>normal/UI_button_close_1.png</filename>
-            <filename>normal/UI_button_close_1_over.png</filename>
             <filename>normal/UI_button_facebook_1.png</filename>
-            <filename>normal/UI_button_help_1.png</filename>
-            <filename>normal/UI_button_help_1_over.png</filename>
-            <filename>normal/UI_button_pause_1.png</filename>
-            <filename>normal/UI_button_pause_1_over.png</filename>
-            <filename>normal/UI_button_play_1.png</filename>
-            <filename>normal/UI_button_play_1_over.png</filename>
             <filename>normal/UI_button_ranking_1.png</filename>
             <filename>normal/UI_button_twitter_1.png</filename>
-            <filename>normal/UI_modal_back_1.png</filename>
             <filename>fullscreen.png</filename>
             <filename>shadow.png</filename>
             <filename>ball.png</filename>
@@ -219,6 +210,10 @@
             <filename>inimigo.png</filename>
             <filename>inimigo_particula.png</filename>
             <filename>UI_button_default_1.png</filename>
+            <filename>UI_button_default_2.png</filename>
+            <filename>play1.png</filename>
+            <filename>barata.png</filename>
+            <filename>partEnemy.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
