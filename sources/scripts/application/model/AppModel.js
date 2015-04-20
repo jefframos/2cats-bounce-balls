@@ -77,7 +77,7 @@ var AppModel = Class.extend({
 
 		this.towelModels = [];
 		this.towelModels.push({
-			value:5,
+			value:0,
 			color: 0x00FF00,
 			imgSrc: 'dist/img/2.png',
 			thumb: 'fundot2.png',
@@ -85,7 +85,7 @@ var AppModel = Class.extend({
 			enabled: false
 		});
 		this.towelModels.push({
-			value:0,
+			value:5,
 			color: 0xFF453c,
 			imgSrc: 'dist/img/1.png',
 			thumb: 'fundot1.png',
