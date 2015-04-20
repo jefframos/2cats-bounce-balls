@@ -104,19 +104,19 @@ var EnemyBall = Entity.extend({
 		TweenLite.to(this.getContent(), 0.2, {alpha:0, onComplete:function(){
 			self.kill = true;
 		}});
-		// for (var i = 5; i >= 0; i--) {
-		// 	var particle = new Particles({x: Math.random() * 8 - 4, y:Math.random() * 8 - 4}, 120, this.particleSource, Math.random() * 0.05);
-		// 	particle.maxScale = this.getContent().scale.x;
-  //           particle.maxInitScale = particle.maxScale;
-		// 	particle.build();
-		// 	particle.getContent().tint = APP.appModel.currentPlayerModel.color;
-		// 	particle.gravity = 0.3 * Math.random();
-		// 	particle.alphadecress = 0.04;
-		// 	particle.scaledecress = -0.05;
-		// 	particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
-		// 		this.getPosition().y);
-		// 	this.layer.addChild(particle);
-		// }
+		for (var i = 6; i >= 0; i--) {
+			var particle = new Particles({x: Math.random() * 8 - 4, y:Math.random() * 8 - 4}, 120, this.particleSource, Math.random() * 0.05);
+			// particle.maxScale = this.getContent().scale.x;
+   //          particle.maxInitScale = particle.maxScale;
+			particle.build();
+			particle.getContent().tint = APP.appModel.currentPlayerModel.color;
+			// particle.gravity = 0.3 * Math.random();
+			particle.alphadecress = 0.02;
+			particle.scaledecress = -0.05;
+			particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
+				this.getPosition().y);
+			this.layer.addChild(particle);
+		}
 		this.collidable = false;
 		this.updateable = false;
 		

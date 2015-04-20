@@ -15,7 +15,8 @@ var KillerBall = Entity.extend({
 		this.power = 1;
 		this.defaultVelocity = 1;
 		this.behaviour = behaviour.clone();
-		this.imgSource = 'barata.png';
+		// this.imgSource = 'barata.png';
+		this.imgSource = 'inimigo.png';
 		this.particleSource = 'partEnemy.png';
 	},
 	startScaleTween: function(){

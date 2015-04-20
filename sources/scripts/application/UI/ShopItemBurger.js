@@ -1,5 +1,5 @@
 /*jshint undef:false */
-var ShopItem = Class.extend({
+var ShopItemBurger = Class.extend({
 	init:function(screen, type, arrayModels, arrayPlaced){
 		this.screen = screen;
 		this.type = type;
@@ -7,11 +7,12 @@ var ShopItem = Class.extend({
 		this.arrayPlaced = arrayPlaced;
 		this.container = new PIXI.DisplayObjectContainer();
 	},
-	build:function(model){
+	build:function(model, isBlock){
 		this.model = model;
+		this.isBlock = isBlock;
 		// console.log(model);
 
-		this.equippedBox = new PIXI.Graphics();
+        this.equippedBox = new PIXI.Graphics();
 		this.equippedBox.beginFill(0xFFFFFF);
 		this.equippedBox.drawRect(-10,-10,windowWidth/ 2.5+20, windowWidth/ 3.5+20);
 		this.equippedBox.alpha = 1;
@@ -25,27 +26,29 @@ var ShopItem = Class.extend({
 
 
         this.backShopItem = new PIXI.Graphics();
-        this.backShopItem.beginFill(this.model.color);
+        this.backShopItem.beginFill(0xdb453c);
         this.backShopItem.drawRect(0,0,this.backScroll.width, this.backScroll.height);
         this.backShopItem.alpha = 1;
         this.container.addChild(this.backShopItem);
 
-
-
+        this.pattern = new SimpleSprite(this.model.thumb);
+        scaleConverter(this.pattern.getContent().height, this.backScroll.height, 1, this.pattern.getContent());
+        this.container.addChild(this.pattern.getContent());
+        this.pattern.getContent().position.x = this.backScroll.width / 2 - this.pattern.getContent().width / 2;
+        this.pattern.getContent().position.y = this.backScroll.height / 2 - this.pattern.getContent().height / 2;
 		var self = this;
 
 		// alert(this.backShopItem.height);
 
-		this.equipped = new PIXI.Text(this.model.label, {align:'center',font:'20px Vagron', fill:'#FFF', wordWrap:true, wordWrapWidth:500});
-		// scaleConverter(this.equipped.width, this.backShopItem.width, 0.75, this.equipped);
+		this.equipped = new PIXI.Text('EQUIPPED', {align:'center',font:'40px Vagron', fill:'#ECBC0C', wordWrap:true, wordWrapWidth:500});
+		scaleConverter(this.equipped.width, this.backShopItem.width, 0.75, this.equipped);
 		this.equipped.position.x = this.backScroll.width / 2 - this.equipped.width/2;
-		this.equipped.position.y = this.backScroll.height / 2 - this.equipped.height/2;
-
-		this.valueLabel = new PIXI.Text(this.model.value+' BUY', {align:'center',font:'50px Vagron', fill:'#ECBC0C', wordWrap:true, wordWrapWidth:500});
+		this.equipped.position.y = this.backShopItem.height / 2 - this.equipped.height/2;
+		// this.equipped.position.y = 20;
+		this.valueLabel = new PIXI.Text(this.model.value+'\n HIGHSCORE', {align:'center',font:'30px Vagron', fill:'#ECBC0C', wordWrap:true, wordWrapWidth:500});
 		scaleConverter(this.valueLabel.width, this.backShopItem.width, 0.75, this.valueLabel);
 		this.valueLabel.position.x = this.backScroll.width / 2 - this.valueLabel.width/2;
-		this.valueLabel.position.y = this.backScroll.height / 2 - this.valueLabel.height/2;
-		// this.equipped.position.y = 20;
+		this.valueLabel.position.y = this.backShopItem.height / 2 - this.valueLabel.height/2;
 
 		this.equipButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
 		this.equipButton.build(this.backScroll.width, this.backScroll.height);
@@ -56,8 +59,8 @@ var ShopItem = Class.extend({
 			if(APP.scrolling){
 				return;
 			}
-			APP.appModel.currentPlayerModel = self.model;
-			var targetArray = self.screen.shopList;
+			APP.appModel.currentBurguerlModel = self.model;
+			var targetArray = self.screen.burgerList;
 			for (var i = targetArray.length - 1; i >= 0; i--) {
 				targetArray[i].updateStats();
 			}
@@ -70,28 +73,12 @@ var ShopItem = Class.extend({
         this.frontShopBlock.alpha = 1;
         this.container.addChild(this.frontShopBlock);
 
-
 		this.buyButton = new DefaultButton('UI_button_default_2.png', 'UI_button_default_2.png');
 		this.buyButton.build(this.backScroll.width, this.backScroll.height);
 		this.buyButton.getContent().alpha = 0;
 		this.buyButton.setPosition(0,0);//this.backBars.getContent().height - 20 - this.continueButton.height / 2 - 10);
-		this.buyButton.clickCallback = this.buyButton.mouseUpCallback = function(){
-			// alert(self.model.value);
-			if(self.model.value > APP.totalCoins || APP.scrolling){
-				return;
-			}
-			APP.totalCoins -= self.model.value;
-			self.screen.updateCoins();
-			APP.appModel.currentPlayerModel = self.model;
-			APP.appModel.currentPlayerModel.enabled = true;
-			APP.appModel.saveScore();
-			var targetArray = self.screen.shopList;
-			for (var i = targetArray.length - 1; i >= 0; i--) {
-				targetArray[i].updateStats();
-			}
-			self.updateStats();
-		};
-
+		// this.buyButton.clickCallback = this.buyButton.mouseUpCallback = function(){
+		// };
 
 		// this.updateStats();
 
@@ -99,7 +86,7 @@ var ShopItem = Class.extend({
 	},
 	updateStats:function(){
 		
-		console.log('updateStats');
+		
 		if(this.equipped && this.equipped.parent){
 			this.equipped.parent.removeChild(this.equipped);
 		}
@@ -121,17 +108,15 @@ var ShopItem = Class.extend({
 
 		var isEquiped = false;
 
-		if(APP.appModel.currentPlayerModel.id === this.model.id){
-			this.container.addChild(this.equipped);
+		if(APP.appModel.currentBurguerlModel.id === this.model.id){
 			this.container.addChild(this.equippedBox);
 			this.container.setChildIndex(this.equippedBox, 0);
+			// this.container.addChild(this.equipped);
 			isEquiped = true;
 		}
 		
 		if(!isEquiped && this.model.enabled){
-			this.container.addChild(this.equipped);
 			this.container.addChild(this.equipButton.getContent());
-
 		}else if(!this.model.enabled){
 			this.container.addChild(this.frontShopBlock);
 			this.container.addChild(this.buyButton.getContent());

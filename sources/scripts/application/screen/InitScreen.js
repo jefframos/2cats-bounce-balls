@@ -35,7 +35,7 @@ var InitScreen = AbstractScreen.extend({
 	initApplication:function(){
 		var self = this;
 
-		this.bg = new SimpleSprite('dist/img/2.png');
+		this.bg = new SimpleSprite(APP.appModel.currentTowelModel.imgSrc);
 		this.container.addChild(this.bg.getContent());
 		scaleConverter(this.bg.getContent().width, windowWidth, 1.2, this.bg);
 		this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2;
@@ -62,11 +62,29 @@ var InitScreen = AbstractScreen.extend({
 		this.brilhoMeio.getContent().anchor.x = 0.5;
 		this.brilhoMeio.getContent().anchor.y = 0.5;
 		
-		this.playButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+
+		this.rotuloContainer = new PIXI.DisplayObjectContainer();
+		this.container.addChild(this.rotuloContainer);
+
+		this.rotuloImg = new SimpleSprite('TITLE_rotulo.png');
+		this.rotuloContainer.addChild(this.rotuloImg.getContent());
+
+		this.logoGame = new SimpleSprite('TITLE.png');
+		this.rotuloContainer.addChild(this.logoGame.getContent());
+		this.logoGame.getContent().position.x = 10;
+		this.logoGame.getContent().position.y = 80;
+
+		// scaleConverter(this.rotuloImg.getContent().width, windowWidth, 1, this.rotuloImg);
+		this.rotuloContainer.position.x = windowWidth / 2 - this.rotuloContainer.width / 2;
+		this.rotuloContainer.position.y = windowHeight / 2 - this.rotuloContainer.height / 2;
+		// this.rotuloImg.blendMode = PIXI.blendModes.OVERLAY;
+		// this.rotuloImg.getContent().tint = 0xf2c10c;
+		// this.rotuloImg.getContent().alpha = 0;
+
+		this.playButton = new DefaultButton('botao_play.png', 'botao_play.png');
 		this.playButton.build();
-		this.playButton.addLabel(new PIXI.Text('PLAY', {font:'30px Vagron', fill:'#db453c'}), 45,2);
-		scaleConverter(this.playButton.getContent().width, windowWidth, 0.4, this.playButton);
-		this.addChild(this.playButton);
+		// scaleConverter(this.playButton.getContent().width, windowWidth, 0.4, this.playButton);
+		this.rotuloContainer.addChild(this.playButton.getContent());
 	  
 		this.playButton.clickCallback = function(){
 			if(testMobile() && possibleFullscreen()){
@@ -75,11 +93,11 @@ var InitScreen = AbstractScreen.extend({
 			self.startGame();
 		};
 
-		this.shopButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+		this.shopButton = new DefaultButton('botao_config.png', 'botao_config.png');
 		this.shopButton.build();
-		this.shopButton.addLabel(new PIXI.Text('SHOP', {font:'30px Vagron', fill:'#db453c'}), 45,2);
-		scaleConverter(this.shopButton.getContent().width, windowWidth, 0.4, this.shopButton);
-		this.addChild(this.shopButton);
+		// this.shopButton.addLabel(new PIXI.Text('SHOP', {font:'30px Vagron', fill:'#db453c'}), 45,2);
+		// scaleConverter(this.shopButton.getContent().width, windowWidth, 0.4, this.shopButton);
+		this.rotuloContainer.addChild(this.shopButton.getContent());
 	  
 		this.shopButton.clickCallback = function(){
 			if(testMobile() && possibleFullscreen()){
@@ -88,11 +106,10 @@ var InitScreen = AbstractScreen.extend({
 			self.screenManager.change('Choice');
 		};
 
-		this.rankingButton = new DefaultButton('UI_button_default_1.png', 'UI_button_default_1.png');
+		this.rankingButton = new DefaultButton('botao_rankin.png', 'botao_rankin.png');
 		this.rankingButton.build();
-		this.rankingButton.addLabel(new PIXI.Text('RANK', {font:'30px Vagron', fill:'#db453c'}), 45,2);
-		scaleConverter(this.rankingButton.getContent().width, windowWidth, 0.4, this.rankingButton);
-		this.addChild(this.rankingButton);
+		// scaleConverter(this.rankingButton.getContent().width, windowWidth, 0.4, this.rankingButton);
+		this.rotuloContainer.addChild(this.rankingButton.getContent());
 	  
 		this.rankingButton.clickCallback = function(){
 			if(testMobile() && possibleFullscreen()){
@@ -101,13 +118,24 @@ var InitScreen = AbstractScreen.extend({
 			self.screenManager.change('Choice');
 		};
 
+
+		this.playButton.setPosition(this.rotuloContainer.width / 2 - this.playButton.getContent().width/2,
+			420);
+
+		this.shopButton.setPosition(this.rotuloContainer.width / 2 + this.shopButton.getContent().width/2 + 50,
+			this.playButton.getContent().position.y + this.playButton.getContent().height + 10);
+
+		this.rankingButton.setPosition(this.rotuloContainer.width / 2 - this.rankingButton.getContent().width*1.5 - 50,
+			this.playButton.getContent().position.y + this.playButton.getContent().height + 10);
+
+
         this.tuboContent = new SimpleSprite('conteudo.png');
         this.addChild(this.tuboContent.getContent());
         this.tuboContent.getContent().anchor.x = 0.5;
         this.tuboContent.getContent().anchor.y = 1;
         // scaleConverter(this.tuboContent.getContent().width, windowWidth, 1.2, this.tuboContent);
         this.tuboContent.getContent().position.x = windowWidth / 2;
-        this.tuboContent.getContent().position.y = windowHeight;
+        this.tuboContent.getContent().position.y = windowHeight + this.tuboContent.getContent().height;
 
 		this.tubo = new SimpleSprite('tubo.png');
         this.addChild(this.tubo.getContent());
@@ -115,7 +143,7 @@ var InitScreen = AbstractScreen.extend({
         this.tubo.getContent().anchor.y = 1;
         // scaleConverter(this.tubo.getContent().width, windowWidth, 1.2, this.tubo);
         this.tubo.getContent().position.x = windowWidth / 2;
-        this.tubo.getContent().position.y = windowHeight;
+        this.tubo.getContent().position.y = windowHeight + this.tubo.getContent().height;
 
         this.tuboContent.getContent().tint = APP.appModel.currentPlayerModel.color;
 
@@ -176,7 +204,6 @@ var InitScreen = AbstractScreen.extend({
 		scaleConverter(this.coinsLabel.height, windowHeight, 0.06, this.coinsLabel);
 		this.addChild(this.coinsLabel);
 		this.coinsLabel.position.y = -500;
-		this.updateCoins();
 
 		this.endModal = new EndModal(this);
 		// this.endModal.show();
@@ -262,7 +289,9 @@ var InitScreen = AbstractScreen.extend({
 			}
 			if(behaviour.killerBehaviour){
 				var tempEnemyKiller = null;
-				if(APP.seed.getNextFloat() < 10.5){
+				var hasEnemy = false;
+				if(APP.seed.getNextFloat() < 0.5){
+					hasEnemy = true;
 					tempEnemyKiller = new KillerBall({x:0,y:0}, behaviour.killerBehaviour);
 				}else{
 					tempEnemyKiller = new Coin({x:0,y:0}, behaviour.killerBehaviour);
@@ -271,7 +300,7 @@ var InitScreen = AbstractScreen.extend({
 				tempEnemyKiller.getContent().position.x = behaviour.killerBehaviour.position.x;
 				tempEnemyKiller.getContent().position.y = behaviour.killerBehaviour.position.y;
 
-				scaleConverter(tempEnemyKiller.getContent().height, windowHeight, 0.2, tempEnemyKiller.getContent());
+				scaleConverter(tempEnemyKiller.getContent().height, windowHeight, hasEnemy?0.1:0.2, tempEnemyKiller.getContent());
 
 				self.layer.addChild(tempEnemyKiller);
 			}
@@ -284,6 +313,10 @@ var InitScreen = AbstractScreen.extend({
 		APP.currentPoints = 0;
 		this.currentHorde = 0;
 		APP.accelGame = 1;
+
+		TweenLite.to(this.tubo.getContent().position, 0.5, {y:windowHeight});
+		TweenLite.to(this.tuboContent.getContent().position, 0.5, {y:windowHeight});
+
 		APP.seed.applySeed();
 		this.updateLabel();
 		this.updateCoins();
@@ -306,6 +339,8 @@ var InitScreen = AbstractScreen.extend({
 		this.removeChild(this.hitTouch);
 		this.pointsLabel.position.y = -500;
 		this.coinsLabel.position.y = -500;
+		TweenLite.to(this.tubo.getContent().position, 0.5, {y:windowHeight + this.tubo.getContent().height});
+		TweenLite.to(this.tuboContent.getContent().position, 0.5, {y:windowHeight + this.tuboContent.getContent().height});
 		for (var i = this.layer.childs.length - 1; i >= 0; i--) {
 			this.layer.childs[i].preKill();
 		}
@@ -349,24 +384,24 @@ var InitScreen = AbstractScreen.extend({
 		// if(this.moreGames){
 		// 	TweenLite.to(this.moreGames.getContent(), 0.5, {delay:0.4, y:windowHeight, ease:'easeOutBack'});
 		// }
-		TweenLite.to(this.rankingButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack'});
-		TweenLite.to(this.shopButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack'});
-		TweenLite.to(this.playButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack', onComplete:function(){
-			if(callback){
-				callback();
+		var self = this;
+		TweenLite.to(this.rotuloContainer, 0.2, {y:-this.rotuloContainer.height, onComplete:function(){
+			if(self.rotuloContainer.parent)
+			{
+				self.rotuloContainer.parent.removeChild(self.rotuloContainer);
 			}
 		}});
+		// TweenLite.to(this.rankingButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack'});
+		// TweenLite.to(this.shopButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack'});
+		// TweenLite.to(this.playButton.getContent(), 0.2, {y:windowHeight, ease:'easeOutBack', onComplete:function(){
+		// 	if(callback){
+		// 		callback();
+		// 	}
+		// }});
 	},
 	fromTween:function(callback){
 
-		this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width/2,
-			windowHeight / 2);
-
-		this.shopButton.setPosition(windowWidth / 2 - this.shopButton.getContent().width/2,
-			this.playButton.getContent().position.y + this.playButton.getContent().height + 10);
-
-		this.rankingButton.setPosition(windowWidth / 2 - this.rankingButton.getContent().width/2,
-			this.shopButton.getContent().position.y + this.shopButton.getContent().height + 10);
+		
 		// TweenLite.from(this.bg.getContent(), 0.5, {alpha:0, ease:'easeOutCubic'});
 		// TweenLite.from(this.logo.getContent(), 0.5, {delay:0.1, alpha:0});
 	   

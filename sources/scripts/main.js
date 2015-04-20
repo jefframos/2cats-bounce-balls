@@ -13,7 +13,7 @@ var windowHeight = res.y;
 var realWindowWidth = res.x;
 var realWindowHeight = res.y;
 
-var gameScale = 2;
+var gameScale = 1.3;
 
 var screenOrientation = 'portait';
 
@@ -37,7 +37,7 @@ var init = false;
 var renderer;
 var APP;
 
-var retina = 2;//window.devicePixelRatio >= 2 ? 2 : 1;
+var retina = 1;//window.devicePixelRatio >= 2 ? 2 : 1;
 
 function isPortait(){
 	return window.innerHeight > window.innerWidth;

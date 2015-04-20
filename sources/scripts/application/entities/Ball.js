@@ -18,7 +18,7 @@ var Ball = Entity.extend({
 		this.defaultVelocity = 1;
 		
 		this.imgSource = 'tiro1.png';
-		this.particleSource = 'bullet.png';
+		this.particleSource = 'bullet.png';//APP.appModel.currentBurguerlModel.imgSrc;
 		// this.defaultVelocity.y = vel.y;
 		//console.log(bulletSource);
 	},
@@ -191,16 +191,17 @@ var Ball = Entity.extend({
 		}
 		this.collidable = false;
 		this.kill = true;
-		// for (var i = 1; i >= 0; i--) {
-		// 	var particle = new Particles({x: Math.random() * 4, y:-(Math.random() * 2 + 1)}, 120, this.particleSource, Math.random() * 0.05);
-		// 	particle.build();
-		// 	particle.gravity = 0.1 * Math.random() + 0.2;
-		// 	particle.alphadecres = 0.1;
-		// 	particle.getContent().tint = APP.appModel.currentPlayerModel.color;
-		// 	particle.scaledecress = 0.02;
-		// 	particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
-		// 		this.getPosition().y);
-		// 	this.layer.addChild(particle);
-		// }
+		for (var i = 8; i >= 0; i--) {
+			console.log('coll');
+			var particle = new Particles({x: Math.random() * 4, y:-(Math.random() * 2 + 1)}, 120, this.particleSource, Math.random() * 0.05);
+			particle.build();
+			// particle.gravity = 0.1 * Math.random() + 0.2;
+			particle.alphadecres = 0.1;
+			particle.getContent().tint = APP.appModel.currentPlayerModel.color;
+			particle.scaledecress = 0.02;
+			particle.setPosition(this.getPosition().x - (Math.random() + this.getContent().width * 0.1) / 2,
+				this.getPosition().y);
+			this.layer.addChild(particle);
+		}
 	},
 });

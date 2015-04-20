@@ -4,9 +4,9 @@ var DefaultButton = Class.extend({
 		if(!imgDown)
 			imgDown = imgOver;
 		this.container = new PIXI.DisplayObjectContainer();
-		this.textureButton = PIXI.Texture.fromImage(imgUp);
-		this.textureButtonDown = PIXI.Texture.fromImage(imgDown);
-		this.textureButtonOver = PIXI.Texture.fromImage(imgOver);
+		this.textureButton = imgUp  instanceof PIXI.Graphics ? imgUp : PIXI.Texture.fromImage(imgUp);
+		this.textureButtonDown = imgDown  instanceof PIXI.Graphics ? imgDown :  PIXI.Texture.fromImage(imgDown);
+		this.textureButtonOver = imgOver  instanceof PIXI.Graphics ? imgOver :  PIXI.Texture.fromImage(imgOver);
 		this.shapeButton = new PIXI.Sprite(this.textureButton);
 		this.isOver = false;
 		this.isdown = false;

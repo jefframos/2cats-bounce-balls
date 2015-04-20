@@ -1,4 +1,4 @@
-/*! jefframos 17-04-2015 */
+/*! jefframos 20-04-2015 */
 function rgbToHsl(r, g, b) {
     r /= 255, g /= 255, b /= 255;
     var h, s, max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
@@ -529,50 +529,196 @@ var Application = AbstractApplication.extend({
         this.container = new PIXI.DisplayObjectContainer();
     },
     build: function(model) {
-        this.model = model, this.backScroll = new PIXI.Graphics(), this.backScroll.beginFill(14370108), 
-        this.backScroll.drawRect(0, 0, windowWidth, 120), this.backScroll.alpha = .2, this.container.addChild(this.backScroll), 
-        this.backShopItem = new PIXI.Graphics(), this.backShopItem.beginFill(this.model.color), 
-        this.backShopItem.drawRect(20, 20, 80, 80), this.backShopItem.alpha = 1, this.container.addChild(this.backShopItem);
+        this.model = model, this.equippedBox = new PIXI.Graphics(), this.equippedBox.beginFill(16777215), 
+        this.equippedBox.drawRect(-10, -10, windowWidth / 2.5 + 20, windowWidth / 3.5 + 20), 
+        this.equippedBox.alpha = 1, this.backScroll = new PIXI.Graphics(), this.backScroll.beginFill(14370108), 
+        this.backScroll.drawRect(0, 0, windowWidth / 2.5, windowWidth / 3.5), this.backScroll.alpha = .2, 
+        this.container.addChild(this.backScroll), this.backShopItem = new PIXI.Graphics(), 
+        this.backShopItem.beginFill(this.model.color), this.backShopItem.drawRect(0, 0, this.backScroll.width, this.backScroll.height), 
+        this.backShopItem.alpha = 1, this.container.addChild(this.backShopItem);
         var self = this;
-        this.equipped = new PIXI.Text("EQUIPPED", {
+        this.equipped = new PIXI.Text(this.model.label, {
             align: "center",
-            font: "50px Vagron",
-            fill: "#db453c",
+            font: "20px Vagron",
+            fill: "#FFF",
             wordWrap: !0,
             wordWrapWidth: 500
-        }), scaleConverter(this.equipped.height, this.backShopItem.height, .4, this.equipped), 
-        this.equipped.position.x = this.backScroll.width - this.equipped.width - .1 * this.backShopItem.height, 
-        this.equipped.position.y = this.backShopItem.height - this.equipped.height + this.backShopItem.position.y, 
+        }), this.equipped.position.x = this.backScroll.width / 2 - this.equipped.width / 2, 
+        this.equipped.position.y = this.backScroll.height / 2 - this.equipped.height / 2, 
+        this.valueLabel = new PIXI.Text(this.model.value + " BUY", {
+            align: "center",
+            font: "50px Vagron",
+            fill: "#ECBC0C",
+            wordWrap: !0,
+            wordWrapWidth: 500
+        }), scaleConverter(this.valueLabel.width, this.backShopItem.width, .75, this.valueLabel), 
+        this.valueLabel.position.x = this.backScroll.width / 2 - this.valueLabel.width / 2, 
+        this.valueLabel.position.y = this.backScroll.height / 2 - this.valueLabel.height / 2, 
         this.equipButton = new DefaultButton("UI_button_default_1.png", "UI_button_default_1.png"), 
-        this.equipButton.build(), this.equipButton.addLabel(new PIXI.Text("EQUIP", {
-            font: "30px Vagron",
-            fill: "#db453c"
-        }), 33, 5), this.equipButton.setPosition(this.backScroll.width - this.equipButton.getContent().width - .1 * this.backShopItem.height, this.backShopItem.height - this.equipButton.getContent().height + this.backShopItem.position.y), 
-        this.equipButton.clickCallback = this.equipButton.mouseDownCallback = function() {
-            APP.appModel.currentPlayerModel = self.model;
-            for (var targetArray = self.screen.shopList, i = targetArray.length - 1; i >= 0; i--) targetArray[i].updateStats();
-            self.updateStats();
-        }, this.buyButton = new DefaultButton("UI_button_default_2.png", "UI_button_default_2.png"), 
-        this.buyButton.build(), this.buyButton.addLabel(new PIXI.Text(this.model.value + " BUY", {
-            font: "30px Vagron",
-            fill: "#ECBC0C"
-        }), 33, 10), this.buyButton.setPosition(this.backScroll.width - this.buyButton.getContent().width - .1 * this.backShopItem.height, this.backShopItem.height - this.buyButton.getContent().height + this.backShopItem.position.y), 
-        this.buyButton.clickCallback = this.buyButton.mouseDownCallback = function() {
-            if (!(self.model.value > APP.totalCoins)) {
+        this.equipButton.build(this.backScroll.width, this.backScroll.height), this.equipButton.getContent().alpha = 0, 
+        this.equipButton.setPosition(this.backScroll.width / 2 - this.equipButton.getContent().width / 2, this.backShopItem.height / 2 - this.equipButton.getContent().height / 2), 
+        this.equipButton.clickCallback = this.equipButton.mouseUpCallback = function() {
+            if (!APP.scrolling) {
+                APP.appModel.currentPlayerModel = self.model;
+                for (var targetArray = self.screen.shopList, i = targetArray.length - 1; i >= 0; i--) targetArray[i].updateStats();
+                self.updateStats();
+            }
+        }, this.frontShopBlock = new PIXI.Graphics(), this.frontShopBlock.beginFill(14370108), 
+        this.frontShopBlock.drawRect(0, 0, this.backScroll.width, this.backScroll.height), 
+        this.frontShopBlock.alpha = 1, this.container.addChild(this.frontShopBlock), this.buyButton = new DefaultButton("UI_button_default_2.png", "UI_button_default_2.png"), 
+        this.buyButton.build(this.backScroll.width, this.backScroll.height), this.buyButton.getContent().alpha = 0, 
+        this.buyButton.setPosition(0, 0), this.buyButton.clickCallback = this.buyButton.mouseUpCallback = function() {
+            if (!(self.model.value > APP.totalCoins || APP.scrolling)) {
                 APP.totalCoins -= self.model.value, self.screen.updateCoins(), APP.appModel.currentPlayerModel = self.model, 
                 APP.appModel.currentPlayerModel.enabled = !0, APP.appModel.saveScore();
                 for (var targetArray = self.screen.shopList, i = targetArray.length - 1; i >= 0; i--) targetArray[i].updateStats();
                 self.updateStats();
             }
-        }, this.updateStats();
+        };
+    },
+    updateStats: function() {
+        console.log("updateStats"), this.equipped && this.equipped.parent && this.equipped.parent.removeChild(this.equipped), 
+        this.equipButton.getContent() && this.equipButton.getContent().parent && this.equipButton.getContent().parent.removeChild(this.equipButton.getContent()), 
+        this.equippedBox && this.equippedBox.parent && this.equippedBox.parent.removeChild(this.equippedBox), 
+        this.buyButton.getContent() && this.buyButton.getContent().parent && this.buyButton.getContent().parent.removeChild(this.buyButton.getContent()), 
+        this.frontShopBlock && this.frontShopBlock.parent && this.frontShopBlock.parent.removeChild(this.frontShopBlock), 
+        this.valueLabel && this.valueLabel.parent && this.valueLabel.parent.removeChild(this.valueLabel);
+        var isEquiped = !1;
+        APP.appModel.currentPlayerModel.id === this.model.id && (this.container.addChild(this.equipped), 
+        this.container.addChild(this.equippedBox), this.container.setChildIndex(this.equippedBox, 0), 
+        isEquiped = !0), !isEquiped && this.model.enabled ? (this.container.addChild(this.equipped), 
+        this.container.addChild(this.equipButton.getContent())) : this.model.enabled || (this.container.addChild(this.frontShopBlock), 
+        this.container.addChild(this.buyButton.getContent()), this.container.addChild(this.valueLabel));
+    },
+    getContent: function() {
+        return this.container;
+    }
+}), ShopItemBurger = Class.extend({
+    init: function(screen, type, arrayModels, arrayPlaced) {
+        this.screen = screen, this.type = type, this.arrayModels = arrayModels, this.arrayPlaced = arrayPlaced, 
+        this.container = new PIXI.DisplayObjectContainer();
+    },
+    build: function(model, isBlock) {
+        this.model = model, this.isBlock = isBlock, this.equippedBox = new PIXI.Graphics(), 
+        this.equippedBox.beginFill(16777215), this.equippedBox.drawRect(-10, -10, windowWidth / 2.5 + 20, windowWidth / 3.5 + 20), 
+        this.equippedBox.alpha = 1, this.backScroll = new PIXI.Graphics(), this.backScroll.beginFill(14370108), 
+        this.backScroll.drawRect(0, 0, windowWidth / 2.5, windowWidth / 3.5), this.backScroll.alpha = .2, 
+        this.container.addChild(this.backScroll), this.backShopItem = new PIXI.Graphics(), 
+        this.backShopItem.beginFill(14370108), this.backShopItem.drawRect(0, 0, this.backScroll.width, this.backScroll.height), 
+        this.backShopItem.alpha = 1, this.container.addChild(this.backShopItem), this.pattern = new SimpleSprite(this.model.thumb), 
+        scaleConverter(this.pattern.getContent().height, this.backScroll.height, 1, this.pattern.getContent()), 
+        this.container.addChild(this.pattern.getContent()), this.pattern.getContent().position.x = this.backScroll.width / 2 - this.pattern.getContent().width / 2, 
+        this.pattern.getContent().position.y = this.backScroll.height / 2 - this.pattern.getContent().height / 2;
+        var self = this;
+        this.equipped = new PIXI.Text("EQUIPPED", {
+            align: "center",
+            font: "40px Vagron",
+            fill: "#ECBC0C",
+            wordWrap: !0,
+            wordWrapWidth: 500
+        }), scaleConverter(this.equipped.width, this.backShopItem.width, .75, this.equipped), 
+        this.equipped.position.x = this.backScroll.width / 2 - this.equipped.width / 2, 
+        this.equipped.position.y = this.backShopItem.height / 2 - this.equipped.height / 2, 
+        this.valueLabel = new PIXI.Text(this.model.value + "\n HIGHSCORE", {
+            align: "center",
+            font: "30px Vagron",
+            fill: "#ECBC0C",
+            wordWrap: !0,
+            wordWrapWidth: 500
+        }), scaleConverter(this.valueLabel.width, this.backShopItem.width, .75, this.valueLabel), 
+        this.valueLabel.position.x = this.backScroll.width / 2 - this.valueLabel.width / 2, 
+        this.valueLabel.position.y = this.backShopItem.height / 2 - this.valueLabel.height / 2, 
+        this.equipButton = new DefaultButton("UI_button_default_1.png", "UI_button_default_1.png"), 
+        this.equipButton.build(this.backScroll.width, this.backScroll.height), this.equipButton.getContent().alpha = 0, 
+        this.equipButton.setPosition(this.backScroll.width / 2 - this.equipButton.getContent().width / 2, this.backShopItem.height / 2 - this.equipButton.getContent().height / 2), 
+        this.equipButton.clickCallback = this.equipButton.mouseUpCallback = function() {
+            if (!APP.scrolling) {
+                APP.appModel.currentBurguerlModel = self.model;
+                for (var targetArray = self.screen.burgerList, i = targetArray.length - 1; i >= 0; i--) targetArray[i].updateStats();
+                self.updateStats();
+            }
+        }, this.frontShopBlock = new PIXI.Graphics(), this.frontShopBlock.beginFill(14370108), 
+        this.frontShopBlock.drawRect(0, 0, this.backScroll.width, this.backScroll.height), 
+        this.frontShopBlock.alpha = 1, this.container.addChild(this.frontShopBlock), this.buyButton = new DefaultButton("UI_button_default_2.png", "UI_button_default_2.png"), 
+        this.buyButton.build(this.backScroll.width, this.backScroll.height), this.buyButton.getContent().alpha = 0, 
+        this.buyButton.setPosition(0, 0);
     },
     updateStats: function() {
         this.equipped && this.equipped.parent && this.equipped.parent.removeChild(this.equipped), 
         this.equipButton.getContent() && this.equipButton.getContent().parent && this.equipButton.getContent().parent.removeChild(this.equipButton.getContent()), 
-        this.buyButton.getContent() && this.buyButton.getContent().parent && this.buyButton.getContent().parent.removeChild(this.buyButton.getContent());
+        this.equippedBox && this.equippedBox.parent && this.equippedBox.parent.removeChild(this.equippedBox), 
+        this.buyButton.getContent() && this.buyButton.getContent().parent && this.buyButton.getContent().parent.removeChild(this.buyButton.getContent()), 
+        this.frontShopBlock && this.frontShopBlock.parent && this.frontShopBlock.parent.removeChild(this.frontShopBlock), 
+        this.valueLabel && this.valueLabel.parent && this.valueLabel.parent.removeChild(this.valueLabel);
         var isEquiped = !1;
-        APP.appModel.currentPlayerModel.id === this.model.id && (this.container.addChild(this.equipped), 
-        isEquiped = !0), !isEquiped && this.model.enabled ? this.container.addChild(this.equipButton.getContent()) : this.model.enabled || this.container.addChild(this.buyButton.getContent());
+        APP.appModel.currentBurguerlModel.id === this.model.id && (this.container.addChild(this.equippedBox), 
+        this.container.setChildIndex(this.equippedBox, 0), isEquiped = !0), !isEquiped && this.model.enabled ? this.container.addChild(this.equipButton.getContent()) : this.model.enabled || (this.container.addChild(this.frontShopBlock), 
+        this.container.addChild(this.buyButton.getContent()), this.container.addChild(this.valueLabel));
+    },
+    getContent: function() {
+        return this.container;
+    }
+}), ShopItemTowel = Class.extend({
+    init: function(screen, type, arrayModels, arrayPlaced) {
+        this.screen = screen, this.type = type, this.arrayModels = arrayModels, this.arrayPlaced = arrayPlaced, 
+        this.container = new PIXI.DisplayObjectContainer();
+    },
+    build: function(model, isBlock) {
+        this.model = model, this.isBlock = isBlock, this.equippedBox = new PIXI.Graphics(), 
+        this.equippedBox.beginFill(16777215), this.equippedBox.drawRect(-10, -10, windowWidth / 2.5 + 20, windowWidth / 3.5 + 20), 
+        this.equippedBox.alpha = 1, this.backScroll = new PIXI.Graphics(), this.backScroll.beginFill(14370108), 
+        this.backScroll.drawRect(0, 0, windowWidth / 2.5, windowWidth / 3.5), this.backScroll.alpha = .2, 
+        this.container.addChild(this.backScroll), this.backShopItem = new PIXI.Graphics(), 
+        this.backShopItem.beginFill(this.model.color), this.backShopItem.drawRect(0, 0, this.backScroll.width, this.backScroll.height), 
+        this.backShopItem.alpha = 0, this.container.addChild(this.backShopItem);
+        var self = this;
+        this.equipped = new PIXI.Text("EQUIPPED", {
+            align: "center",
+            font: "40px Vagron",
+            fill: "#db453c",
+            wordWrap: !0,
+            wordWrapWidth: 500
+        }), scaleConverter(this.equipped.width, this.backShopItem.width, .75, this.equipped), 
+        this.equipped.position.x = this.backScroll.width / 2 - this.equipped.width / 2, 
+        this.equipped.position.y = this.backScroll.height / 2 - this.equipped.height / 2, 
+        this.valueLabel = new PIXI.Text(this.model.value + "\nPLAYS", {
+            align: "center",
+            font: "50px Vagron",
+            fill: "#ECBC0C",
+            wordWrap: !0,
+            wordWrapWidth: 500
+        }), scaleConverter(this.valueLabel.width, this.backShopItem.width, .5, this.valueLabel), 
+        this.valueLabel.position.x = this.backScroll.width / 2 - this.valueLabel.width / 2, 
+        this.valueLabel.position.y = this.backShopItem.height / 2 - this.valueLabel.height / 2, 
+        this.equipButton = new DefaultButton("UI_button_default_1.png", "UI_button_default_1.png"), 
+        this.equipButton.build(this.backScroll.width, this.backScroll.height), this.equipButton.getContent().alpha = 0, 
+        this.equipButton.setPosition(this.backScroll.width / 2 - this.equipButton.getContent().width / 2, 0), 
+        this.equipButton.clickCallback = this.equipButton.mouseUpCallback = function() {
+            if (!APP.scrolling) {
+                APP.appModel.currentTowelModel = self.model;
+                for (var targetArray = self.screen.towelList, i = targetArray.length - 1; i >= 0; i--) targetArray[i].updateStats();
+                self.updateStats();
+            }
+        }, this.frontShopBlock = new PIXI.Graphics(), this.frontShopBlock.beginFill(14370108), 
+        this.frontShopBlock.drawRect(0, 0, this.backScroll.width, this.backScroll.height), 
+        this.frontShopBlock.alpha = 1, this.container.addChild(this.frontShopBlock), this.buyButton = new DefaultButton("UI_button_default_2.png", "UI_button_default_2.png"), 
+        this.buyButton.build(this.backScroll.width, this.backScroll.height), this.buyButton.getContent().alpha = 0, 
+        this.buyButton.setPosition(0, 0);
+    },
+    updateStats: function() {
+        this.pattern || (this.pattern = new SimpleSprite(this.model.thumb), this.maskk = new PIXI.Graphics(), 
+        this.maskk.beginFill(this.model.color), this.maskk.drawRect(0, 0, this.backScroll.width, this.backScroll.height), 
+        this.maskk.alpha = 1, this.container.addChild(this.maskk), this.pattern.getContent().mask = this.maskk, 
+        this.container.addChild(this.pattern.getContent())), this.equipped && this.equipped.parent && this.equipped.parent.removeChild(this.equipped), 
+        this.equippedBox && this.equippedBox.parent && this.equippedBox.parent.removeChild(this.equippedBox), 
+        this.equipButton.getContent() && this.equipButton.getContent().parent && this.equipButton.getContent().parent.removeChild(this.equipButton.getContent()), 
+        this.buyButton.getContent() && this.buyButton.getContent().parent && this.buyButton.getContent().parent.removeChild(this.buyButton.getContent()), 
+        this.frontShopBlock && this.frontShopBlock.parent && this.frontShopBlock.parent.removeChild(this.frontShopBlock), 
+        this.valueLabel && this.valueLabel.parent && this.valueLabel.parent.removeChild(this.valueLabel);
+        var isEquiped = !1;
+        APP.appModel.currentTowelModel.id === this.model.id && (this.container.addChild(this.equippedBox), 
+        this.container.setChildIndex(this.equippedBox, 0), isEquiped = !0), !isEquiped && this.model.enabled ? this.container.addChild(this.equipButton.getContent()) : this.model.enabled || (this.container.addChild(this.frontShopBlock), 
+        this.container.addChild(this.buyButton.getContent()), this.container.addChild(this.valueLabel));
     },
     getContent: function() {
         return this.container;
@@ -670,7 +816,19 @@ var Application = AbstractApplication.extend({
         }
     },
     preKill: function() {
-        this.invencible || (this.collidable = !1, this.kill = !0);
+        if (!this.invencible) {
+            this.collidable = !1, this.kill = !0;
+            for (var i = 8; i >= 0; i--) {
+                console.log("coll");
+                var particle = new Particles({
+                    x: 4 * Math.random(),
+                    y: -(2 * Math.random() + 1)
+                }, 120, this.particleSource, .05 * Math.random());
+                particle.build(), particle.alphadecres = .1, particle.getContent().tint = APP.appModel.currentPlayerModel.color, 
+                particle.scaledecress = .02, particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
+                this.layer.addChild(particle);
+            }
+        }
     }
 }), Coin = Entity.extend({
     init: function(vel, behaviour) {
@@ -780,7 +938,17 @@ var Application = AbstractApplication.extend({
                 onComplete: function() {
                     self.kill = !0;
                 }
-            }), this.collidable = !1, this.updateable = !1;
+            });
+            for (var i = 6; i >= 0; i--) {
+                var particle = new Particles({
+                    x: 8 * Math.random() - 4,
+                    y: 8 * Math.random() - 4
+                }, 120, this.particleSource, .05 * Math.random());
+                particle.build(), particle.getContent().tint = APP.appModel.currentPlayerModel.color, 
+                particle.alphadecress = .02, particle.scaledecress = -.05, particle.setPosition(this.getPosition().x - (Math.random() + .1 * this.getContent().width) / 2, this.getPosition().y), 
+                this.layer.addChild(particle);
+            }
+            this.collidable = !1, this.updateable = !1;
         }
     }
 }), KillerBall = Entity.extend({
@@ -788,7 +956,7 @@ var Application = AbstractApplication.extend({
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
         this.height = 1, this.type = "killer", this.node = null, this.velocity.x = vel.x, 
         this.velocity.y = vel.y, this.timeLive = 1e3, this.power = 1, this.defaultVelocity = 1, 
-        this.behaviour = behaviour.clone(), this.imgSource = "barata.png", this.particleSource = "partEnemy.png";
+        this.behaviour = behaviour.clone(), this.imgSource = "inimigo.png", this.particleSource = "partEnemy.png";
     },
     startScaleTween: function() {
         TweenLite.from(this.getContent().scale, .3, {
@@ -1370,74 +1538,161 @@ var Application = AbstractApplication.extend({
         APP.totalCoins = coins ? coins : 0, APP.highScore = high ? high : 0, APP.plays = plays ? plays : 0, 
         APP.currentPoints = 0, this.playerModels = [], this.playerModels.push({
             value: 0,
-            color: 16729404,
+            label: "KETCHUP",
+            color: 15152942,
             id: this.playerModels.length,
             enabled: !0
         }), this.playerModels.push({
-            value: 1,
+            value: 10,
+            label: "WASABI",
+            color: 6073388,
+            id: this.playerModels.length,
+            enabled: !1
+        }), this.playerModels.push({
+            value: 20,
+            label: "MAYO",
+            color: 15461547,
+            id: this.playerModels.length,
+            enabled: !1
+        }), this.playerModels.push({
+            value: 30,
+            label: "MOUSTARD",
+            color: 15790663,
+            id: this.playerModels.length,
+            enabled: !1
+        }), this.playerModels.push({
+            value: 40,
+            label: "BARBIECUE",
+            color: 11619621,
+            id: this.playerModels.length,
+            enabled: !1
+        }), this.playerModels.push({
+            value: 50,
+            label: "PUTONIUM",
+            color: 7927665,
+            id: this.playerModels.length,
+            enabled: !1
+        }), this.towelModels = [], this.towelModels.push({
+            value: 5,
             color: 65280,
-            id: this.playerModels.length,
+            imgSrc: "dist/img/2.png",
+            thumb: "fundot2.png",
+            id: this.towelModels.length,
             enabled: !1
-        }), this.playerModels.push({
-            value: 5,
+        }), this.towelModels.push({
+            value: 0,
+            color: 16729404,
+            imgSrc: "dist/img/1.png",
+            thumb: "fundot1.png",
+            id: this.towelModels.length,
+            enabled: !0
+        }), this.towelModels.push({
+            value: 10,
             color: 255,
-            id: this.playerModels.length,
+            imgSrc: "dist/img/3.png",
+            thumb: "fundot3.png",
+            id: this.towelModels.length,
             enabled: !1
-        }), this.playerModels.push({
-            value: 5,
+        }), this.towelModels.push({
+            value: 15,
             color: 10487543,
-            id: this.playerModels.length,
+            imgSrc: "dist/img/4.png",
+            thumb: "fundot4.png",
+            id: this.towelModels.length,
             enabled: !1
-        }), this.playerModels.push({
-            value: 5,
+        }), this.towelModels.push({
+            value: 20,
             color: 364288,
-            id: this.playerModels.length,
+            imgSrc: "dist/img/5.png",
+            thumb: "fundot5.png",
+            id: this.towelModels.length,
             enabled: !1
-        }), this.playerModels.push({
-            value: 5,
+        }), this.towelModels.push({
+            value: 25,
             color: 9830655,
-            id: this.playerModels.length,
+            imgSrc: "dist/img/6.png",
+            thumb: "fundot6.png",
+            id: this.towelModels.length,
             enabled: !1
-        }), this.playerModels.push({
+        }), this.burguersModels = [], this.burguersModels.push({
+            value: 0,
+            color: 16729404,
+            imgSrc: "burger.png",
+            thumb: "burger.png",
+            id: this.burguersModels.length,
+            enabled: !0
+        }), this.burguersModels.push({
             value: 5,
-            color: 11337975,
-            id: this.playerModels.length,
+            color: 65280,
+            imgSrc: "burger.png",
+            thumb: "burger.png",
+            id: this.burguersModels.length,
             enabled: !1
-        }), this.playerModels.push({
-            value: 5,
-            color: 671488,
-            id: this.playerModels.length,
+        }), this.burguersModels.push({
+            value: 10,
+            color: 255,
+            imgSrc: "burger.png",
+            thumb: "burger.png",
+            id: this.burguersModels.length,
             enabled: !1
-        }), this.playerModels.push({
-            value: 5,
-            color: 10526895,
-            id: this.playerModels.length,
+        }), this.burguersModels.push({
+            value: 15,
+            color: 10487543,
+            imgSrc: "burger.png",
+            thumb: "burger.png",
+            id: this.burguersModels.length,
             enabled: !1
-        }), console.log(APP.cookieManager.getSafeCookie("enableds"));
+        }), this.burguersModels.push({
+            value: 20,
+            color: 364288,
+            imgSrc: "burger.png",
+            thumb: "burger.png",
+            id: this.burguersModels.length,
+            enabled: !1
+        }), this.burguersModels.push({
+            value: 25,
+            color: 9830655,
+            imgSrc: "burger.png",
+            thumb: "burger.png",
+            id: this.burguersModels.length,
+            enabled: !1
+        }), this.updateTowels(), this.updateBurguers();
         var enableds = APP.cookieManager.getSafeCookie("enableds"), j = 0;
         if (enableds) for (enableds = enableds.split(","), j = 0; j < this.playerModels.length - 1; j++) console.log(enableds[j]), 
         "1" === enableds[j] && (this.playerModels[j].enabled = !0); else {
             for (console.log("whata"), enableds = "1", j = 0; j < this.playerModels.length - 1; j++) enableds += ",0";
             APP.cookieManager.setSafeCookie("enableds", enableds);
         }
-        this.currentPlayerModel = this.playerModels[0], this.totalPlayers = 0;
+        this.currentPlayerModel = this.playerModels[0], this.currentTowelModel = this.towelModels[0], 
+        this.currentBurguerlModel = this.burguersModels[0], this.totalPlayers = 0;
         for (var i = this.playerModels.length - 1; i >= 0; i--) this.playerModels[i].toAble <= this.totalPoints && (this.playerModels[i].able = !0, 
         this.totalPlayers++);
         this.currentHorde = 0;
     },
+    updateBurguers: function() {
+        var i = 0;
+        for (i = this.burguersModels.length - 1; i >= 0; i--) this.burguersModels[i].value <= APP.highScore && (this.burguersModels[i].enabled = !0);
+    },
+    updateTowels: function() {
+        var i = 0;
+        for (i = this.towelModels.length - 1; i >= 0; i--) this.towelModels[i].value <= APP.plays && (this.towelModels[i].enabled = !0);
+    },
     saveScore: function() {
         APP.cookieManager.setSafeCookie("coins", APP.totalCoins), APP.cookieManager.setSafeCookie("highScore", APP.highScore), 
         APP.cookieManager.setSafeCookie("plays", APP.plays);
-        for (var enableds = "1", i = 1; i < this.playerModels.length; i++) enableds += this.playerModels[i].enabled ? ",1" : ",0";
+        var i = 0;
+        this.updateTowels(), this.updateBurguers();
+        var enableds = "1";
+        for (i = 1; i < this.playerModels.length; i++) enableds += this.playerModels[i].enabled ? ",1" : ",0";
         console.log(enableds), APP.cookieManager.setSafeCookie("enableds", enableds), console.log(APP.cookieManager.getSafeCookie("enableds"));
     },
     setModel: function(id) {
         this.currentID = id, this.currentPlayerModel = this.playerModels[id];
     },
     zerarTudo: function() {
-        this.currentHorde = 0, this.totalPoints = 0, this.totalBirds = 1, this.totalPlayers = 1, 
-        APP.cookieManager.setCookie("totalPoints", 0, 500), APP.cookieManager.setCookie("totalBirds", 1, 500);
-        for (var i = this.playerModels.length - 1; i >= 0; i--) this.playerModels[i].toAble <= this.totalPoints ? this.playerModels[i].able = !0 : this.playerModels[i].able = !1;
+        APP.totalCoins = 0, APP.highScore = 0, APP.plays = 0, APP.cookieManager.setSafeCookie("enableds", "0"), 
+        APP.cookieManager.setSafeCookie("coins", APP.totalCoins), APP.cookieManager.setSafeCookie("highScore", APP.highScore), 
+        APP.cookieManager.setSafeCookie("plays", APP.plays);
     },
     maxPoints: function() {
         this.currentHorde = 0, this.totalPoints = 999999, this.totalBirds = 8, APP.cookieManager.setCookie("totalPoints", this.totalPoints, 500), 
@@ -1565,46 +1820,117 @@ var Application = AbstractApplication.extend({
     },
     initApplication: function() {
         var self = this;
-        this.bg = new SimpleSprite("bg1.jpg"), scaleConverter(this.bg.getContent().width, windowWidth, 1.2, this.bg), 
-        this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2, 
-        this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2, 
-        this.scrollContainer = new PIXI.DisplayObjectContainer(), this.addChild(this.scrollContainer);
-        var marginTopBottom = (new PIXI.Graphics(), 100);
-        this.shopList = [];
-        for (var i = 0; i < APP.appModel.playerModels.length; i++) {
-            var shopItem = new ShopItem(this);
-            shopItem.build(APP.appModel.playerModels[i]), this.scrollContainer.addChild(shopItem.getContent()), 
-            scaleConverter(shopItem.getContent().width, windowWidth, .6, shopItem.getContent()), 
-            shopItem.getContent().position.y = i * shopItem.getContent().height + marginTopBottom + 20, 
-            shopItem.getContent().position.x = windowWidth / 2 - shopItem.getContent().width / 2, 
-            this.shopList.push(shopItem);
-        }
-        this.back = new PIXI.Graphics(), this.back.beginFill(15514636), this.back.drawRect(0, 0, windowWidth, this.scrollContainer.height), 
-        this.back.height = this.scrollContainer.height + 2 * marginTopBottom, this.scrollContainer.addChild(this.back), 
-        this.scrollContainer.setChildIndex(this.back, 0), this.applyScroll(this.scrollContainer), 
-        this.backTop = new PIXI.Graphics(), this.backTop.beginFill(14370108), this.backTop.drawRect(0, 0, windowWidth, marginTopBottom), 
+        this.scrollContainer1 = new PIXI.DisplayObjectContainer(), this.addChild(this.scrollContainer1), 
+        this.scrollContainer2 = new PIXI.DisplayObjectContainer(), this.addChild(this.scrollContainer2), 
+        this.scrollContainer3 = new PIXI.DisplayObjectContainer(), this.addChild(this.scrollContainer3);
+        var marginTopBottom = (new PIXI.Graphics(), .3 * windowHeight);
+        this.shopList = [], this.towelList = [], this.burgerList = [], this.saucesLabel = new PIXI.Text("SAUCES", {
+            font: "50px Vagron",
+            fill: "#FFFFFF"
+        }), this.saucesLabel.position.x = windowWidth / 2 - this.saucesLabel.width / 2, 
+        this.saucesLabel.position.y = 100, this.scrollContainer1.addChild(this.saucesLabel);
+        var shopItem, shopItemTowel, shopItemBurger, line = -1, col = 0, i = 0, margin = 0, initY = this.saucesLabel.position.y + 1.5 * this.saucesLabel.height;
+        for (i = 0; i < APP.appModel.playerModels.length; i++) shopItem = new ShopItem(this), 
+        shopItem.build(APP.appModel.playerModels[i]), this.scrollContainer1.addChild(shopItem.getContent()), 
+        i % 2 === 0 ? (col = 0, line++) : col++, 0 === margin && (margin = 5 + (windowWidth - (1.2 * shopItem.getContent().width + shopItem.getContent().width)) / 2), 
+        shopItem.getContent().position.y = 1.2 * line * shopItem.getContent().height + initY, 
+        shopItem.getContent().position.x = (shopItem.getContent().width + .2 * shopItem.getContent().height) * col + margin, 
+        this.shopList.push(shopItem), shopItem.updateStats();
+        for (console.log("INIT"), this.foodLabel = new PIXI.Text("FOOD", {
+            font: "50px Vagron",
+            fill: "#FFFFFF"
+        }), this.foodLabel.position.x = windowWidth / 2 - this.foodLabel.width / 2, this.foodLabel.position.y = shopItem.getContent().position.y + 1.5 * shopItem.getContent().height, 
+        this.foodLabel.position.y = 100, this.scrollContainer2.addChild(this.foodLabel), 
+        line = -1, col = 0, initY = this.foodLabel.position.y + 1.5 * this.foodLabel.height, 
+        i = 0; i < APP.appModel.burguersModels.length; i++) shopItemBurger = new ShopItemBurger(this), 
+        shopItemBurger.build(APP.appModel.burguersModels[i]), this.scrollContainer2.addChild(shopItemBurger.getContent()), 
+        i % 2 === 0 ? (col = 0, line++) : col++, scaleConverter(shopItemBurger.getContent().width, windowWidth, .4, shopItemBurger.getContent()), 
+        shopItemBurger.getContent().position.y = 1.2 * line * shopItemBurger.getContent().height + initY, 
+        shopItemBurger.getContent().position.x = (shopItemBurger.getContent().width + .2 * shopItemBurger.getContent().height) * col + margin, 
+        this.burgerList.push(shopItemBurger), shopItemBurger.updateStats();
+        for (this.tableLabel = new PIXI.Text("TABLE", {
+            font: "50px Vagron",
+            fill: "#FFFFFF"
+        }), this.tableLabel.position.x = windowWidth / 2 - this.tableLabel.width / 2, this.tableLabel.position.y = shopItemBurger.getContent().position.y + 1.5 * shopItemBurger.getContent().height, 
+        this.tableLabel.position.y = 100, this.scrollContainer3.addChild(this.tableLabel), 
+        initY = this.tableLabel.position.y + 1.5 * this.tableLabel.height, line = -1, col = 0, 
+        i = 0; i < APP.appModel.towelModels.length; i++) shopItemTowel = new ShopItemTowel(this), 
+        shopItemTowel.build(APP.appModel.towelModels[i]), this.scrollContainer3.addChild(shopItemTowel.getContent()), 
+        i % 2 === 0 ? (col = 0, line++) : col++, scaleConverter(shopItemTowel.getContent().width, windowWidth, .4, shopItemTowel.getContent()), 
+        shopItemTowel.getContent().position.y = 1.2 * line * shopItemTowel.getContent().height + initY, 
+        shopItemTowel.getContent().position.x = (shopItemTowel.getContent().width + .2 * shopItemTowel.getContent().height) * col + margin, 
+        this.towelList.push(shopItemTowel), shopItemTowel.updateStats();
+        this.back = new PIXI.Graphics(), this.back.beginFill(15514636), this.back.drawRect(0, 0, windowWidth, windowHeight), 
+        this.back.height = shopItemTowel.getContent().position.y + shopItemTowel.getContent().height + marginTopBottom / 2, 
+        this.addChild(this.back), this.back.parent.setChildIndex(this.back, 0), this.backTop = new PIXI.Graphics(), 
+        this.backTop.beginFill(14370108), this.backTop.drawRect(0, 0, windowWidth, .1 * windowHeight), 
         this.container.addChild(this.backTop), this.textScreen = new PIXI.Text("SHOP", {
             font: "50px Vagron",
             fill: "#FFFFFF"
         }), scaleConverter(this.textScreen.width, windowWidth, .25, this.textScreen), this.textScreen.position.x = windowWidth / 2 - this.textScreen.width / 2, 
-        this.textScreen.position.y = .1 * windowWidth, this.container.addChild(this.textScreen), 
-        this.playButton = new DefaultButton("play1.png", "play1.png"), this.playButton.build(), 
-        scaleConverter(this.playButton.getContent().height, this.textScreen.height, 1, this.playButton), 
-        this.playButton.setPosition(.1 * windowWidth + this.playButton.getContent().width, .1 * windowWidth), 
-        this.addChild(this.playButton), this.playButton.getContent().scale.x = -1, this.playButton.clickCallback = function() {
+        this.textScreen.position.y = this.backTop.height / 2 - this.textScreen.height / 2, 
+        this.container.addChild(this.textScreen), this.playButton = new DefaultButton("play1.png", "play1.png"), 
+        this.playButton.build(), scaleConverter(this.playButton.getContent().height, this.textScreen.height, 1, this.playButton), 
+        this.playButton.setPosition(windowWidth - this.playButton.getContent().width - .1 * windowWidth, this.backTop.height / 2 - this.playButton.getContent().height / 2), 
+        this.addChild(this.playButton), this.playButton.clickCallback = function() {
             self.updateable = !1, self.toTween(function() {
                 self.screenManager.change("Init"), APP.goDirect = !0;
             });
-        }, this.coinsLabel = new PIXI.Text(APP.totalCoins, {
+        }, this.coinsLabel = new PIXI.Text("x" + APP.totalCoins, {
             font: "50px Vagron",
             fill: "#FFFFFF"
         }), scaleConverter(this.coinsLabel.height, this.playButton.getContent().height, 1, this.coinsLabel), 
-        this.coinsLabel.position.x = windowWidth - this.coinsLabel.width - .1 * windowWidth, 
-        this.coinsLabel.position.y = .1 * windowWidth, this.container.addChild(this.coinsLabel);
+        this.coinsLabel.position.x = .1 * windowWidth, this.coinsLabel.position.y = this.backTop.height / 2 - this.coinsLabel.height / 2, 
+        this.container.addChild(this.coinsLabel), this.currentPage = 0, this.currentPageLast = 1, 
+        this.vecPages = [ this.scrollContainer1, this.scrollContainer2, this.scrollContainer3 ];
+        for (var j = this.vecPages.length - 1; j >= 0; j--) this.vecPages[j].position.x = windowWidth;
+        this.balls = [];
+        var tempBall;
+        this.containerBalls = new PIXI.DisplayObjectContainer(), this.addChild(this.containerBalls);
+        for (var k = 0; k < this.vecPages.length; k++) tempBall = new PIXI.Graphics(), tempBall.beginFill(16777215), 
+        tempBall.drawCircle(10, 0, 10), tempBall.position.x = 1.5 * tempBall.width * k, 
+        this.balls.push(tempBall), this.containerBalls.addChild(tempBall), tempBall.tint = 16777215;
+        scaleConverter(this.containerBalls.width, windowWidth, .12, this.containerBalls), 
+        this.containerBalls.position.x = windowWidth / 2 - this.containerBalls.width / 2;
+        var lalalaTop = this.scrollContainer1.position.y + shopItem.getContent().position.y + shopItem.getContent().height, lalalal = windowHeight - lalalaTop;
+        this.containerBalls.position.y = lalalal / 2 + lalalaTop, this.updateShopList("right"), 
+        this.hammer && (this.hammer.off("swiperight"), this.hammer.off("swipeleft"));
+        var swipe = new Hammer.Swipe();
+        this.hammer = new Hammer.Manager(renderer.view), this.hammer.add(swipe), this.hammer.on("swiperight", function(event) {
+            self.currentPage <= 0 ? self.currentPage = self.vecPages.length - 1 : self.currentPage--, 
+            self.updateShopList("right");
+        }), this.hammer.on("swipeleft", function(event) {
+            self.currentPage >= self.vecPages.length - 1 ? self.currentPage = 0 : self.currentPage++, 
+            self.updateShopList("left");
+        });
+    },
+    updateShopList: function(side) {
+        if (!this.initSider) {
+            this.initSider = !0;
+            var self = this;
+            "right" === side ? (console.log(this.vecPages[this.currentPage].x, " - 1", this.currentPage), 
+            this.vecPages[this.currentPage].position.x = -this.vecPages[this.currentPage].width, 
+            console.log(this.vecPages[this.currentPage].x, " - 2"), TweenLite.to(this.vecPages[this.currentPage], .5, {
+                x: 0,
+                onComplete: function() {
+                    self.initSider = !1;
+                }
+            }), TweenLite.to(this.vecPages[this.currentPageLast], .5, {
+                x: windowWidth
+            })) : (this.vecPages[this.currentPage].position.x = windowWidth, TweenLite.to(this.vecPages[this.currentPageLast], .5, {
+                x: 1.2 * -this.vecPages[this.currentPageLast].width
+            }), TweenLite.to(this.vecPages[this.currentPage], .5, {
+                x: 0,
+                onComplete: function() {
+                    self.initSider = !1;
+                }
+            })), this.balls[this.currentPage].tint = 14370108, this.balls[this.currentPageLast].tint = 16777215, 
+            this.currentPageLast = this.currentPage;
+        }
     },
     updateCoins: function() {
-        this.coinsLabel.setText(APP.totalCoins), this.coinsLabel.position.x = windowWidth - this.coinsLabel.width - .1 * windowWidth, 
-        this.coinsLabel.position.y = .1 * windowWidth;
+        this.coinsLabel.setText("x" + APP.totalCoins), this.coinsLabel.position.x = .1 * windowWidth, 
+        this.coinsLabel.position.y = this.backTop.height / 2 - this.coinsLabel.height / 2;
     },
     applyScroll: function(container) {
         function verifyPos(posReturn) {
@@ -1612,7 +1938,9 @@ var Application = AbstractApplication.extend({
             posReturn;
         }
         container.interactive = !0, container.mousedown = container.touchstart = function(mouseData) {
-            container.mouseDown = !0, container.initGlobalY = mouseData.global.y - container.position.y;
+            setTimeout(function() {
+                APP.scrolling = !1;
+            }, 100), container.mouseDown = !0, container.initGlobalY = mouseData.global.y - container.position.y;
         }, container.mousemove = container.touchmove = function(mouseData) {
             if (container.mouseDown) {
                 container.lastVelY = mouseData.global.y - container.initGlobalY - container.position.y;
@@ -1622,16 +1950,16 @@ var Application = AbstractApplication.extend({
         }, container.mouseup = container.touchend = function(mouseData) {
             container.mouseDown = !1;
             var posDest = verifyPos(container.position.y + 5 * container.lastVelY);
-            TweenLite.to(container.position, Math.abs(container.lastVelY) / 120, {
-                y: posDest
+            console.log(container.initGlobalY, posDest, container.position.y), pointDistance(0, posDest, 0, container.position.y) < 31 || TweenLite.to(container.position, Math.abs(container.lastVelY) / 120, {
+                y: posDest,
+                onComplete: function() {
+                    APP.scrolling = !1;
+                }
             });
         };
     },
     toTween: function(callback) {
-        TweenLite.to(this.bg.getContent(), .1, {
-            alpha: 0,
-            ease: "easeOutCubic"
-        }), TweenLite.to(this.textScreen, .1, {
+        TweenLite.to(this.textScreen, .1, {
             delay: .1,
             alpha: 0
         }), TweenLite.to(this.playButton.getContent(), .1, {
@@ -1644,10 +1972,7 @@ var Application = AbstractApplication.extend({
         });
     },
     fromTween: function(callback) {
-        console.log("from"), TweenLite.from(this.bg.getContent(), .1, {
-            alpha: 0,
-            ease: "easeOutCubic"
-        }), TweenLite.from(this.textScreen, .1, {
+        console.log("from"), TweenLite.from(this.textScreen, .1, {
             delay: .1,
             alpha: 0
         }), TweenLite.from(this.playButton.getContent(), .1, {
@@ -1855,7 +2180,7 @@ var Application = AbstractApplication.extend({
     },
     initApplication: function() {
         var self = this;
-        this.bg = new SimpleSprite("dist/img/2.png"), this.container.addChild(this.bg.getContent()), 
+        this.bg = new SimpleSprite(APP.appModel.currentTowelModel.imgSrc), this.container.addChild(this.bg.getContent()), 
         scaleConverter(this.bg.getContent().width, windowWidth, 1.2, this.bg), this.bg.getContent().position.x = windowWidth / 2 - this.bg.getContent().width / 2, 
         this.bg.getContent().position.y = windowHeight / 2 - this.bg.getContent().height / 2, 
         this.brilhoBase = new SimpleSprite("brilho_base.png"), this.container.addChild(this.brilhoBase.getContent()), 
@@ -1866,39 +2191,38 @@ var Application = AbstractApplication.extend({
         this.container.addChild(this.brilhoMeio.getContent()), scaleConverter(this.brilhoMeio.getContent().width, windowWidth, 1, this.brilhoMeio), 
         this.brilhoMeio.getContent().position.x = windowWidth / 2, this.brilhoMeio.getContent().position.y = windowHeight / 2, 
         this.brilhoMeio.getContent().alpha = 0, this.brilhoMeio.getContent().anchor.x = .5, 
-        this.brilhoMeio.getContent().anchor.y = .5, this.playButton = new DefaultButton("UI_button_default_1.png", "UI_button_default_1.png"), 
-        this.playButton.build(), this.playButton.addLabel(new PIXI.Text("PLAY", {
-            font: "30px Vagron",
-            fill: "#db453c"
-        }), 45, 2), scaleConverter(this.playButton.getContent().width, windowWidth, .4, this.playButton), 
-        this.addChild(this.playButton), this.playButton.clickCallback = function() {
+        this.brilhoMeio.getContent().anchor.y = .5, this.rotuloContainer = new PIXI.DisplayObjectContainer(), 
+        this.container.addChild(this.rotuloContainer), this.rotuloImg = new SimpleSprite("TITLE_rotulo.png"), 
+        this.rotuloContainer.addChild(this.rotuloImg.getContent()), this.logoGame = new SimpleSprite("TITLE.png"), 
+        this.rotuloContainer.addChild(this.logoGame.getContent()), this.logoGame.getContent().position.x = 10, 
+        this.logoGame.getContent().position.y = 80, this.rotuloContainer.position.x = windowWidth / 2 - this.rotuloContainer.width / 2, 
+        this.rotuloContainer.position.y = windowHeight / 2 - this.rotuloContainer.height / 2, 
+        this.playButton = new DefaultButton("botao_play.png", "botao_play.png"), this.playButton.build(), 
+        this.rotuloContainer.addChild(this.playButton.getContent()), this.playButton.clickCallback = function() {
             testMobile() && possibleFullscreen() && fullscreen(), self.startGame();
-        }, this.shopButton = new DefaultButton("UI_button_default_1.png", "UI_button_default_1.png"), 
-        this.shopButton.build(), this.shopButton.addLabel(new PIXI.Text("SHOP", {
-            font: "30px Vagron",
-            fill: "#db453c"
-        }), 45, 2), scaleConverter(this.shopButton.getContent().width, windowWidth, .4, this.shopButton), 
-        this.addChild(this.shopButton), this.shopButton.clickCallback = function() {
+        }, this.shopButton = new DefaultButton("botao_config.png", "botao_config.png"), 
+        this.shopButton.build(), this.rotuloContainer.addChild(this.shopButton.getContent()), 
+        this.shopButton.clickCallback = function() {
             testMobile() && possibleFullscreen() && fullscreen(), self.screenManager.change("Choice");
-        }, this.rankingButton = new DefaultButton("UI_button_default_1.png", "UI_button_default_1.png"), 
-        this.rankingButton.build(), this.rankingButton.addLabel(new PIXI.Text("RANK", {
-            font: "30px Vagron",
-            fill: "#db453c"
-        }), 45, 2), scaleConverter(this.rankingButton.getContent().width, windowWidth, .4, this.rankingButton), 
-        this.addChild(this.rankingButton), this.rankingButton.clickCallback = function() {
+        }, this.rankingButton = new DefaultButton("botao_rankin.png", "botao_rankin.png"), 
+        this.rankingButton.build(), this.rotuloContainer.addChild(this.rankingButton.getContent()), 
+        this.rankingButton.clickCallback = function() {
             testMobile() && possibleFullscreen() && fullscreen(), self.screenManager.change("Choice");
-        }, this.tuboContent = new SimpleSprite("conteudo.png"), this.addChild(this.tuboContent.getContent()), 
+        }, this.playButton.setPosition(this.rotuloContainer.width / 2 - this.playButton.getContent().width / 2, 420), 
+        this.shopButton.setPosition(this.rotuloContainer.width / 2 + this.shopButton.getContent().width / 2 + 50, this.playButton.getContent().position.y + this.playButton.getContent().height + 10), 
+        this.rankingButton.setPosition(this.rotuloContainer.width / 2 - 1.5 * this.rankingButton.getContent().width - 50, this.playButton.getContent().position.y + this.playButton.getContent().height + 10), 
+        this.tuboContent = new SimpleSprite("conteudo.png"), this.addChild(this.tuboContent.getContent()), 
         this.tuboContent.getContent().anchor.x = .5, this.tuboContent.getContent().anchor.y = 1, 
-        this.tuboContent.getContent().position.x = windowWidth / 2, this.tuboContent.getContent().position.y = windowHeight, 
+        this.tuboContent.getContent().position.x = windowWidth / 2, this.tuboContent.getContent().position.y = windowHeight + this.tuboContent.getContent().height, 
         this.tubo = new SimpleSprite("tubo.png"), this.addChild(this.tubo.getContent()), 
         this.tubo.getContent().anchor.x = .5, this.tubo.getContent().anchor.y = 1, this.tubo.getContent().position.x = windowWidth / 2, 
-        this.tubo.getContent().position.y = windowHeight, this.tuboContent.getContent().tint = APP.appModel.currentPlayerModel.color, 
-        this.fromTween(), this.layerManager = new LayerManager(), this.layerManager.build("Main"), 
-        this.addChild(this.layerManager), this.layer = new Layer(), this.layer.build("EntityLayer"), 
-        this.layerManager.addLayer(this.layer), this.hitTouch = new PIXI.Graphics(), this.hitTouch.interactive = !0, 
-        this.hitTouch.beginFill(0), this.hitTouch.drawRect(0, 0, windowWidth, windowHeight), 
-        this.hitTouch.alpha = 0, this.hitTouch.hitArea = new PIXI.Rectangle(0, 0, windowWidth, windowHeight), 
-        this.hitTouch.mouseup = function(mouseData) {
+        this.tubo.getContent().position.y = windowHeight + this.tubo.getContent().height, 
+        this.tuboContent.getContent().tint = APP.appModel.currentPlayerModel.color, this.fromTween(), 
+        this.layerManager = new LayerManager(), this.layerManager.build("Main"), this.addChild(this.layerManager), 
+        this.layer = new Layer(), this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), 
+        this.hitTouch = new PIXI.Graphics(), this.hitTouch.interactive = !0, this.hitTouch.beginFill(0), 
+        this.hitTouch.drawRect(0, 0, windowWidth, windowHeight), this.hitTouch.alpha = 0, 
+        this.hitTouch.hitArea = new PIXI.Rectangle(0, 0, windowWidth, windowHeight), this.hitTouch.mouseup = function(mouseData) {
             self.moveBall();
         }, this.hitTouch.touchstart = function(touchData) {
             self.moveBall();
@@ -1926,8 +2250,8 @@ var Application = AbstractApplication.extend({
             wordWrap: !0,
             wordWrapWidth: 500
         }), scaleConverter(this.coinsLabel.height, windowHeight, .06, this.coinsLabel), 
-        this.addChild(this.coinsLabel), this.coinsLabel.position.y = -500, this.updateCoins(), 
-        this.endModal = new EndModal(this), APP.goDirect && this.startGame(), APP.goDirect = !1;
+        this.addChild(this.coinsLabel), this.coinsLabel.position.y = -500, this.endModal = new EndModal(this), 
+        APP.goDirect && this.startGame(), APP.goDirect = !1;
     },
     updateLabel: function() {
         this.pointsLabel.setText(APP.currentPoints), this.pointsLabel.position.x = windowWidth - this.pointsLabel.width - .1 * windowWidth, 
@@ -1979,16 +2303,16 @@ var Application = AbstractApplication.extend({
                 TweenLite.to(self.brilhoMeio.getContent(), .3, {
                     alpha: .3
                 }), self.layer.addChild(tempEnemy), self.currentEnemy = tempEnemy, !(self.currentHorde < 2) && behaviour.killerBehaviour) {
-                    var tempEnemyKiller = null;
-                    tempEnemyKiller = APP.seed.getNextFloat() < 10.5 ? new KillerBall({
+                    var tempEnemyKiller = null, hasEnemy = !1;
+                    APP.seed.getNextFloat() < .5 ? (hasEnemy = !0, tempEnemyKiller = new KillerBall({
                         x: 0,
                         y: 0
-                    }, behaviour.killerBehaviour) : new Coin({
+                    }, behaviour.killerBehaviour)) : tempEnemyKiller = new Coin({
                         x: 0,
                         y: 0
                     }, behaviour.killerBehaviour), tempEnemyKiller.build(), tempEnemyKiller.getContent().position.x = behaviour.killerBehaviour.position.x, 
                     tempEnemyKiller.getContent().position.y = behaviour.killerBehaviour.position.y, 
-                    scaleConverter(tempEnemyKiller.getContent().height, windowHeight, .2, tempEnemyKiller.getContent()), 
+                    scaleConverter(tempEnemyKiller.getContent().height, windowHeight, hasEnemy ? .1 : .2, tempEnemyKiller.getContent()), 
                     self.layer.addChild(tempEnemyKiller);
                 }
             }
@@ -1997,8 +2321,11 @@ var Application = AbstractApplication.extend({
     startGame: function() {
         this.toTween(), TweenLite.to(this.tapToPlay, .5, {
             alpha: 1
-        }), APP.currentPoints = 0, this.currentHorde = 0, APP.accelGame = 1, APP.seed.applySeed(), 
-        this.updateLabel(), this.updateCoins(), this.ball = new Ball({
+        }), APP.currentPoints = 0, this.currentHorde = 0, APP.accelGame = 1, TweenLite.to(this.tubo.getContent().position, .5, {
+            y: windowHeight
+        }), TweenLite.to(this.tuboContent.getContent().position, .5, {
+            y: windowHeight
+        }), APP.seed.applySeed(), this.updateLabel(), this.updateCoins(), this.ball = new Ball({
             x: 0,
             y: 0
         }, this), this.ball.build(), scaleConverter(this.ball.spriteBall.width, windowWidth, .15, this.ball.spriteBall), 
@@ -2009,7 +2336,12 @@ var Application = AbstractApplication.extend({
         this.addChild(this.hitTouch);
     },
     gameOver: function() {
-        this.removeChild(this.hitTouch), this.pointsLabel.position.y = -500, this.coinsLabel.position.y = -500;
+        this.removeChild(this.hitTouch), this.pointsLabel.position.y = -500, this.coinsLabel.position.y = -500, 
+        TweenLite.to(this.tubo.getContent().position, .5, {
+            y: windowHeight + this.tubo.getContent().height
+        }), TweenLite.to(this.tuboContent.getContent().position, .5, {
+            y: windowHeight + this.tuboContent.getContent().height
+        });
         for (var i = this.layer.childs.length - 1; i >= 0; i--) this.layer.childs[i].preKill();
         APP.plays++, APP.appModel.saveScore(), this.endModal.show();
     },
@@ -2027,24 +2359,16 @@ var Application = AbstractApplication.extend({
             delay: .1,
             y: -this.audioOn.getContent().height,
             ease: "easeOutBack"
-        }), TweenLite.to(this.rankingButton.getContent(), .2, {
-            y: windowHeight,
-            ease: "easeOutBack"
-        }), TweenLite.to(this.shopButton.getContent(), .2, {
-            y: windowHeight,
-            ease: "easeOutBack"
-        }), TweenLite.to(this.playButton.getContent(), .2, {
-            y: windowHeight,
-            ease: "easeOutBack",
+        });
+        var self = this;
+        TweenLite.to(this.rotuloContainer, .2, {
+            y: -this.rotuloContainer.height,
             onComplete: function() {
-                callback && callback();
+                self.rotuloContainer.parent && self.rotuloContainer.parent.removeChild(self.rotuloContainer);
             }
         });
     },
     fromTween: function(callback) {
-        this.playButton.setPosition(windowWidth / 2 - this.playButton.getContent().width / 2, windowHeight / 2), 
-        this.shopButton.setPosition(windowWidth / 2 - this.shopButton.getContent().width / 2, this.playButton.getContent().position.y + this.playButton.getContent().height + 10), 
-        this.rankingButton.setPosition(windowWidth / 2 - this.rankingButton.getContent().width / 2, this.shopButton.getContent().position.y + this.shopButton.getContent().height + 10), 
         this.audioOn && TweenLite.from(this.audioOn.getContent(), .5, {
             delay: .1,
             y: -this.audioOn.getContent().height,
@@ -2092,7 +2416,7 @@ var Application = AbstractApplication.extend({
     },
     build: function() {
         this._super();
-        var assetsToLoader = [ "dist/img/atlas2.json", "dist/img/2.png" ];
+        var assetsToLoader = [ "dist/img/atlas2.json", "dist/img/1.png", "dist/img/2.png", "dist/img/3.png", "dist/img/4.png", "dist/img/5.png", "dist/img/6.png" ];
         assetsToLoader.length > 0 && !this.isLoaded ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.initLoad()) : this.onAssetsLoaded();
     },
@@ -2621,13 +2945,13 @@ var Application = AbstractApplication.extend({
 }), res = {
     x: 375,
     y: 667
-}, resizeProportional = !0, windowWidth = res.x, windowHeight = res.y, realWindowWidth = res.x, realWindowHeight = res.y, gameScale = 2, screenOrientation = "portait", windowWidthVar = window.innerHeight, windowHeightVar = window.innerWidth, gameView = document.getElementById("game");
+}, resizeProportional = !0, windowWidth = res.x, windowHeight = res.y, realWindowWidth = res.x, realWindowHeight = res.y, gameScale = 1.3, screenOrientation = "portait", windowWidthVar = window.innerHeight, windowHeightVar = window.innerWidth, gameView = document.getElementById("game");
 
 testMobile() || (document.body.className = ""), console.log(gameView), window.addEventListener("orientationchange", function() {
     window.scrollTo(0, 0);
 }, !1);
 
-var ratio = 1, init = !1, renderer, APP, retina = 2, initialize = function() {
+var ratio = 1, init = !1, renderer, APP, retina = 1, initialize = function() {
     PIXI.BaseTexture.SCALE_MODE = PIXI.scaleModes.NEAREST, requestAnimFrame(update);
 }, isfull = !1;
 
