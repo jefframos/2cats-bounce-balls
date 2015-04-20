@@ -11,7 +11,7 @@ var LoadScreen = AbstractScreen.extend({
     build: function () {
         this._super();
 
-        var assetsToLoader = ['dist/img/atlas2.json',
+        var assetsToLoader = ['dist/img/atlas1.json',
         'dist/img/1.png',
         'dist/img/2.png',
         'dist/img/3.png',

@@ -38,7 +38,7 @@
         <key>dataFormat</key>
         <string>json</string>
         <key>textureFileName</key>
-        <filename>../../dist/img/atlas2.png</filename>
+        <filename>../../dist/img/atlas1.png</filename>
         <key>flipPVR</key>
         <false/>
         <key>pvrCompressionQuality</key>
@@ -145,7 +145,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../../dist/img/atlas2.json</filename>
+                <filename>../../dist/img/atlas1.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -188,7 +188,6 @@
         </struct>
         <key>fileList</key>
         <array>
-            <filename>normal/bg1.jpg</filename>
             <filename>normal/UI_button_facebook_1.png</filename>
             <filename>normal/UI_button_ranking_1.png</filename>
             <filename>normal/UI_button_twitter_1.png</filename>
@@ -214,6 +213,19 @@
             <filename>play1.png</filename>
             <filename>barata.png</filename>
             <filename>partEnemy.png</filename>
+            <filename>thumbs/fundot6.png</filename>
+            <filename>thumbs/fundot1.png</filename>
+            <filename>thumbs/fundot2.png</filename>
+            <filename>thumbs/fundot3.png</filename>
+            <filename>thumbs/fundot4.png</filename>
+            <filename>thumbs/fundot5.png</filename>
+            <filename>botao_rankin.png</filename>
+            <filename>botao_volume.png</filename>
+            <filename>TITLE.png</filename>
+            <filename>TITLE_rotulo.png</filename>
+            <filename>botao_config.png</filename>
+            <filename>botao_credits.png</filename>
+            <filename>botao_play.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

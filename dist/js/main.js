@@ -2416,7 +2416,7 @@ var Application = AbstractApplication.extend({
     },
     build: function() {
         this._super();
-        var assetsToLoader = [ "dist/img/atlas2.json", "dist/img/1.png", "dist/img/2.png", "dist/img/3.png", "dist/img/4.png", "dist/img/5.png", "dist/img/6.png" ];
+        var assetsToLoader = [ "dist/img/atlas1.json", "dist/img/1.png", "dist/img/2.png", "dist/img/3.png", "dist/img/4.png", "dist/img/5.png", "dist/img/6.png" ];
         assetsToLoader.length > 0 && !this.isLoaded ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.initLoad()) : this.onAssetsLoaded();
     },
